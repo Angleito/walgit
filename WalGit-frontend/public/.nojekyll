@@ -1,1 +1,3 @@
 # This file ensures GitHub Pages doesn't process your site with Jekyll
+
+### 2. Create a .nojekyll file to disable Jekyll processing
