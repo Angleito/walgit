@@ -1,14 +1,14 @@
-
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom"; // Import Link
 import { Header } from "@/components/layout/Header";
 import WaveBackground from "@/components/layout/WaveBackground";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code, Eye, GitFork, Star, FileText, CircleAlert, Link } from "lucide-react";
+import { Code, Eye, GitFork, Star, FileText, CircleAlert, Link as LinkIcon, GitCommit } from "lucide-react"; // Added GitCommit, renamed Link to LinkIcon
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Added Card components
 
 const Repository = () => {
   const { owner, name } = useParams<{ owner: string; name: string }>();
-  
+
   // Mock repository data
   const repository = {
     owner: owner || "suiocean",
@@ -53,43 +53,48 @@ MIT
 `
   };
 
+  // TODO: load commits via Sui RPC
+  const commits = [
+    { id: '0xabc', message: 'Initial commit: Setup project structure', author: 'suiocean', timestamp: Date.now() - 86400000 * 2 },
+    { id: '0xdef', message: 'Feat: Implement basic staking logic', author: 'wavecoder', timestamp: Date.now() - 86400000 },
+    { id: '0xghi', message: 'Fix: Correct reward calculation', author: 'suiocean', timestamp: Date.now() - 3600000 },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-ocean-50/30 to-white relative">
+    <div className="min-h-screen bg-gradient-to-b from-ocean-50/30 to-white dark:from-dark-300 dark:to-dark-100 relative">
       <WaveBackground />
       <Header />
-      
+
       <div className="container px-4 py-8">
         {/* Repository Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-muted-foreground mb-2">
-            <Link className="h-4 w-4 mr-1" />
-            <a href={`/${repository.owner}`} className="font-medium text-ocean-600 hover:underline">
+            <LinkIcon className="h-4 w-4 mr-1" /> {/* Use LinkIcon */}
+            <Link to={`/${repository.owner}`} className="font-medium text-ocean-600 hover:underline"> {/* Use React Router Link */}
               {repository.owner}
-            </a>
+            </Link>
             <span className="mx-1">/</span>
-            <a href={`/${repository.owner}/${repository.name}`} className="font-semibold text-ocean-700 hover:underline">
+            <Link to={`/${repository.owner}/${repository.name}`} className="font-semibold text-ocean-700 hover:underline"> {/* Use React Router Link */}
               {repository.name}
-            </a>
+            </Link>
           </div>
-          
+
           <div className="mb-4">
             <h1 className="text-3xl font-bold text-foreground">{repository.name}</h1>
             <p className="text-muted-foreground mt-2">{repository.description}</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="outline" size="sm" className="gap-1">
               <Eye className="h-4 w-4" />
               Watch
               <span className="bg-muted rounded px-1.5 py-0.5 text-xs font-semibold ml-1">{repository.watchers}</span>
             </Button>
-            
             <Button variant="outline" size="sm" className="gap-1">
               <Star className="h-4 w-4" />
               Star
               <span className="bg-muted rounded px-1.5 py-0.5 text-xs font-semibold ml-1">{repository.stars}</span>
             </Button>
-            
             <Button variant="outline" size="sm" className="gap-1">
               <GitFork className="h-4 w-4" />
               Fork
@@ -97,56 +102,89 @@ MIT
             </Button>
           </div>
         </div>
-        
+
         {/* Repository Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg border border-border/60 overflow-hidden">
+            <Card className="bg-card/80 backdrop-blur-sm overflow-hidden"> {/* Use Card */}
               {/* Tabs Navigation */}
               <Tabs defaultValue="code">
                 <div className="border-b border-border/60">
                   <TabsList className="h-auto p-0 bg-transparent">
-                    <TabsTrigger 
-                      value="code" 
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                    <TabsTrigger
+                      value="code"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <Code className="h-4 w-4 mr-2" />
                       Code
                     </TabsTrigger>
-                    <TabsTrigger 
-                      value="issues" 
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                    <TabsTrigger
+                      value="commits" // Add Commits Tab
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                    >
+                      <GitCommit className="h-4 w-4 mr-2" />
+                      Commits <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{commits.length}</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="issues"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <CircleAlert className="h-4 w-4 mr-2" />
                       Issues <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{repository.issues}</span>
                     </TabsTrigger>
-                    <TabsTrigger 
-                      value="pulls" 
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                    <TabsTrigger
+                      value="pulls"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <GitFork className="h-4 w-4 mr-2 rotate-90" />
                       Pull Requests <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{repository.pullRequests}</span>
                     </TabsTrigger>
                   </TabsList>
                 </div>
-                
+
                 <TabsContent value="code" className="p-0 m-0">
                   <div className="p-6">
-                    <div className="rounded-lg border border-border/60 bg-muted/30 p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center">
-                          <FileText className="h-5 w-5 mr-2 text-muted-foreground" />
-                          <h2 className="text-lg font-semibold">README.md</h2>
-                        </div>
-                        <span className="text-sm text-muted-foreground">{repository.lastUpdated}</span>
-                      </div>
-                      <div className="prose max-w-none">
-                        <pre className="whitespace-pre-wrap">{repository.readme}</pre>
-                      </div>
-                    </div>
+                    <Card className="bg-muted/30">
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                         <CardTitle className="text-lg font-semibold flex items-center">
+                           <FileText className="h-5 w-5 mr-2 text-muted-foreground" />
+                           README.md
+                         </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                         <pre className="text-xs bg-background p-4 rounded overflow-auto">{repository.readme}</pre>
+                      </CardContent>
+                    </Card>
                   </div>
                 </TabsContent>
-                
+
+                <TabsContent value="commits" className="p-0 m-0"> {/* Commits Content */}
+                  <div className="border-t border-border/60">
+                    <div className="flex justify-end p-4">
+                       <Link to={`/${repository.owner}/${repository.name}/commit/new`}>
+                         <Button variant="outline" size="sm">New Commit</Button>
+                       </Link>
+                    </div>
+                    <ul>
+                      {commits.map(c => (
+                        <li key={c.id} className="border-b border-border/60 px-6 py-3 hover:bg-muted/30 transition-colors">
+                          <div className="flex justify-between items-center">
+                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-sm font-medium hover:text-ocean-600">
+                              {c.message}
+                            </Link>
+                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-xs font-mono text-muted-foreground hover:text-ocean-600">
+                              {c.id.substring(0, 9)}...
+                            </Link>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            <span className="font-medium">{c.author}</span> committed {new Date(c.timestamp).toLocaleDateString()}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </TabsContent>
+
                 <TabsContent value="issues" className="p-0 m-0">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
@@ -175,7 +213,7 @@ MIT
                   </div>
                 </TabsContent>
               </Tabs>
-            </div>
+            </Card>
           </div>
           
           {/* Sidebar */}

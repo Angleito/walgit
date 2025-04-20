@@ -1,12 +1,14 @@
+// filepath: /Users/angle/CascadeProjects/walgit/sui-ocean/src/templates/OriginalHomepage.tsx
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import TrendingRepos from "@/components/dashboard/TrendingRepos";
 import { RepoCard } from "@/components/dashboard/RepoCard";
+import { Link } from "react-router-dom";
 import WaveBackground from "@/components/layout/WaveBackground";
 
-const Index = () => {
+const OriginalHomepage = () => {
   // Mock data for popular repositories
   const popularRepos = [
     {
@@ -61,9 +63,11 @@ const Index = () => {
               Explore, collaborate, and build on the waves of decentralized innovation
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" variant="sui" className="font-medium">
-                Explore Repositories
-              </Button>
+              <Link to="/repositories">
+                <Button size="lg" variant="sui" className="font-medium">
+                  Explore Repositories
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
                 Learn Sui Development
               </Button>
@@ -151,4 +155,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default OriginalHomepage;
