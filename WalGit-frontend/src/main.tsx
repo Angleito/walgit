@@ -1,13 +1,13 @@
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import App from './App'
 import './index.css'
+import { BrowserRouter } from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <div className="dark bg-background min-h-screen text-foreground">
+    <BrowserRouter basename="/walgit">
       <App />
-    </div>
+    </BrowserRouter>
   </React.StrictMode>,
 )
