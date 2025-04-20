@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # This is needed for the action to push to gh-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,3 +36,4 @@ jobs:
         with:
           folder: WalGit-frontend/dist
           branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use the automatic GitHub token
