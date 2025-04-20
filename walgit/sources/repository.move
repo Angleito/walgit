@@ -5,9 +5,11 @@ module walgit::repository {
     use sui::table::{Table, new as table_new, contains as table_contains, borrow as table_borrow}; // Removed unused Self alias, specify function imports
     use std::string::{String};
     use sui::event;
+    use walgit::storage::{StorageQuota, consume_storage};
 
     const ENotOwnerOrCollaborator: u64 = 1;
     const EPermissionDenied: u64 = 2;
+    const EInsufficientStorage: u64 = 3;
 
     // Repository struct to store metadata
     public struct Repository has key, store { // Added public
@@ -52,27 +54,34 @@ module walgit::repository {
         name: String,
         description: String,
         walrus_blob_id: String,
+        initial_size_bytes: u64, // Add parameter for initial size
+        storage: &mut StorageQuota, // Add storage quota parameter
         ctx: &mut TxContext
     ) {
         let owner = sender(ctx);
-        let id_uid = new(ctx); // Renamed variable for clarity
+        
+        // Check and consume storage quota
+        let has_storage = consume_storage(storage, initial_size_bytes);
+        assert!(has_storage, EInsufficientStorage);
+        
+        let id_uid = new(ctx);
 
         let repo = Repository {
-            id: id_uid, // Use the UID directly
+            id: id_uid,
             name,
             owner,
             description,
             walrus_blob_id,
-            collaborators: table_new(ctx) // Use aliased import
+            collaborators: table_new(ctx)
         };
 
         event::emit(RepositoryCreated {
-            repo_id: id(&repo), // Use imported id function
+            repo_id: id(&repo),
             name: repo.name,
             owner: repo.owner
         });
 
-        share_object(repo); // Use specific import
+        share_object(repo);
     }
 
     // --- Getter Functions ---
