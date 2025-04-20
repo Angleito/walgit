@@ -1,7 +1,12 @@
+import { cn } from "@/lib/utils";
 
-const WaveBackground = () => {
+interface WaveBackgroundProps {
+  className?: string;
+}
+
+const WaveBackground = ({ className }: WaveBackgroundProps) => {
   return (
-    <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
+    <div className={cn("absolute inset-0 overflow-hidden -z-10 pointer-events-none", className)}>
       {/* Top waves */}
       <div className="absolute top-0 left-0 right-0 h-64 opacity-5">
         <div className="absolute top-0 left-0 right-0 h-32 bg-ocean-400 rounded-b-[100%]"></div>
