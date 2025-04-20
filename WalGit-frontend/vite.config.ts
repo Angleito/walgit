@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  base: '/walgit/', // Add this line for GitHub Pages deployment
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
