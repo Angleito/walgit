@@ -1,3 +1,4 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +10,7 @@ import Repository from "./pages/Repository";
 import RepositoriesList from "./pages/RepositoriesList";
 import CommitDetail from "./pages/CommitDetail";
 import NewRepository from "./pages/NewRepository";
-import NewCommit from "./pages/NewCommit";
+// import NewCommit from "./pages/NewCommit"; // Commented out as file doesn't exist
 import OriginalHomepage from "./templates/OriginalHomepage"; // Template in templates directory
 
 // Import Sui dApp Kit components
@@ -41,7 +42,7 @@ const App = () => (
             <Route path="/:owner/:name" element={<Repository />} />
             <Route path="/:owner/:name/commits" element={<Repository />} />
             <Route path="/:owner/:name/commits/:commitId" element={<CommitDetail />} />
-            <Route path="/:owner/:name/commit/new" element={<NewCommit />} />
+            {/* <Route path="/:owner/:name/commit/new" element={<NewCommit />} /> */} {/* Commented out as component doesn't exist */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
