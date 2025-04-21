@@ -11,9 +11,9 @@ const Repository = () => {
 
   // Mock repository data
   const repository = {
-    owner: owner || "suiocean",
-    name: name || "sui-wave-protocol",
-    description: "Liquid staking protocol for SUI with wave-based rewards distribution and oceanic governance",
+    owner: owner || "walgit",
+    name: name || "decentralized-git",
+    description: "Core implementation of decentralized Git protocol with blockchain-based version control",
     stars: 1254,
     watchers: 278,
     forks: 178,
@@ -22,25 +22,25 @@ const Repository = () => {
     language: "TypeScript",
     languageColor: "text-blue-500",
     lastUpdated: "2 days ago",
-    readme: `# SUI Wave Protocol
+    readme: `# Decentralized Git Protocol
 
-A liquid staking protocol built for the SUI blockchain, featuring wave-based rewards distribution and oceanic governance mechanisms.
+A blockchain-based version control system that enables truly decentralized code collaboration.
 
 ## Features
 
-- Liquid staking with minimal slashing risk
-- Wave-based reward distribution cycles
-- Decentralized governance via Ocean DAO
-- Deep integration with SUI Move objects
+- Decentralized repository hosting
+- Blockchain-based commit verification
+- Web3 authentication and access control
+- Smart contract integration
 
 ## Getting Started
 
 \`\`\`bash
 # Clone the repository
-git clone https://github.com/suiocean/sui-wave-protocol.git
+git clone https://github.com/walgit/decentralized-git.git
 
 # Install dependencies
-cd sui-wave-protocol
+cd decentralized-git
 npm install
 
 # Run development server
@@ -53,15 +53,15 @@ MIT
 `
   };
 
-  // TODO: load commits via Sui RPC
+  // Mock commit data
   const commits = [
-    { id: '0xabc', message: 'Initial commit: Setup project structure', author: 'suiocean', timestamp: Date.now() - 86400000 * 2 },
-    { id: '0xdef', message: 'Feat: Implement basic staking logic', author: 'wavecoder', timestamp: Date.now() - 86400000 },
-    { id: '0xghi', message: 'Fix: Correct reward calculation', author: 'suiocean', timestamp: Date.now() - 3600000 },
+    { id: '0xabc', message: 'Initial commit: Setup project structure', author: 'walgit', timestamp: Date.now() - 86400000 * 2 },
+    { id: '0xdef', message: 'Feat: Implement basic repository creation', author: 'web3dev', timestamp: Date.now() - 86400000 },
+    { id: '0xghi', message: 'Fix: Update merkle tree validation', author: 'walgit', timestamp: Date.now() - 3600000 },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-ocean-50/30 to-white dark:from-dark-300 dark:to-dark-100 relative">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white dark:from-dark-300 dark:to-dark-100 relative">
       <WaveBackground />
       <Header />
 
@@ -69,12 +69,12 @@ MIT
         {/* Repository Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-muted-foreground mb-2">
-            <LinkIcon className="h-4 w-4 mr-1" /> {/* Use LinkIcon */}
-            <Link to={`/${repository.owner}`} className="font-medium text-ocean-600 hover:underline"> {/* Use React Router Link */}
+            <LinkIcon className="h-4 w-4 mr-1" />
+            <Link to={`/${repository.owner}`} className="font-medium text-blue-600 hover:underline">
               {repository.owner}
             </Link>
             <span className="mx-1">/</span>
-            <Link to={`/${repository.owner}/${repository.name}`} className="font-semibold text-ocean-700 hover:underline"> {/* Use React Router Link */}
+            <Link to={`/${repository.owner}/${repository.name}`} className="font-semibold text-blue-700 hover:underline">
               {repository.name}
             </Link>
           </div>
@@ -113,28 +113,28 @@ MIT
                   <TabsList className="h-auto p-0 bg-transparent">
                     <TabsTrigger
                       value="code"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <Code className="h-4 w-4 mr-2" />
                       Code
                     </TabsTrigger>
                     <TabsTrigger
-                      value="commits" // Add Commits Tab
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                      value="commits"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <GitCommit className="h-4 w-4 mr-2" />
                       Commits <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{commits.length}</span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="issues"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <CircleAlert className="h-4 w-4 mr-2" />
                       Issues <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{repository.issues}</span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="pulls"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
                       <GitFork className="h-4 w-4 mr-2 rotate-90" />
                       Pull Requests <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{repository.pullRequests}</span>
@@ -169,10 +169,10 @@ MIT
                       {commits.map(c => (
                         <li key={c.id} className="border-b border-border/60 px-6 py-3 hover:bg-muted/30 transition-colors">
                           <div className="flex justify-between items-center">
-                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-sm font-medium hover:text-ocean-600">
+                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-sm font-medium hover:text-blue-600">
                               {c.message}
                             </Link>
-                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-xs font-mono text-muted-foreground hover:text-ocean-600">
+                            <Link to={`/${repository.owner}/${repository.name}/commits/${c.id}`} className="text-xs font-mono text-muted-foreground hover:text-blue-600">
                               {c.id.substring(0, 9)}...
                             </Link>
                           </div>
@@ -189,7 +189,7 @@ MIT
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-semibold">Issues</h2>
-                      <Button variant="ocean" size="sm">New Issue</Button>
+                      <Button variant="default" size="sm" className="bg-blue-500 hover:bg-blue-600">New Issue</Button>
                     </div>
                     <div className="rounded-lg border border-border/60 p-10 text-center">
                       <CircleAlert className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
@@ -203,7 +203,7 @@ MIT
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-semibold">Pull Requests</h2>
-                      <Button variant="ocean" size="sm">New Pull Request</Button>
+                      <Button variant="default" size="sm" className="bg-blue-500 hover:bg-blue-600">New Pull Request</Button>
                     </div>
                     <div className="rounded-lg border border-border/60 p-10 text-center">
                       <GitFork className="h-10 w-10 mx-auto mb-3 text-muted-foreground rotate-90" />
@@ -259,39 +259,39 @@ MIT
               </div>
             </div>
             
-            <div className="rounded-lg border border-border/60 bg-gradient-to-b from-ocean-50 to-white p-4">
-              <h3 className="font-semibold mb-3">SUI Network Stats</h3>
+            <div className="rounded-lg border border-border/60 bg-gradient-to-b from-blue-50 to-white p-4">
+              <h3 className="font-semibold mb-3">Network Stats</h3>
               <div className="space-y-3 text-sm">
-                <div className="relative p-2 rounded-md bg-ocean-100/50 overflow-hidden">
+                <div className="relative p-2 rounded-md bg-blue-100/50 overflow-hidden">
                   <div className="relative z-10">
                     <span className="block text-muted-foreground mb-1">TPS</span>
-                    <span className="font-bold text-lg text-ocean-800">3,245</span>
+                    <span className="font-bold text-lg text-blue-800">3,245</span>
                   </div>
                   <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute bottom-0 h-1 w-full bg-ocean-300 opacity-30"></div>
-                    <div className="absolute bottom-0 h-1 w-[70%] bg-ocean-500 animate-[flow_2s_ease-in-out_infinite]"></div>
+                    <div className="absolute bottom-0 h-1 w-full bg-blue-300 opacity-30"></div>
+                    <div className="absolute bottom-0 h-1 w-[70%] bg-blue-500 animate-[flow_2s_ease-in-out_infinite]"></div>
                   </div>
                 </div>
                 
-                <div className="relative p-2 rounded-md bg-ocean-100/50 overflow-hidden">
+                <div className="relative p-2 rounded-md bg-blue-100/50 overflow-hidden">
                   <div className="relative z-10">
                     <span className="block text-muted-foreground mb-1">Gas Price</span>
-                    <span className="font-bold text-lg text-ocean-800">0.0042 SUI</span>
+                    <span className="font-bold text-lg text-blue-800">0.0042 WAL</span>
                   </div>
                   <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute bottom-0 h-1 w-full bg-ocean-300 opacity-30"></div>
-                    <div className="absolute bottom-0 h-1 w-[30%] bg-ocean-500 animate-[flow_3s_ease-in-out_infinite]"></div>
+                    <div className="absolute bottom-0 h-1 w-full bg-blue-300 opacity-30"></div>
+                    <div className="absolute bottom-0 h-1 w-[30%] bg-blue-500 animate-[flow_3s_ease-in-out_infinite]"></div>
                   </div>
                 </div>
                 
-                <div className="relative p-2 rounded-md bg-ocean-100/50 overflow-hidden">
+                <div className="relative p-2 rounded-md bg-blue-100/50 overflow-hidden">
                   <div className="relative z-10">
                     <span className="block text-muted-foreground mb-1">Validators</span>
-                    <span className="font-bold text-lg text-ocean-800">129</span>
+                    <span className="font-bold text-lg text-blue-800">129</span>
                   </div>
                   <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute bottom-0 h-1 w-full bg-ocean-300 opacity-30"></div>
-                    <div className="absolute bottom-0 h-1 w-[80%] bg-ocean-500 animate-[flow_2.5s_ease-in-out_infinite]"></div>
+                    <div className="absolute bottom-0 h-1 w-full bg-blue-300 opacity-30"></div>
+                    <div className="absolute bottom-0 h-1 w-[80%] bg-blue-500 animate-[flow_2.5s_ease-in-out_infinite]"></div>
                   </div>
                 </div>
               </div>

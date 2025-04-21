@@ -21,12 +21,12 @@ const NewRepository = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-ocean-50/30 to-white dark:from-dark-300 dark:to-dark-100 relative">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white dark:from-dark-300 dark:to-dark-100 relative">
       <WaveBackground />
       <Header />
 
       <div className="container px-4 py-8 max-w-2xl mx-auto">
-         <Link to="/repositories" className="inline-flex items-center text-sm text-ocean-600 hover:text-ocean-700 mb-4">
+         <Link to="/repositories" className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 mb-4">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to repositories
           </Link>
@@ -39,17 +39,15 @@ const NewRepository = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="repoName">Repository name <span className="text-destructive">*</span></Label>
-                <Input id="repoName" placeholder="my-awesome-project" required /* value={repoName} onChange={(e) => setRepoName(e.target.value)} */ />
-                <p className="text-xs text-muted-foreground mt-1">Great repository names are short and memorable.</p>
+                <Input id="repoName" placeholder="my-repo" className="mt-1.5" />
               </div>
               <div>
-                <Label htmlFor="description">Description (optional)</Label>
-                <Textarea id="description" placeholder="A short description of your project" /* value={description} onChange={(e) => setDescription(e.target.value)} */ />
+                <Label htmlFor="description">Description <span className="text-muted-foreground">(optional)</span></Label>
+                <Textarea id="description" placeholder="Describe your repository" className="mt-1.5 h-20" />
               </div>
-              {/* Add public/private toggle later */}
-              <div className="pt-4">
-                <Button type="submit" variant="ocean">Create repository</Button>
-              </div>
+              <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
+                Create Repository
+              </Button>
             </form>
           </CardContent>
         </Card>

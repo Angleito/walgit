@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-w-[32px] min-h-[36px] mx-2",
   {
     variants: {
       variant: {
@@ -18,15 +18,12 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        ocean: "bg-ocean-500 text-white hover:bg-ocean-600 border-ocean-700/20 border shadow-sm",
-        "ocean-ghost": "text-ocean-700 hover:bg-ocean-50 hover:text-ocean-800",
-        sui: "bg-sui-400 text-white hover:bg-sui-500 border-sui-600/20 border shadow-sm",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-10 px-4 py-2.5",
+        sm: "h-9 rounded-md px-3 py-2.5",
+        lg: "h-11 rounded-md px-8 py-3",
+        icon: "h-10 w-10 p-2.5",
       },
     },
     defaultVariants: {

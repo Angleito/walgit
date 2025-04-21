@@ -1,12 +1,11 @@
-
 import { RepoCard } from "./RepoCard";
 
 const TrendingRepos = () => {
   const trendingRepos = [
     {
-      name: "sui-core",
-      owner: "sui-foundation",
-      description: "Core implementation of Sui blockchain with improved gas mechanisms and faster consensus",
+      name: "core",
+      owner: "walgit",
+      description: "Core implementation of decentralized Git protocol with blockchain integration",
       language: "Rust",
       languageColor: "text-orange-600",
       stars: 2547,
@@ -14,31 +13,31 @@ const TrendingRepos = () => {
       lastUpdated: "yesterday"
     },
     {
-      name: "move-stdlib",
-      owner: "mysten-labs",
-      description: "Standard library for Move programming language with extensible cryptographic primitives",
-      language: "Move",
-      languageColor: "text-blue-600",
+      name: "web3-git-sync",
+      owner: "walgit-labs",
+      description: "Decentralized Git synchronization protocol with Web3 capabilities",
+      language: "TypeScript",
+      languageColor: "text-blue-500",
       stars: 1876,
       forks: 321,
       lastUpdated: "today"
     },
     {
-      name: "sui-wave-protocol",
-      owner: "ocean-labs",
-      description: "Liquid staking protocol for Sui with wave-based rewards distribution and oceanic governance",
-      language: "TypeScript",
-      languageColor: "text-blue-500",
+      name: "smart-contracts",
+      owner: "walgit",
+      description: "Smart contract implementation for decentralized Git operations",
+      language: "Move",
+      languageColor: "text-violet-600",
       stars: 1254,
       forks: 178,
       lastUpdated: "2 days ago"
     },
     {
-      name: "deep-blue-wallet",
-      owner: "tidal-finance",
-      description: "Self-custodial wallet for Sui with intuitive UX and enhanced security features",
-      language: "JavaScript",
-      languageColor: "text-yellow-500",
+      name: "decentralized-wallet",
+      owner: "walgit-labs",
+      description: "Secure wallet implementation for decentralized Git authentication",
+      language: "TypeScript",
+      languageColor: "text-blue-500",
       stars: 957,
       forks: 124,
       lastUpdated: "3 days ago"

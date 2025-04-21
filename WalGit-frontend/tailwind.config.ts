@@ -52,32 +52,6 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        ocean: {
-          DEFAULT: '#0EA5E9',
-          50: '#EFF9FF',
-          100: '#DEF2FF',
-          200: '#B8E7FF',
-          300: '#7DD5FF',
-          400: '#33C3F0',
-          500: '#0EA5E9',
-          600: '#0284C7',
-          700: '#036694',
-          800: '#075985',
-          900: '#0C4A6E',
-        },
-        sui: {
-          DEFAULT: '#6FBCFF',
-          50: '#F0F8FF',
-          100: '#E0F1FF',
-          200: '#C5E4FF',
-          300: '#9DD0FF',
-          400: '#6FBCFF',
-          500: '#478EE5',
-          600: '#3B7DD1',
-          700: '#2E6CB3',
-          800: '#1F5B9F',
-          900: '#154A86',
-        },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
@@ -97,7 +71,7 @@ export default {
         }
       },
       backgroundImage: {
-        'dark-ocean-gradient': 'linear-gradient(to bottom, #0A192F, #112240)',
+        'dark-gradient': 'linear-gradient(to bottom, #0A192F, #112240)',
       },
       borderRadius: {
         lg: 'var(--radius)',

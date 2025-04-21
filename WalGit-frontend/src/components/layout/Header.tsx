@@ -11,21 +11,21 @@ export const Header = ({ className }: { className?: string }) => {
       <div className="container flex h-14 items-center px-4">
         <div className="mr-4 flex">
           <Link to="/" className="mr-8 flex items-center space-x-2">
-            <div className="relative h-7 w-7 overflow-hidden rounded-full bg-gradient-to-br from-ocean-400 to-sui-600">
+            <div className="relative h-7 w-7 overflow-hidden rounded-full bg-gradient-to-br from-blue-400 to-violet-500">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-3 w-3 rounded-full bg-white"></div>
               </div>
-              <div className="absolute -inset-1 bg-ocean-200 opacity-20 blur-md animate-pulse"></div>
+              <div className="absolute -inset-1 bg-blue-200 opacity-20 blur-md animate-pulse"></div>
             </div>
-            <span className="hidden font-bold sm:inline-block">Sui Ocean</span>
+            <span className="hidden font-bold sm:inline-block">WalGit</span>
           </Link>
           <nav className="flex items-center space-x-4 lg:space-x-6">
-            <Link to="/repositories" className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-ocean-600">
+            <Link to="/repositories" className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-blue-600">
               <Book className="h-4 w-4" />
               <span>Repositories</span>
             </Link>
-            <Link to="/explore" className="text-sm font-medium transition-colors hover:text-ocean-600">Explore</Link>
-            <Link to="/network" className="text-sm font-medium transition-colors hover:text-ocean-600">Network</Link>
+            <Link to="/explore" className="text-sm font-medium transition-colors hover:text-blue-600">Explore</Link>
+            <Link to="/network" className="text-sm font-medium transition-colors hover:text-blue-600">Network</Link>
           </nav>
         </div>
         <div className="flex-1 flex items-center justify-end space-x-2">
@@ -34,7 +34,7 @@ export const Header = ({ className }: { className?: string }) => {
             <Input 
               type="search" 
               placeholder="Search repositories..." 
-              className="w-full rounded-full pl-8 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-ocean-400" 
+              className="w-full rounded-full pl-8 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-blue-400" 
             />
           </div>
           <Button variant="ghost" size="icon" className="text-muted-foreground">

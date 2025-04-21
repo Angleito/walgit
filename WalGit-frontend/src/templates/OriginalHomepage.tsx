@@ -1,4 +1,3 @@
-// filepath: /Users/angle/CascadeProjects/walgit/sui-ocean/src/templates/OriginalHomepage.tsx
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { ProfileCard } from "@/components/dashboard/ProfileCard";
@@ -12,9 +11,9 @@ const OriginalHomepage = () => {
   // Mock data for popular repositories
   const popularRepos = [
     {
-      name: "coral-defi",
-      owner: "suiocean",
-      description: "Decentralized finance protocol built on Sui with oceanic liquidity pools and wave mechanisms",
+      name: "smart-contracts",
+      owner: "walgit",
+      description: "Core smart contracts powering decentralized git functionality",
       language: "TypeScript",
       languageColor: "text-blue-500",
       stars: 1254,
@@ -22,9 +21,9 @@ const OriginalHomepage = () => {
       lastUpdated: "2 days ago"
     },
     {
-      name: "tidepool-forge",
-      owner: "suiocean",
-      description: "NFT minting and trading platform with unique ocean-themed assets and Sui-powered marketplace",
+      name: "nft-protocol",
+      owner: "walgit",
+      description: "Protocol for NFT-based repository access and collaboration",
       language: "Rust",
       languageColor: "text-orange-600",
       stars: 876,
@@ -32,9 +31,9 @@ const OriginalHomepage = () => {
       lastUpdated: "1 week ago"
     },
     {
-      name: "wave-validator",
-      owner: "suiocean",
-      description: "Validator node implementation with improved stake delegation and oceanic consensus algorithm",
+      name: "governance",
+      owner: "walgit",
+      description: "Decentralized governance system for protocol updates and management",
       language: "Go",
       languageColor: "text-teal-500",
       stars: 543,
@@ -58,18 +57,18 @@ const OriginalHomepage = () => {
         
         <div className="container px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Dive into the Sui Ocean</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Build on Web3 with WalGit</h1>
             <p className="text-lg md:text-xl mb-8 opacity-90">
-              Explore, collaborate, and build on the waves of decentralized innovation
+              Experience secure, decentralized code collaboration powered by blockchain
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/repositories">
-                <Button size="lg" variant="sui" className="font-medium">
-                  Explore Repositories
+                <Button size="lg" variant="default" className="font-medium bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600">
+                  Explore Projects
                 </Button>
               </Link>
               <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
-                Learn Sui Development
+                Learn More
               </Button>
             </div>
           </div>
@@ -81,9 +80,9 @@ const OriginalHomepage = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           <div className="md:col-span-3 space-y-6">
             <ProfileCard 
-              username="suiocean"
-              fullName="SUI Ocean Labs"
-              bio="Building the next generation of oceanic blockchain experiences on SUI"
+              username="walgit"
+              fullName="WalGit Labs"
+              bio="Building the future of decentralized code collaboration"
               followers={1254}
               following={87}
               repos={32}
@@ -92,14 +91,14 @@ const OriginalHomepage = () => {
           
           <div className="md:col-span-6 space-y-6">
             <div className="p-4 rounded-lg border border-border/60 bg-card/30">
-              <h2 className="text-xl font-semibold mb-4 text-ocean-800">Your Repositories</h2>
+              <h2 className="text-xl font-semibold mb-4">Your Repositories</h2>
               <div className="grid grid-cols-1 gap-3">
                 {popularRepos.map((repo) => (
                   <RepoCard key={repo.name} {...repo} />
                 ))}
               </div>
               <div className="mt-4 text-center">
-                <Button variant="ocean-ghost">View All Repositories</Button>
+                <Button variant="outline" className="hover:bg-white/10">View All Repositories</Button>
               </div>
             </div>
           </div>
@@ -116,38 +115,38 @@ const OriginalHomepage = () => {
         <div className="container px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-medium mb-4">Sui Ocean</h3>
-              <p className="text-ocean-100 text-sm">
-                The oceanic GitHub for Sui blockchain development and collaboration.
+              <h3 className="text-lg font-medium mb-4">WalGit</h3>
+              <p className="text-gray-300 text-sm">
+                The decentralized GitHub for Web3 development and collaboration.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-medium mb-4">Resources</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">API Reference</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Community Forum</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Documentation</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">API Reference</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Community Forum</a></li>
               </ul>
             </div>
             <div>
               <h3 className="text-lg font-medium mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Team</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">About</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Team</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Careers</a></li>
               </ul>
             </div>
             <div>
               <h3 className="text-lg font-medium mb-4">Legal</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-ocean-100 hover:text-white transition-colors">License</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">License</a></li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-ocean-700/50 dark:border-[#112240] text-center text-sm text-ocean-200">
-            &copy; {new Date().getFullYear()} Sui Ocean. All rights reserved.
+          <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} WalGit. All rights reserved.
           </div>
         </div>
       </footer>

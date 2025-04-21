@@ -41,19 +41,20 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-4 py-24 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-violet-500 inline-block text-transparent bg-clip-text">
-          Decentralized Git for the Web3 Era
+          Decentralized Git for Web3
         </h1>
-        <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10">
-          WalGit combines the power of Git's version control with Sui blockchain for secure, 
-          transparent, and decentralized code collaboration.
+        <p className="text-xl mb-8 text-gray-300">
+          Build, collaborate, and deploy with confidence on the blockchain
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-lg px-8 py-6 h-auto w-full sm:w-auto">
-            Get Started
-          </Button>
+        <div className="flex flex-wrap justify-center gap-4">
           <Link to="/repositories">
-            <Button variant="outline" className="border-white/20 hover:border-white/40 text-lg px-8 py-6 h-auto w-full sm:w-auto">
-              View Repositories
+            <Button variant="default" className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600">
+              Explore Projects
+            </Button>
+          </Link>
+          <Link to="/new">
+            <Button variant="outline" className="border-white/20 hover:border-white/40">
+              Create Repository
             </Button>
           </Link>
         </div>

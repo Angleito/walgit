@@ -19,13 +19,13 @@ const ActivityItem = ({ type, username, avatarUrl, repoName, time, description }
       case 'star':
         return <Star className="h-4 w-4 text-yellow-500" />;
       case 'fork':
-        return <GitFork className="h-4 w-4 text-ocean-600" />;
+        return <GitFork className="h-4 w-4 text-blue-600" />;
       case 'commit':
-        return <Code className="h-4 w-4 text-sui-600" />;
+        return <Code className="h-4 w-4 text-violet-600" />;
       case 'repo':
-        return <Book className="h-4 w-4 text-ocean-500" />;
+        return <Book className="h-4 w-4 text-blue-500" />;
       case 'pull':
-        return <GitFork className="h-4 w-4 rotate-180 text-sui-500" />;
+        return <GitFork className="h-4 w-4 rotate-180 text-violet-500" />;
     }
   };
 
@@ -104,37 +104,37 @@ const ActivityFeed = () => {
   const activities: ActivityItemProps[] = [
     {
       type: 'star',
-      username: 'oceandev',
-      repoName: 'sui-wave',
+      username: 'web3dev',
+      repoName: 'smart-contracts',
       time: '2 hours ago',
-      description: 'Amazing project for wave generation algorithms'
+      description: 'Advanced smart contracts for Git operations'
     },
     {
       type: 'commit',
-      username: 'cryptowhale',
-      repoName: 'sui-token',
+      username: 'gitmaster',
+      repoName: 'core',
       time: '4 hours ago',
-      description: 'Fix memory leak in blockchain parser'
+      description: 'Fix memory leak in blockchain sync'
     },
     {
       type: 'fork',
-      username: 'deepblue',
-      repoName: 'ocean-protocols',
+      username: 'chaindev',
+      repoName: 'decentralized-git',
       time: '6 hours ago'
     },
     {
       type: 'pull',
-      username: 'tidalforce',
-      repoName: 'sui-moves',
+      username: 'blocksmith',
+      repoName: 'web3-git-sync',
       time: '1 day ago',
-      description: 'Add new transaction types for SUI Move modules'
+      description: 'Add new transaction types for atomic commits'
     },
     {
       type: 'repo',
-      username: 'wavecoder',
-      repoName: 'deep-sui',
+      username: 'devsecops',
+      repoName: 'git-protocol',
       time: '2 days ago',
-      description: 'New SUI implementation with oceanic consensus'
+      description: 'New decentralized Git implementation with Web3 auth'
     }
   ];
 
