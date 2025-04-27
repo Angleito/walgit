@@ -99,8 +99,8 @@ VITE_WALRUS_API_KEY=your_api_key
 The project is automatically deployed to GitHub Pages using GitHub Actions whenever changes are pushed to the main branch. The deployment process includes:
 
 1. Building the frontend application
-2. Generating Walrus Sites provenance data
-3. Deploying to GitHub Pages
+2. Deploying to GitHub Pages
+3. Generating Walrus Sites provenance data
 
 Visit: [https://angleito.github.io/walgit/](https://angleito.github.io/walgit/)
 

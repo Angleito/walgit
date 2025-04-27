@@ -32,16 +32,16 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Walrus Sites Provenance
-        uses: zktx-io/walrus-sites-provenance@v0.3.5
-        with:
-          config-path: 'WalGit-frontend/site.config.json'
-        env:
-          ED25519_PRIVATE_KEY: ${{ secrets.ED25519_PRIVATE_KEY }}
-
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: WalGit-frontend/dist
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}  # Use the automatic GitHub token
+
+      - name: Walrus Sites Provenance
+        uses: zktx-io/walrus-sites-provenance@v0.3.5
+        with:
+          config-path: 'WalGit-frontend/site.config.json'
+        env:
+          ED25519_PRIVATE_KEY: ${{ secrets.ED25519_PRIVATE_KEY }}
