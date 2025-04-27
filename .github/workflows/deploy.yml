@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: WalGit-frontend
     permissions:
       contents: write  # This is needed for the action to push to gh-pages
     steps:
@@ -22,14 +25,12 @@ jobs:
           cache-dependency-path: './WalGit-frontend/package-lock.json'
 
       - name: Install dependencies
-        run: |
-          cd WalGit-frontend
-          npm ci
+        run: npm ci
 
       - name: Build
-        run: |
-          cd WalGit-frontend
-          npm run build
+        run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Walrus Sites Provenance
         uses: zktx-io/walrus-sites-provenance@v0.3.5
