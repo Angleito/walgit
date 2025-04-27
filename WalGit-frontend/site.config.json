@@ -10,7 +10,7 @@
     "creator": "Angleito"
   },
   "epochs": 30,
-  "path": "./dist",
+  "path": "../WalGit-frontend/dist",
   "gas_budget": 100000000,
   "write_retry_limit": 3
 } 
