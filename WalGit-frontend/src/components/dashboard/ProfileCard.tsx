@@ -1,4 +1,3 @@
-
 import { Book, GitFork, Star, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ export const ProfileCard = ({
         
         <div className="relative z-10 flex flex-col items-center mb-4">
           <Avatar className="h-24 w-24 mb-3 ring-2 ring-white/10 shadow-lg">
-            <AvatarImage src={avatarUrl} alt={username} />
+            <AvatarImage src={avatarUrl || "/walgitv3.png"} alt={username} />
             <AvatarFallback className="bg-gradient-to-br from-blue-400 to-blue-600">
               {username.slice(0, 2).toUpperCase()}
             </AvatarFallback>

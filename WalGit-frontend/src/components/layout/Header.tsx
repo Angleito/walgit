@@ -13,7 +13,7 @@ export const Header = ({ className }: { className?: string }) => {
           <Link to="/" className="mr-8 flex items-center space-x-2">
             <div className="relative h-7 w-7 overflow-hidden rounded-full">
               <img 
-                src="/walrus.jpeg"
+                src="/walgitv3.png"
                 alt="WalGit Logo" 
                 className="w-full h-full object-cover"
               />

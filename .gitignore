@@ -38,8 +38,6 @@ yarn-error.log*
 
 # Project specific
 *.key
-0x1fd3e9126f2cd5eb8f562adfc0a652ad450cf3a75ab5da70fc99a42bb7b17479.key
-0xe2dec0cd648e90f37a5c2419b8b318a63ac65aa65447df8c0574f4ad6bb295e9.key
 walrus.jpeg
 
 # Build artifacts

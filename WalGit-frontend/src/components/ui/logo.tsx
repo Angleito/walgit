@@ -20,7 +20,7 @@ export function Logo({
       {...props}
     >
       <img
-        src="/walrus.jpeg"
+        src="/walgitv3.png"
         alt="WalGit Logo"
         className={cn(
           "rounded-full object-cover",

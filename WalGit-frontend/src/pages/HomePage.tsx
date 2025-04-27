@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import WaveBackground from "@/components/layout/WaveBackground";
 import { Link } from "react-router-dom";
 import { GitBranchIcon, GitPullRequestIcon, CodeIcon, StarIcon, ShieldCheckIcon } from "lucide-react";
-import walrusLogo from '/walrus.jpeg';
+import walrusLogo from '/walgitv3.png';
 
 const HomePage = () => {
   return (

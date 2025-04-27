@@ -71,7 +71,7 @@ const ActivityItem = ({ type, username, avatarUrl, repoName, time, description }
       
       <div className="relative z-10 flex items-center">
         <Avatar className="h-8 w-8 mr-3 ring-1 ring-white/10">
-          <AvatarImage src={avatarUrl} alt={username} />
+          <AvatarImage src={avatarUrl || "/walgitv3.png"} alt={username} />
           <AvatarFallback className="bg-[#1E293B] text-white">
             {username.charAt(0).toUpperCase()}
           </AvatarFallback>
