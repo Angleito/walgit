@@ -31,6 +31,13 @@ jobs:
           cd WalGit-frontend
           npm run build
 
+      - name: Walrus Sites Provenance
+        uses: zktx-io/walrus-sites-provenance@v0.3.5
+        with:
+          config-path: './WalGit-frontend/site.config.json'
+        env:
+          ED25519_PRIVATE_KEY: ${{ secrets.ED25519_PRIVATE_KEY }}
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
