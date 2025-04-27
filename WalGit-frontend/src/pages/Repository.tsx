@@ -3,7 +3,7 @@ import { Header } from "@/components/layout/Header";
 import WaveBackground from "@/components/layout/WaveBackground";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code, Eye, GitFork, Star, FileText, CircleAlert, Link as LinkIcon, GitCommit } from "lucide-react"; // Added GitCommit, renamed Link to LinkIcon
+import { Code, Eye, GitFork, Star, FileText, AlertCircle, Link as LinkIcon, GitCommit } from "lucide-react"; // Added GitCommit, renamed Link to LinkIcon
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Added Card components
 
 const Repository = () => {
@@ -129,7 +129,7 @@ MIT
                       value="issues"
                       className="rounded-none border-b-2 border-transparent data-[state=active]:border-ocean-500 data-[state=active]:text-ocean-500 data-[state=active]:bg-transparent px-4 py-3"
                     >
-                      <CircleAlert className="h-4 w-4 mr-2" />
+                      <AlertCircle className="h-4 w-4 mr-2" />
                       Issues <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{repository.issues}</span>
                     </TabsTrigger>
                     <TabsTrigger
@@ -192,7 +192,7 @@ MIT
                       <Button variant="ocean" size="sm">New Issue</Button>
                     </div>
                     <div className="rounded-lg border border-border/60 p-10 text-center">
-                      <CircleAlert className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                      <AlertCircle className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
                       <p className="text-muted-foreground mb-4">No issues are currently available in this repository</p>
                       <Button variant="outline" size="sm">Create Issue</Button>
                     </div>
@@ -250,7 +250,7 @@ MIT
                 </div>
                 
                 <div className="flex items-start">
-                  <CircleAlert className="w-5 h-5 mt-0.5 mr-2 text-muted-foreground" />
+                  <AlertCircle className="w-5 h-5 mt-0.5 mr-2 text-muted-foreground" />
                   <div>
                     <span className="block text-muted-foreground">Issues</span>
                     <span className="font-medium">{repository.issues}</span>

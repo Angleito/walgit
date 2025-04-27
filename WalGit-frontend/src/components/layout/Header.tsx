@@ -11,13 +11,14 @@ export const Header = ({ className }: { className?: string }) => {
       <div className="container flex h-14 items-center px-4">
         <div className="mr-4 flex">
           <Link to="/" className="mr-8 flex items-center space-x-2">
-            <div className="relative h-7 w-7 overflow-hidden rounded-full bg-gradient-to-br from-ocean-400 to-sui-600">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-3 w-3 rounded-full bg-white"></div>
-              </div>
-              <div className="absolute -inset-1 bg-ocean-200 opacity-20 blur-md animate-pulse"></div>
+            <div className="relative h-7 w-7 overflow-hidden rounded-full">
+              <img 
+                src="/walrus.jpeg"
+                alt="WalGit Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="hidden font-bold sm:inline-block">Sui Ocean</span>
+            <span className="hidden font-bold sm:inline-block">WalGit</span>
           </Link>
           <nav className="flex items-center space-x-4 lg:space-x-6">
             <Link to="/repositories" className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-ocean-600">

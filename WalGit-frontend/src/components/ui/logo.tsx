@@ -1,0 +1,33 @@
+import React from 'react';
+import { cn } from "@/lib/utils";
+
+interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'small';
+}
+
+export function Logo({ 
+  variant = 'default',
+  className,
+  ...props 
+}: LogoProps) {
+  return (
+    <div 
+      className={cn(
+        "flex items-center gap-2 font-semibold",
+        variant === 'small' ? "text-lg" : "text-xl",
+        className
+      )} 
+      {...props}
+    >
+      <img
+        src="/walrus.jpeg"
+        alt="WalGit Logo"
+        className={cn(
+          "rounded-full object-cover",
+          variant === 'small' ? "h-5 w-5" : "h-6 w-6"
+        )}
+      />
+      <span>WalGit</span>
+    </div>
+  );
+} 

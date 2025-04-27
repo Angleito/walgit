@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
   ].filter(Boolean),
-  base: '/walgit/', // This ensures assets load correctly on GitHub Pages
+  base: mode === 'production' ? '/walgit/' : '/', // Use /walgit/ only in production for GitHub Pages
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
