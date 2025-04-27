@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import WaveBackground from "@/components/layout/WaveBackground";
 import { Link } from "react-router-dom";
 import { GitBranchIcon, GitPullRequestIcon, CodeIcon, StarIcon, ShieldCheckIcon } from "lucide-react";
+import walrusLogo from '/walrus.jpeg';
 
 const HomePage = () => {
   return (
@@ -14,13 +15,13 @@ const HomePage = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="relative w-8 h-8">
               <img 
-                src="/walrus.jpeg"
+                src={walrusLogo}
                 alt="WalGit Logo" 
                 className="w-full h-full object-contain rounded-full"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.onerror = null; // Prevent infinite loop
-                  target.src = '/walrus.jpeg'; // Use same image as fallback
+                  target.src = walrusLogo; // Use same image as fallback
                 }}
               />
             </div>
@@ -209,7 +210,7 @@ const HomePage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-6 md:mb-0">
               <img 
-                src="/walrus.jpeg"
+                src={walrusLogo}
                 alt="WalGit Logo" 
                 className="h-8 w-8 rounded-full object-cover" 
               />
