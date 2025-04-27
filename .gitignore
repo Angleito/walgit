@@ -3,16 +3,20 @@ node_modules/
 /.pnp
 .pnp.js
 yarn.lock
+package-lock.json
 
 # Testing
 /coverage
 /test-results
 *.lcov
+.nyc_output
 
 # Production/Build
 /build
 /dist
 *.tsbuildinfo
+WalGit-frontend/dist/
+walgit/build/
 
 # Development/IDE
 .idea/
@@ -25,27 +29,40 @@ yarn.lock
 .env.test.local
 .env.production.local
 *.log
+.history/
+*.sublime-workspace
+*.sublime-project
 
-# Debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+debug.log
+*.log
 
 # Environment variables
 .env
 .env.*
 !.env.example
 
+# Secrets and keys
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+
 # Project specific
 *.key
 walrus.jpeg
+.walrus-sites
+.cache
 
 # Build artifacts
-walgit/build/
-WalGit-frontend/dist/
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
 # Rust/Cargo
 target/
@@ -55,13 +72,31 @@ Cargo.lock
 # Move language
 move/build/
 .aptos/
+.sui/
 
 # Documentation
 .docusaurus
 .cache-loader
+docs/_build/
 
 # Temporary files
 *.tmp
 *.temp
 .cache
-.walrus-sites
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor backup files
+*~
+*.bak
+*.swp
+*.swo

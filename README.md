@@ -1,7 +1,7 @@
 # WalGit: Decentralized, Self-Controlled Version Control
 
 <p align="center">
-  <img src="WalGit-frontend/public/walgit-logo.png" alt="WalGit Logo" width="200" />
+  <img src="WalGit-frontend/public/walgitv3.png" alt="WalGit Logo - Cool Walrus with Sunglasses" width="200" style="background: transparent;" />
 </p>
 
 ## Overview
@@ -39,10 +39,29 @@ By leveraging Walrus's cost-effective and widely available storage, WalGit offer
 ### 🔄 Familiar Git-Like Experience
 WalGit maintains a workflow and interface similar to GitHub, making it easy for developers to transition without sacrificing usability or productivity.
 
+## Technology Stack
+
+- **Frontend**: React with TypeScript
+- **Styling**: Tailwind CSS
+- **Blockchain**: Sui Network
+- **Storage**: Walrus Decentralized Storage
+- **Build Tool**: Vite
+- **Key Dependencies**:
+  - @mysten/dapp-kit: Sui dApp development kit
+  - @mysten/sui.js: Sui blockchain interaction
+  - React Router: Client-side routing
+  - TanStack Query: Data fetching and caching
+
 ## Project Structure
 
-- **WalGit-frontend**: React-based frontend interface for interacting with repositories
-- **smart-contracts**: Sui Move contracts that manage repository permissions and storage pointers
+- **WalGit-frontend/**: React-based frontend interface
+  - `src/`: Source code
+  - `public/`: Static assets
+  - `dist/`: Production build output
+- **walrus-sites/**: Integration with Walrus Sites for storage
+- **.github/workflows/**: CI/CD automation
+  - `deploy.yml`: GitHub Pages deployment
+- **smart-contracts/**: Sui Move contracts
 
 ## Getting Started
 
@@ -50,35 +69,70 @@ WalGit maintains a workflow and interface similar to GitHub, making it easy for 
 - Node.js v18+
 - Sui wallet (Sui Wallet, Ethos Wallet, or other compatible wallets)
 - Access to Walrus storage
+- Git
 
 ### Installation
 ```bash
-# Clone the repository
-git clone https://github.com/Angleito/walgit.git
+# Clone the repository and submodules
+git clone https://github.com/Angleito/walgit.git --recursive
 cd walgit
+
+# Install root dependencies
+npm install
 
 # Install frontend dependencies
 cd WalGit-frontend
 npm install
 
-# Run the development server
+# Start the development server
 npm run dev
 ```
 
+### Environment Setup
+Create a `.env` file in the WalGit-frontend directory:
+```env
+VITE_NETWORK=devnet  # or testnet/mainnet
+VITE_WALRUS_API_KEY=your_api_key
+```
+
 ### Deployment
-The project is automatically deployed to GitHub Pages using GitHub Actions.
+The project is automatically deployed to GitHub Pages using GitHub Actions whenever changes are pushed to the main branch. The deployment process includes:
+
+1. Building the frontend application
+2. Generating Walrus Sites provenance data
+3. Deploying to GitHub Pages
+
 Visit: [https://angleito.github.io/walgit/](https://angleito.github.io/walgit/)
+
+## Development
+
+### Available Scripts
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build locally
+
+### Code Style
+- TypeScript for type safety
+- ESLint for code linting
+- Prettier for code formatting
 
 ## Contributing
 
-We welcome contributions to WalGit! Feel free to fork the repository, make your changes, and submit a pull request.
+We welcome contributions to WalGit! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
 - Built on [Sui](https://sui.io/) blockchain
 - Utilizes Walrus decentralized storage technology
+- Integrates with Walrus Sites for provenance and verification
 - Inspired by the need for developer sovereignty in the age of AI and centralized control
