@@ -33,6 +33,7 @@ jobs:
           NODE_ENV: production
 
       - name: Walrus Sites Provenance
+        continue-on-error: true  # Make this step optional for now
         uses: zktx-io/walrus-sites-provenance@v0.3.5
         with:
           config-path: './WalGit-frontend/site.config.json'
