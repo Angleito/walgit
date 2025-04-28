@@ -33,10 +33,10 @@ const HomePage = () => {
             <a href="#" className="text-sm font-medium hover:text-blue-400 transition-colors">Docs</a>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="text-sm font-medium">
+            <Button className="text-sm font-medium">
               Sign in
             </Button>
-            <Button variant="default" className="text-sm font-medium">
+            <Button className="text-sm font-medium">
               Sign up
             </Button>
           </div>
@@ -53,11 +53,11 @@ const HomePage = () => {
           tusk-strength security and immutability for your distributed version control.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-lg px-8 py-6 h-auto w-full sm:w-auto">
+          <Button className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-lg px-8 py-6 h-auto w-full sm:w-auto">
             Get Started
           </Button>
           <Link to="/repositories">
-            <Button size="lg" variant="outline" className="bg-white/5 backdrop-blur-sm border-white/20 hover:bg-white/10 hover:border-white/30 text-lg px-8 py-6 h-auto w-full sm:w-auto">
+            <Button className="bg-white/5 backdrop-blur-sm border-white/20 hover:bg-white/10 hover:border-white/30 text-lg px-8 py-6 h-auto w-full sm:w-auto">
               View Repositories
             </Button>
           </Link>

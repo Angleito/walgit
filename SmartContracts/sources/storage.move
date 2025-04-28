@@ -1,10 +1,12 @@
 // This module manages storage quotas for users, allowing them to purchase and consume storage space.
+#[allow(duplicate_alias, unused_use)]
 module walgit::storage {
     // Import necessary modules and types
     use sui::coin::{Self as coin, Coin}; // Using 'coin' alias for coin functions
     use sui::sui::SUI;                   // The native SUI coin type
-    use sui::object::new;                // For creating new objects. UID is implicitly available.
-    use sui::tx_context::sender;         // For getting the transaction sender. TxContext is implicitly available.
+    use sui::object::UID;                // Import UID type
+    use sui::tx_context::sender;         // Import sender function
+    use sui::tx_context;                 // For TxContext type
     use sui::transfer::{transfer, public_transfer}; // For transferring objects
     use sui::event;                      // For emitting events
 
@@ -12,7 +14,7 @@ module walgit::storage {
 
     // Error when a user attempts an action without sufficient SUI funds.
     const EInsufficientFunds: u64 = 1;
-    // Error when a user attempts an action requiring more storage than they have available.
+    // Error when a user attempts to consume more storage than available
     const EInsufficientStorage: u64 = 2;
 
     // --- Structs ---
@@ -48,7 +50,7 @@ module walgit::storage {
     public entry fun create_storage_quota(ctx: &mut TxContext) {
         let owner = sender(ctx); // Get the sender of the transaction
         let storage = StorageQuota {
-            id: new(ctx),           // Create a new UID for the object
+            id: object::new(ctx),           // Create a new UID for the object using object::new
             owner,
             bytes_available: 0,     // Start with 0 available bytes
             bytes_used: 0           // Start with 0 used bytes
@@ -105,12 +107,12 @@ module walgit::storage {
     // --- Public Functions ---
 
     // Consumes a specified amount of storage bytes from the user's quota.
-    // Aborts the transaction if insufficient storage is available.
+    // Aborts if insufficient storage is available.
     public fun consume_storage(
         storage: &mut StorageQuota, // The user's StorageQuota object (mutable reference)
         bytes_needed: u64           // The amount of storage required for the operation (in bytes)
     ) {
-        // Ensure the user has enough available bytes.
+        // Check if the user has enough available bytes
         assert!(storage.bytes_available >= bytes_needed, EInsufficientStorage);
 
         // Decrease available bytes and increase used bytes.

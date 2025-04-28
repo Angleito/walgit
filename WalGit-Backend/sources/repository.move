@@ -1,9 +1,13 @@
+#[allow(duplicate_alias, unused_use)]
 module walgit::repository {
-    use sui::object::{new, id}; // Re-add id import
-    use sui::tx_context::{sender}; // Removed Self alias and unnecessary TxContext alias
-    use sui::transfer::{share_object}; // Use specific import
-    use sui::table::{Table, new as table_new, contains as table_contains, borrow as table_borrow}; // Removed unused Self alias, specify function imports
-    use std::string::{String};
+    use sui::object;
+    use sui::object::UID;
+    use sui::object::id;
+    use sui::tx_context;
+    use sui::tx_context::sender;
+    use sui::transfer::share_object;
+    use sui::table::{Table, new as table_new, contains as table_contains, borrow as table_borrow};
+    use std::string::String;
     use sui::event;
     use walgit::storage::{StorageQuota, consume_storage};
 
@@ -12,7 +16,7 @@ module walgit::repository {
     const EInsufficientStorage: u64 = 3;
 
     // Repository struct to store metadata
-    public struct Repository has key, store { // Added public
+    public struct Repository has key, store {
         id: UID,
         name: String,
         owner: address,
@@ -22,14 +26,14 @@ module walgit::repository {
     }
 
     // Collaborator roles enum
-    public struct CollaboratorRole has copy, drop, store { // Added public
+    public struct CollaboratorRole has copy, drop, store {
         // Removed unused can_read field
         can_write: bool,
         is_admin: bool
     }
 
     // Events
-    public struct RepositoryCreated has copy, drop { // Added public
+    public struct RepositoryCreated has copy, drop {
         repo_id: ID,
         name: String,
         owner: address
@@ -54,17 +58,16 @@ module walgit::repository {
         name: String,
         description: String,
         walrus_blob_id: String,
-        initial_size_bytes: u64, // Add parameter for initial size
-        storage: &mut StorageQuota, // Add storage quota parameter
+        initial_size_bytes: u64,
+        storage: &mut StorageQuota,
         ctx: &mut TxContext
     ) {
         let owner = sender(ctx);
-        
         // Check and consume storage quota
         let has_storage = consume_storage(storage, initial_size_bytes);
         assert!(has_storage, EInsufficientStorage);
         
-        let id_uid = new(ctx);
+        let id_uid = object::new(ctx);
 
         let repo = Repository {
             id: id_uid,
@@ -103,9 +106,9 @@ module walgit::repository {
     // --- Permission Checks ---
 
     public fun assert_can_write(repo: &Repository, user: address) {
-        assert!(repo.owner == user || table_contains(&repo.collaborators, user), ENotOwnerOrCollaborator); // Use aliased import
+        assert!(repo.owner == user || table_contains(&repo.collaborators, user), ENotOwnerOrCollaborator);
         if (repo.owner != user) {
-            let role = table_borrow(&repo.collaborators, user); // Use aliased import
+            let role = table_borrow(&repo.collaborators, user);
             assert!(role.can_write || role.is_admin, EPermissionDenied);
         }
     }

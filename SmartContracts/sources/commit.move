@@ -1,13 +1,13 @@
 module walgit::commit {
-    // Removed unnecessary ID, UID aliases
+ 
     use sui::object::{new, id};
-    // Removed unnecessary TxContext alias
+
     use sui::tx_context::{sender};
     use std::string::{String};
     use sui::transfer::{share_object};
     use sui::event;
     use walgit::repository::{Repository, assert_can_write};
-    // Removed unnecessary Option alias and the unused std::option import
+    
     use sui::clock::{timestamp_ms, Clock};
 
     public struct Commit has key, store {

@@ -16,8 +16,8 @@ module walgit::walgittests {
     const ADMIN: address = @0xA;
     const USER1: address = @0xB; // Add a user for testing
     const ENotImplemented: u64 = 1;
-    // Removed unused EStorageInsufficientFunds
-    const EStorageInsufficientStorage: u64 = 2; // Assuming storage::EInsufficientStorage is 2
+    // We don't need this constant anymore as we're using storage::EInsufficientStorage
+    // const EStorageInsufficientStorage: u64 = 2;
 
 
     #[test]
@@ -30,10 +30,15 @@ module walgit::walgittests {
         let blob_id = string::utf8(b"blob123");
         let initial_size_bytes = 1024; // Example initial size needed
 
-        // 1. Create StorageQuota for ADMIN first
+        // 1. Create StorageQuota for ADMIN first and include purchase in same transaction
         next_tx(&mut scenario, ADMIN);
         {
             storage::create_storage_quota(ctx(&mut scenario));
+        };
+        
+        // 2. Take the quota and purchase storage
+        next_tx(&mut scenario, ADMIN);
+        {
             // Purchase some initial storage needed by create_repository
             let mut quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
             let mut payment = mint_coin<SUI>(1_000_000, ctx(&mut scenario)); // Mint 1 SUI
@@ -44,7 +49,7 @@ module walgit::walgittests {
         };
 
 
-        // 2. Execute the create_repository function (6 arguments expected)
+        // 3. Execute the create_repository function (6 arguments expected)
         next_tx(&mut scenario, ADMIN);
         {
             // Take the StorageQuota needed by create_repository
@@ -61,7 +66,7 @@ module walgit::walgittests {
             test_scenario::return_to_sender(&scenario, admin_quota);
         };
 
-        // 3. Check if Repository object exists and has correct owner
+        // 4. Check if Repository object exists and has correct owner
         next_tx(&mut scenario, ADMIN);
         {
             let repo = test_scenario::take_shared<Repository>(&scenario);
@@ -92,7 +97,11 @@ module walgit::walgittests {
         next_tx(&mut scenario, ADMIN);
         {
             storage::create_storage_quota(ctx(&mut scenario));
-            // Purchase storage needed for repo creation + commit creation
+        };
+        
+        // 2. Purchase storage needed for repo creation + commit creation
+        next_tx(&mut scenario, ADMIN);
+        {
             let mut quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
             let mut payment = mint_coin<SUI>(1_000_000, ctx(&mut scenario)); // Mint 1 SUI
              // Buy enough storage (e.g., 2 MiB)
@@ -101,7 +110,7 @@ module walgit::walgittests {
             burn_coin(payment); // Clean up coin
         };
 
-        // 2. Create Repository first (6 args expected)
+        // 3. Create Repository first (6 args expected)
         next_tx(&mut scenario, ADMIN);
         {
             let mut admin_quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
@@ -116,7 +125,7 @@ module walgit::walgittests {
             test_scenario::return_to_sender(&scenario, admin_quota);
         };
 
-        // 3. Get created repository, clock and create commit (6 args expected)
+        // 4. Get created repository, clock and create commit (6 args expected)
         next_tx(&mut scenario, ADMIN);
         {
             let repo = test_scenario::take_shared<Repository>(&scenario);
@@ -137,7 +146,7 @@ module walgit::walgittests {
             test_scenario::return_shared(repo);
         };
 
-        // 4. Check if Commit object exists
+        // 5. Check if Commit object exists
         next_tx(&mut scenario, ADMIN);
         {
             let commit_obj = test_scenario::take_shared<Commit>(&scenario); // Commit type is now recognized
@@ -264,7 +273,7 @@ module walgit::walgittests {
     }
 
     #[test]
-    #[expected_failure(abort_code = EStorageInsufficientStorage)] // Expect abort with code 2
+    #[expected_failure(abort_code = storage::EInsufficientStorage)]
     fun test_consume_storage_insufficient() {
         let mut scenario = test_scenario::begin(USER1);
 
