@@ -20,17 +20,17 @@ for (const testPath of possiblePaths) {
   }
 }
 
-// If we can't find the CLI file, create a mock version for testing
-if (!cliPath) {
-  const mockCliDir = path.join(__dirname, '../cli/bin');
-  if (!fs.existsSync(mockCliDir)) {
-    fs.mkdirSync(mockCliDir, { recursive: true });
-  }
-  
-  cliPath = path.join(mockCliDir, 'walgit.js');
-  
-  // Create a simple mock CLI file
-  const mockCliContent = `#!/usr/bin/env node
+// Always create a mock CLI for testing to avoid dependency issues
+const mockCliDir = path.join(__dirname, '../cli/bin');
+if (!fs.existsSync(mockCliDir)) {
+  fs.mkdirSync(mockCliDir, { recursive: true });
+}
+
+// Create both the real CLI path and a mock CLI for testing
+const mockCliPath = path.join(mockCliDir, 'walgit-mock.js');
+
+// Create a simple mock CLI file
+const mockCliContent = `#!/usr/bin/env node
 
 const args = process.argv.slice(2);
 
@@ -69,14 +69,28 @@ if (args.length > 1 && args[1] === '--help') {
   process.exit(0);
 }
 `;
-  
-  fs.writeFileSync(cliPath, mockCliContent);
+
+fs.writeFileSync(mockCliPath, mockCliContent);
+
+// If we found the real CLI, use it, otherwise use the mock
+if (!cliPath) {
+  cliPath = mockCliPath;
 }
 
 async function makeExecutable() {
   try {
-    await chmod(cliPath, '755');
-    console.log(`Made ${cliPath} executable`);
+    // Make the real CLI executable if it exists
+    if (cliPath) {
+      await chmod(cliPath, '755');
+      console.log(`Made ${cliPath} executable`);
+    }
+    
+    // Always make the mock CLI executable for testing
+    const mockCliPath = path.join(mockCliDir, 'walgit-mock.js');
+    if (fs.existsSync(mockCliPath)) {
+      await chmod(mockCliPath, '755');
+      console.log(`Made ${mockCliPath} executable`);
+    }
   } catch (error) {
     console.error(`Error making file executable: ${error.message}`);
     process.exit(1);
