@@ -1,0 +1,20 @@
+{
+  "name": "walgit-backend",
+  "version": "0.1.0",
+  "description": "Decentralized, self-controlled version control powered by Sui and Walrus",
+  "type": "module",
+  "scripts": {
+    "start": "node cli/bin/walgit.js",
+    "pretest": "chmod +x cli/bin/walgit.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit": "^0.15.6",
+    "@mysten/sui.js": "^0.54.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.2"
+  }
+}
