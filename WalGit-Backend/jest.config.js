@@ -5,7 +5,11 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   testEnvironment: 'node',
-  testMatch: ['**/tests/**/*.test.js'],
+  testMatch: ['**/WalGit-Backend/tests/**/*.test.js'],
   verbose: true,
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js']
+  setupFilesAfterEnv: ['<rootDir>/WalGit-Backend/tests/setup.js'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/walrus-sites/'
+  ]
 };
