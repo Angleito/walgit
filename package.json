@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node cli/bin/walgit.js",
-    "pretest": "chmod +x cli/bin/walgit.js",
+    "pretest": "node WalGit-Backend/scripts/make-executable.js || node scripts/make-executable.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
