@@ -51,6 +51,15 @@ debug.log
 *.cert
 *.crt
 *.p12
+id_rsa*
+*.gpg
+*.pgp
+*_rsa
+*_dsa
+*_ed25519
+*_ecdsa
+known_hosts
+authorized_keys
 
 # Project specific
 *.key
@@ -100,3 +109,22 @@ Thumbs.db
 *.bak
 *.swp
 *.swo
+.aider*
+
+# AI tools and configs
+CLAUDE.md
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+.aider.conf.yml
+.aider.input.history
+.aider.chat.history.json
+
+# Local security configs
+*wallet*.json
+*config*.local.json
+*secrets*.json
+*credential*.json
+*.keystore
+wallet.dat
+*.secret
