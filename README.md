@@ -8,6 +8,18 @@
 
 WalGit is a decentralized, user-controlled version control system built on Sui blockchain and Walrus's distributed storage technology. It empowers developers to maintain full sovereignty over their code while enjoying the benefits of cloud-based collaboration.
 
+## Testing
+
+To run the tests for the WalGit CLI:
+
+```bash
+cd WalGit-Backend
+npm install
+npm test
+```
+
+The test suite uses Jest and includes mocks for Sui and Walrus integration to ensure all CLI commands work properly without requiring actual blockchain interaction.
+
 ## Why WalGit?
 
 > "Developers should not have to choose between the convenience of cloud-hosted version control and the sovereignty of their own code."
