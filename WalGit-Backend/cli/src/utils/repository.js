@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import { initializeWallet } from './auth.js';
-import { saveCurrentRepository } from './config.js';
+import { saveCurrentRepository, getCurrentRepository } from './config.js';
 
 /**
  * Create a new repository
@@ -143,6 +143,414 @@ export const pullCommits = async (options) => {
     commitCount: 5,
     branch: options.branch || 'main',
     newFiles: 8,
+    conflicts: []
+  };
+};
+
+/**
+ * Clone a repository
+ * @param {object} options - Clone options
+ * @param {string} options.owner - Repository owner
+ * @param {string} options.repoName - Repository name
+ * @param {string} options.branch - Branch to checkout
+ * @param {string} options.directory - Directory to clone into
+ * @param {number} options.depth - Create a shallow clone with specified depth
+ * @param {boolean} options.recursive - Initialize all submodules
+ * @returns {Promise<object>} Clone result
+ */
+export const cloneRepository = async (options) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // In a real implementation, this would:
+  // 1. Fetch repository metadata from blockchain
+  // 2. Download content from Walrus storage
+  // 3. Set up local repository structure
+  
+  // Mock clone result
+  return {
+    success: true,
+    repoId: `walgit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    branch: options.branch || 'main',
+    commit: `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  };
+};
+
+/**
+ * Get repository status
+ * @param {object} options - Status options
+ * @param {boolean} options.short - Give output in short format
+ * @param {boolean} options.branch - Show branch information
+ * @param {string} options.untrackedFiles - Show untracked files mode
+ * @returns {Promise<object>} Repository status
+ */
+export const getRepositoryStatus = async (options) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Get current repository
+  const repository = await getCurrentRepository();
+  
+  // Mock status result
+  return {
+    currentBranch: 'main',
+    upstream: 'origin/main',
+    relation: 'ahead of',
+    commits: 2,
+    stagedChanges: [
+      { path: 'src/index.js', status: 'modified' },
+      { path: 'README.md', status: 'modified' }
+    ],
+    unstagedChanges: [
+      { path: 'package.json', status: 'modified' }
+    ],
+    untrackedFiles: [
+      'new-file.txt'
+    ]
+  };
+};
+
+/**
+ * List branches
+ * @param {object} options - Branch listing options
+ * @param {boolean} options.all - List both remote-tracking and local branches
+ * @param {boolean} options.remotes - List the remote-tracking branches
+ * @returns {Promise<Array>} Branches list
+ */
+export const listBranches = async (options) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock branches list
+  return [
+    { name: 'main', current: true, upstream: 'origin/main', ahead: 2, behind: 0 },
+    { name: 'develop', current: false, upstream: 'origin/develop', ahead: 0, behind: 1 },
+    { name: 'feature/new-feature', current: false, upstream: null, ahead: 0, behind: 0 }
+  ];
+};
+
+/**
+ * Create a branch
+ * @param {string} branchName - Branch name
+ * @param {object} options - Branch creation options
+ * @param {boolean} options.force - Force creation/reset
+ * @param {boolean} options.orphan - Create orphan branch
+ * @returns {Promise<object>} Created branch data
+ */
+export const createBranch = async (branchName, options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock branch creation
+  return {
+    name: branchName,
+    commit: `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  };
+};
+
+/**
+ * Delete a branch
+ * @param {string} branchName - Branch name
+ * @returns {Promise<object>} Deletion result
+ */
+export const deleteBranch = async (branchName) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock branch deletion
+  return { success: true };
+};
+
+/**
+ * Rename a branch
+ * @param {string} oldName - Old branch name
+ * @param {string} newName - New branch name
+ * @returns {Promise<object>} Rename result
+ */
+export const renameBranch = async (oldName, newName) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock branch renaming
+  return { 
+    oldName,
+    newName,
+    success: true 
+  };
+};
+
+/**
+ * Checkout a branch
+ * @param {string} branchName - Branch name
+ * @param {object} options - Checkout options
+ * @param {boolean} options.force - Force checkout
+ * @returns {Promise<object>} Checkout result
+ */
+export const checkoutBranch = async (branchName, options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock branch checkout
+  return {
+    name: branchName,
+    previousBranch: 'main',
+    commit: `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  };
+};
+
+/**
+ * List remotes
+ * @returns {Promise<Array>} Remotes list
+ */
+export const listRemotes = async () => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock remotes list
+  return [
+    { name: 'origin', url: 'walgit://walrus-dev/walgit-core', pushUrl: null },
+    { name: 'upstream', url: 'walgit://walgit-org/walgit-core', pushUrl: null }
+  ];
+};
+
+/**
+ * Add a remote
+ * @param {string} name - Remote name
+ * @param {string} url - Remote URL
+ * @param {object} options - Remote options
+ * @param {boolean} options.fetch - Fetch after adding
+ * @param {string} options.track - Branch to track
+ * @returns {Promise<object>} Add result
+ */
+export const addRemote = async (name, url, options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock remote addition
+  return { success: true };
+};
+
+/**
+ * Remove a remote
+ * @param {string} name - Remote name
+ * @returns {Promise<object>} Remove result
+ */
+export const removeRemote = async (name) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock remote removal
+  return { success: true };
+};
+
+/**
+ * Set remote URL
+ * @param {string} name - Remote name
+ * @param {string} url - Remote URL
+ * @param {object} options - URL options
+ * @param {boolean} options.push - Set push URL
+ * @param {boolean} options.add - Add URL instead of changing
+ * @returns {Promise<object>} Set URL result
+ */
+export const setRemoteUrl = async (name, url, options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock remote URL update
+  return { success: true };
+};
+
+/**
+ * Get commit history
+ * @param {object} options - Log options
+ * @param {number} options.maxCount - Limit number of commits
+ * @param {number} options.skip - Skip number of commits
+ * @param {string} options.since - Show commits more recent than date
+ * @param {string} options.until - Show commits older than date
+ * @param {string} options.author - Filter by author
+ * @param {string} options.grep - Filter by message pattern
+ * @param {boolean} options.oneline - Show each commit as single line
+ * @param {boolean} options.graph - Show text-based graph
+ * @returns {Promise<Array>} Commit history
+ */
+export const getCommitHistory = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock commit history
+  return [
+    {
+      id: `commit-${Date.now() - 86400000}-${Math.floor(Math.random() * 1000)}`,
+      author: 'Walrus Developer',
+      email: 'dev@walgit.io',
+      date: new Date(Date.now() - 86400000).toISOString(),
+      message: 'Add new feature\n\nThis commit adds a new feature to the repository.'
+    },
+    {
+      id: `commit-${Date.now() - 172800000}-${Math.floor(Math.random() * 1000)}`,
+      author: 'Walrus Developer',
+      email: 'dev@walgit.io',
+      date: new Date(Date.now() - 172800000).toISOString(),
+      message: 'Update README.md\n\nUpdate documentation with new information.'
+    },
+    {
+      id: `commit-${Date.now() - 259200000}-${Math.floor(Math.random() * 1000)}`,
+      author: 'Walrus Developer',
+      email: 'dev@walgit.io',
+      date: new Date(Date.now() - 259200000).toISOString(),
+      message: 'Initial commit'
+    }
+  ];
+};
+
+/**
+ * Fetch from remote
+ * @param {object} options - Fetch options
+ * @param {string} options.remote - Remote name
+ * @param {string} options.branch - Branch to fetch
+ * @param {boolean} options.all - Fetch all remotes
+ * @param {boolean} options.prune - Remove deleted remote branches
+ * @param {boolean} options.tags - Fetch all tags
+ * @param {number} options.depth - Limit fetching to depth
+ * @param {boolean} options.force - Force fetching
+ * @returns {Promise<object>} Fetch result
+ */
+export const fetchRemote = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock fetch result
+  return {
+    remoteUrl: 'walgit://walrus-dev/walgit-core',
+    newObjects: 5,
+    updatedRefs: [
+      { name: 'main', oldId: 'abcdef1', newId: 'abcdef2', type: 'fastForward' },
+      { name: 'develop', oldId: 'bcdef12', newId: 'bcdef13', type: 'update' }
+    ]
+  };
+};
+
+/**
+ * Merge changes
+ * @param {object} options - Merge options
+ * @param {string} options.branch - Branch to merge
+ * @param {boolean} options.noFastForward - No fast-forward
+ * @param {boolean} options.fastForwardOnly - Fast-forward only
+ * @param {string} options.message - Merge commit message
+ * @param {boolean} options.abort - Abort merge
+ * @param {boolean} options.continue - Continue merge
+ * @returns {Promise<object>} Merge result
+ */
+export const mergeChanges = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock merge result
+  return {
+    success: true,
+    fastForward: false,
+    commitId: `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    filesChanged: 3,
+    insertions: 25,
+    deletions: 10,
+    conflicts: []
+  };
+};
+
+/**
+ * Create a tag
+ * @param {object} options - Tag options
+ * @param {string} options.name - Tag name
+ * @param {string} options.commit - Commit to tag
+ * @param {boolean} options.annotate - Create annotated tag
+ * @param {string} options.message - Tag message
+ * @returns {Promise<object>} Tag creation result
+ */
+export const createTag = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock tag creation
+  return {
+    name: options.name,
+    commit: options.commit,
+    annotated: options.annotate,
+    message: options.message
+  };
+};
+
+/**
+ * Delete a tag
+ * @param {string} tagName - Tag name
+ * @returns {Promise<object>} Tag deletion result
+ */
+export const deleteTag = async (tagName) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock tag deletion
+  return { success: true };
+};
+
+/**
+ * List tags
+ * @param {string} pattern - Pattern to match tag names
+ * @returns {Promise<Array>} Tags list
+ */
+export const listTags = async (pattern) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock tags list
+  return [
+    { name: 'v1.0.0', commit: 'abcdef1', annotation: 'Version 1.0.0 release' },
+    { name: 'v0.9.0', commit: 'bcdef12', annotation: 'Beta release' },
+    { name: 'v0.1.0', commit: 'cdef123', annotation: 'Initial release' }
+  ];
+};
+
+/**
+ * Reset repository
+ * @param {object} options - Reset options
+ * @param {string} options.commit - Commit to reset to
+ * @param {string} options.mode - Reset mode (soft, mixed, hard)
+ * @param {Array} options.paths - Paths to reset
+ * @returns {Promise<object>} Reset result
+ */
+export const resetRepository = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock reset result
+  return {
+    success: true,
+    commit: options.commit,
+    mode: options.mode,
+    paths: options.paths
+  };
+};
+
+/**
+ * Revert a commit
+ * @param {object} options - Revert options
+ * @param {string} options.commit - Commit to revert
+ * @param {boolean} options.noCommit - Don't create commit
+ * @param {number} options.mainline - Parent number for merge commit
+ * @param {boolean} options.abort - Abort revert
+ * @param {boolean} options.continue - Continue revert
+ * @returns {Promise<object>} Revert result
+ */
+export const revertCommit = async (options = {}) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // Mock revert result
+  return {
+    success: true,
+    commitId: `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    filesChanged: 2,
+    insertions: 15,
+    deletions: 15,
     conflicts: []
   };
 };
