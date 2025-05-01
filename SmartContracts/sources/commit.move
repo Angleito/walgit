@@ -1,23 +1,25 @@
 module walgit::commit {
  
-    use sui::object::{new, id};
+    use sui::object::{new, id, UID, ID};
 
-    use sui::tx_context::{sender};
+    use sui::tx_context::{sender, TxContext};
     use std::string::{String};
     use sui::transfer::{share_object};
     use sui::event;
     use walgit::repository::{Repository, assert_can_write};
+    use walgit::tree::{GitTreeObject};
     
     use sui::clock::{timestamp_ms, Clock};
+    use std::option::{Option};
 
     public struct Commit has key, store {
-        id: UID, // UID is implicitly available
-        repo_id: ID, // ID is implicitly available
+        id: UID,
+        repo_id: ID,
         message: String,
         author: address,
-        walrus_blob_id: String, // Points to content in Walrus
+        root_tree_id: ID, // Reference to the root tree object
         timestamp: u64,
-        parent_commit_id: Option<ID> // Option and ID are implicitly available
+        parent_commit_id: Option<ID>
     }
 
     // Events
@@ -50,38 +52,39 @@ module walgit::commit {
     public entry fun create_commit(
         repo: &Repository,
         message: String,
-        walrus_blob_id: String,
-        parent_commit_id: Option<ID>, // Option and ID are implicitly available
+        root_tree: &GitTreeObject,
+        parent_commit_id: Option<ID>,
         clock: &Clock,
-        ctx: &mut TxContext // TxContext is implicitly available
+        ctx: &mut TxContext
     ) {
         let author = sender(ctx);
-        let repo_id = id(repo); // Use imported id function
+        let repo_id = id(repo);
 
         // Check if sender is owner or has write access
-        assert_can_write(repo, author); // Use specific import
+        assert_can_write(repo, author);
 
-        let id_uid = new(ctx); // Renamed variable for clarity
-        let timestamp = timestamp_ms(clock); // Use specific import
+        let id_uid = new(ctx);
+        let timestamp = timestamp_ms(clock);
+        let root_tree_id = id(root_tree);
 
         let commit = Commit {
-            id: id_uid, // Use the UID directly
+            id: id_uid,
             repo_id,
             message,
             author,
-            walrus_blob_id,
+            root_tree_id,
             timestamp,
             parent_commit_id
         };
 
         event::emit(CommitCreated {
-            commit_id: id(&commit), // Use imported id function
+            commit_id: id(&commit),
             repo_id,
             author,
             message
         });
 
-        share_object(commit); // Use specific import
+        share_object(commit);
     }
 
     // --- Getter Functions ---
@@ -90,7 +93,7 @@ module walgit::commit {
         commit.author
     }
 
-    public fun walrus_blob_id(commit: &Commit): String {
-        commit.walrus_blob_id // Assumes String has copy
+    public fun root_tree_id(commit: &Commit): ID {
+        commit.root_tree_id
     }
 }
