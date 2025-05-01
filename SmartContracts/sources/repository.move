@@ -20,8 +20,9 @@ module walgit::repository {
         name: String,
         owner: address,
         description: String,
-        walrus_blob_id: String, // Walrus blob identifier
-        collaborators: Table<address, CollaboratorRole>
+        walrus_blob_id: String, // Walrus blob identifier (This might change or be removed later as tree objects will hold blob references)
+        collaborators: Table<address, CollaboratorRole>,
+        head_commit_id: Option<ID>, // Reference to the current HEAD commit
     }
 
     // Collaborator roles enum
@@ -72,8 +73,9 @@ module walgit::repository {
             name,
             owner,
             description,
-            walrus_blob_id,
-            collaborators: table_new(ctx)
+            walrus_blob_id, // This might change or be removed later
+            collaborators: table_new(ctx),
+            head_commit_id: option::none(), // Initialize with no HEAD commit
         };
 
         event::emit(RepositoryCreated {

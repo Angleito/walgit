@@ -7,8 +7,8 @@ module walgit::commit {
     use sui::transfer::{share_object};
     use sui::event;
     use walgit::repository::{Repository, assert_can_write};
-    use walgit::tree::{GitTreeObject};
-    
+    use walgit::tree::{GitTreeObject, id as tree_id}; // Import tree_id function
+
     use sui::clock::{timestamp_ms, Clock};
     use std::option::{Option};
 
@@ -65,7 +65,7 @@ module walgit::commit {
 
         let id_uid = new(ctx);
         let timestamp = timestamp_ms(clock);
-        let root_tree_id = id(root_tree);
+        let root_tree_id = tree_id(root_tree); // Use the imported tree_id function
 
         let commit = Commit {
             id: id_uid,

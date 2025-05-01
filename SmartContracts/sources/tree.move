@@ -296,4 +296,75 @@ module walgit::tree {
     public fun get_entry(tree: &GitTreeObject, name: String): &TreeEntry {
         table::borrow(&tree.entries, name)
     }
+}#[allow(duplicate_alias, unused_use)]
+module walgit::tree {
+    use sui::object::{new, id, UID, ID};
+    use sui::tx_context::{TxContext};
+    use std::string::String;
+    use sui::transfer::share_object;
+    use std::vector::Vector;
+    use walgit::blob::{GitBlobObject}; // Assuming blob module is created
+
+    /// Represents an entry within a Git tree (a file or a subdirectory).
+    public struct TreeEntry has store, drop {
+        /// Mode of the entry (e.g., file, directory).
+        mode: u8, // Use constants for modes (e.g., 0x8 for file, 0x4 for directory)
+        /// The ID of the referenced GitBlobObject or GitTreeObject.
+        object_id: ID,
+        /// The name of the file or directory.
+        name: String,
+    }
+
+    /// Represents a Git tree (a directory).
+    public struct GitTreeObject has key, store {
+        id: UID,
+        /// Entries within this tree.
+        entries: Vector<TreeEntry>,
+    }
+
+    /// Create a new empty GitTreeObject.
+    public fun new(ctx: &mut TxContext): GitTreeObject {
+        GitTreeObject {
+            id: new(ctx),
+            entries: vector::empty(),
+        }
+    }
+
+    /// Add an entry to the GitTreeObject.
+    /// This function is intended to be called internally during the tree building process.
+    public fun add_entry(
+        tree: &mut GitTreeObject,
+        mode: u8,
+        object_id: ID,
+        name: String,
+    ) {
+        let entry = TreeEntry {
+            mode,
+            object_id,
+            name,
+        };
+        vector::push_back(&mut tree.entries, entry);
+    }
+
+    /// Get the entries of the GitTreeObject.
+    public fun entries(tree: &GitTreeObject): &Vector<TreeEntry> {
+        &tree.entries
+    }
+
+    /// Share the GitTreeObject (if needed, though typically owned by a Commit).
+    public fun share(tree: GitTreeObject) {
+        share_object(tree);
+    }
+
+    /// Get the ID of the GitTreeObject.
+    public fun id(tree: &GitTreeObject): ID {
+        id(tree)
+    }
+
+    // --- Constants for Entry Modes ---
+    // These should ideally be defined in a separate constants module or within this module.
+    // For simplicity, defining them here for now.
+    public fun mode_file(): u8 { 0x8 } // Example mode for a regular file
+    public fun mode_directory(): u8 { 0x4 } // Example mode for a directory
+    // Add other modes as needed (e.g., executable, symlink)
 }
