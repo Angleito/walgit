@@ -42,7 +42,7 @@ You can test the basic local commit and push functionality without connecting to
 3.  Run the local WalGit commit command from within the `test-repo` directory:
 
     ```bash
-    node ../WalGit-Backend/cli/bin/walgit.js commit -m "Initial local commit"
+    node ../../WalGit-Backend/cli/bin/walgit.js commit -m "Initial local commit"
     ```
 
     This will create a simplified Git object structure (commit, tree, and blob files) within the `.walgit` directory.
@@ -50,7 +50,7 @@ You can test the basic local commit and push functionality without connecting to
 4.  Run the local WalGit push command from within the `test-repo` directory:
 
     ```bash
-    node ../WalGit-Backend/cli/bin/walgit.js push
+    node ../../WalGit-Backend/cli/bin/walgit.js push
     ```
 
     This will simulate a push operation and confirm the latest local commit.
