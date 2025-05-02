@@ -16,7 +16,7 @@ const config = new Conf({
       default: {}
     },
     currentRepository: {
-      type: 'object',
+      type: ['object', 'null'],
       default: null
     },
     settings: {
