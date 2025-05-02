@@ -8,25 +8,37 @@ import { SuiClient } from '@mysten/sui.js/client';
  * @returns {Promise<object>} Connected wallet session
  */
 export const initializeWallet = async () => {
+  // Check for local simulation environment variable
+  if (process.env.WALGIT_LOCAL_SIMULATION === 'true') {
+    console.log(chalk.yellow('Running in local simulation mode. Using mock wallet.'));
+    return {
+      address: '0xLOCAL_SIMULATION_WALLET_ADDRESS',
+      publicKey: 'mock-public-key',
+      keypair: null, // No real keypair in simulation
+      client: null, // No real client in simulation
+      network: 'local-simulation'
+    };
+  }
+
   // Get current wallet config
   const walletConfig = await getWalletConfig();
-  
+
   if (walletConfig.keypair) {
     try {
       // Restore keypair from config
       const keyPair = Ed25519Keypair.fromSecretKey(
         Buffer.from(walletConfig.keypair, 'base64')
       );
-      
+
       // Set up SUI client
       const network = process.env.WALGIT_NETWORK || 'devnet';
       const client = new SuiClient({
         url: networkToRpcUrl(network),
       });
-      
+
       // Verify connection by trying to get the address
       const address = keyPair.getPublicKey().toSuiAddress();
-      
+
       return {
         address,
         keypair: keyPair,
@@ -38,7 +50,7 @@ export const initializeWallet = async () => {
       console.warn(chalk.yellow('Failed to restore wallet configuration'));
     }
   }
-  
+
   throw new Error('No wallet configuration found. Please run `walgit auth` to authenticate.');
 };
 
@@ -48,6 +60,17 @@ export const initializeWallet = async () => {
  * @throws {Error} If wallet is not connected or invalid
  */
 export const validateWalletConnection = async () => {
+   // Check for local simulation environment variable
+   if (process.env.WALGIT_LOCAL_SIMULATION === 'true') {
+    return {
+      address: '0xLOCAL_SIMULATION_WALLET_ADDRESS',
+      publicKey: 'mock-public-key',
+      keypair: null, // No real keypair in simulation
+      client: null, // No real client in simulation
+      network: 'local-simulation'
+    };
+  }
+
   try {
     const wallet = await initializeWallet();
     return wallet;
