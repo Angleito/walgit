@@ -4,10 +4,10 @@
   "description": "Decentralized, self-controlled version control powered by Sui and Walrus",
   "type": "module",
   "bin": {
-    "walgit": "cli/bin/walgit.js"
+    "walgit": "WalGit-Backend/cli/bin/walgit.js"
   },
   "scripts": {
-    "start": "node cli/bin/walgit.js",
+    "start": "node WalGit-Backend/cli/bin/walgit.js",
     "pretest": "node WalGit-Backend/scripts/make-executable.js || node scripts/make-executable.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=WalGit-Backend"
   },
