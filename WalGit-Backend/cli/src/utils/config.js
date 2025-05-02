@@ -31,7 +31,7 @@ const config = new Conf({
 });
 
 // Path to .walgit directory in current project
-const getWalGitDir = () => {
+export const getWalGitDir = () => {
   return path.join(process.cwd(), '.walgit');
 };
 
