@@ -2,7 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import { initializeWallet } from './auth.js';
-import { saveCurrentRepository, getCurrentRepository } from './config.js';
+import { saveCurrentRepository, getCurrentRepository, getWalGitDir } from './config.js';
+import crypto from 'crypto';
+
+/**
+ * Calculate a simple hash of content.
+ * In a real Git implementation, this would be a SHA-1 hash of the object type and content.
+ * @param {string} content - The content to hash.
+ * @returns {string} A simple hash string.
+ */
+const calculateHash = (content) => {
+  return crypto.createHash('md5').update(content).digest('hex');
+};
 
 /**
  * Create a new repository
@@ -64,12 +75,32 @@ export const createRepository = async (options) => {
  * @returns {Promise<Array>} Staged files
  */
 export const stageFiles = async (options) => {
-  // This would normally scan the working directory and record changes
-  // For now, we'll just return a mock response
-  return [
-    { path: 'src/index.js', status: 'modified' },
-    { path: 'README.md', status: 'modified' }
-  ];
+  // This function would normally scan the working directory and record changes
+  // For this local simulation, we'll assume all files in the current directory
+  // (excluding .walgit) are "staged" for the initial commit.
+  const walgitDir = getWalGitDir();
+  const filesToStage = [];
+
+  const readDirRecursive = (dir) => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (fullPath === walgitDir || fullPath.startsWith(path.join(walgitDir, path.sep))) {
+        continue; // Skip the .walgit directory
+      }
+
+      if (entry.isDirectory()) {
+        readDirRecursive(fullPath);
+      } else {
+        filesToStage.push({ path: fullPath, status: 'added' }); // For simplicity, assume all are 'added'
+      }
+    }
+  };
+
+  readDirRecursive(process.cwd());
+
+  return filesToStage;
 };
 
 /**
@@ -77,108 +108,93 @@ export const stageFiles = async (options) => {
  * @param {object} options - Commit options
  * @param {string} options.message - Commit message
  * @param {boolean} options.amend - Whether to amend the previous commit
- * @param {string} options.repositoryId - Repository ID
  * @returns {Promise<object>} Created commit data
  */
 export const createCommit = async (options) => {
-  // Initialize wallet for signing
+  // Initialize wallet for signing (still needed for author info)
   const wallet = await initializeWallet();
-  
-  // Get staged files
-  const stagedFiles = await stageFiles({ all: true });
-  
-  // This would upload file contents to Walrus in a real implementation
-  // and receive walrus_blob_ids in return
-  const uploadedBlobs = [];
+
+  // Get staged files (simulated by reading the directory)
+  const stagedFiles = await stageFiles();
+
+  // Simulate creating blobs and a tree structure
+  const blobs = {};
+  const tree = {}; // This will represent the root tree
+
   for (const file of stagedFiles) {
-    // Mock content upload to Walrus
-    const blobId = `walrus-blob-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const sizeBytes = Math.floor(Math.random() * 10000); // Random file size for mocking
-    
-    uploadedBlobs.push({
-      path: file.path,
-      walrus_blob_id: blobId,
-      size_bytes: sizeBytes
-    });
-  }
-  
-  // In a real implementation, this would call the Sui Move contract to:
-  // 1. Create GitBlobObject for each file
-  // 2. Create GitTreeObject for each directory
-  // 3. Build the tree hierarchy
-  // 4. Create the Commit object referencing the root tree
-  
-  // Mock tree building
-  const directoryMap = {};
-  const rootTree = {
-    id: `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    entries: []
-  };
-  
-  // Group files by directory
-  for (const blob of uploadedBlobs) {
-    const pathParts = blob.path.split('/');
-    const fileName = pathParts.pop();
-    const dirPath = pathParts.join('/');
-    
-    if (!directoryMap[dirPath]) {
-      const treeId = `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}-${dirPath.replace(/\//g, '-')}`;
-      directoryMap[dirPath] = {
-        id: treeId,
-        path: dirPath,
-        entries: []
-      };
-    }
-    
-    directoryMap[dirPath].entries.push({
-      name: fileName,
-      type: 'blob',
-      object_id: blob.walrus_blob_id,
-      mode: 0o644 // Standard file permissions
-    });
-  }
-  
-  // Build tree hierarchy
-  const trees = Object.values(directoryMap);
-  trees.sort((a, b) => b.path.length - a.path.length); // Process deepest paths first
-  
-  // Add all top-level directories to root tree
-  for (const dir of trees) {
-    if (!dir.path) {
-      // Files in root directory
-      rootTree.entries.push(...dir.entries);
-    } else {
-      // Top-level directories
-      const pathParts = dir.path.split('/');
-      if (pathParts.length === 1) {
-        rootTree.entries.push({
-          name: pathParts[0],
-          type: 'tree',
-          object_id: dir.id,
-          mode: 0o755 // Directory permissions
-        });
+    const filePath = file.path;
+    const fileContent = fs.readFileSync(filePath);
+    const blobHash = calculateHash(fileContent.toString()); // Simple hash for simulation
+
+    blobs[blobHash] = {
+      content: fileContent,
+      size: fileContent.length,
+    };
+
+    // Build a simple tree structure (nested objects)
+    const pathParts = path.relative(process.cwd(), filePath).split(path.sep);
+    let currentLevel = tree;
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      const part = pathParts[i];
+      if (!currentLevel[part]) {
+        currentLevel[part] = { type: 'tree', entries: {} };
       }
+      currentLevel = currentLevel[part].entries;
     }
+    currentLevel[pathParts[pathParts.length - 1]] = {
+      type: 'blob',
+      hash: blobHash,
+      mode: '100644', // Simplified mode for files
+    };
   }
-  
-  // Generate commit ID (would be a hash of contents in production)
-  const commitId = `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  
-  // Mock commit object with tree references
+
+  // Simulate creating a root tree hash (simple hash of the tree structure JSON)
+  const rootTreeHash = calculateHash(JSON.stringify(tree));
+
+  // Generate a simple commit hash
+  const commitHash = calculateHash(
+    options.message +
+    wallet.address +
+    new Date().toISOString() +
+    rootTreeHash
+  );
+
+  // Create a simplified commit object
   const commit = {
-    id: commitId,
+    hash: commitHash,
     message: options.message,
     author: wallet.address,
     timestamp: new Date().toISOString(),
-    rootTree: rootTree,
-    files: stagedFiles,
-    blobs: uploadedBlobs,
-    trees: trees,
-    repositoryId: options.repositoryId
+    tree: rootTreeHash, // Reference to the root tree hash
+    // In a real implementation, this would also include parent commits
   };
-  
-  // Update branch reference in a real implementation
-  
+
+  // Save the commit object to a file in .walgit/objects
+  const walgitDir = getWalGitDir();
+  const commitDir = path.join(walgitDir, 'objects', commitHash.substring(0, 2));
+  const commitFilePath = path.join(commitDir, commitHash.substring(2));
+
+  fs.mkdirSync(commitDir, { recursive: true });
+  fs.writeFileSync(commitFilePath, JSON.stringify(commit, null, 2));
+
+  // For this simulation, also save the tree and blob info (in a real Git, these would be separate objects)
+  const treeFilePath = path.join(walgitDir, 'objects', rootTreeHash.substring(0, 2), rootTreeHash.substring(2));
+  fs.mkdirSync(path.dirname(treeFilePath), { recursive: true });
+  fs.writeFileSync(treeFilePath, JSON.stringify(tree, null, 2));
+
+  for (const blobHash in blobs) {
+    const blobDir = path.join(walgitDir, 'objects', blobHash.substring(0, 2));
+    const blobFilePath = path.join(blobDir, blobHash.substring(2));
+    fs.mkdirSync(blobDir, { recursive: true });
+    fs.writeFileSync(blobFilePath, blobs[blobHash].content);
+  }
+
+  // Update HEAD to point to the new commit
+  fs.writeFileSync(path.join(walgitDir, 'HEAD'), commitHash);
+
+
+  console.log(chalk.green(`[walgit] committed ${commitHash}`));
+
   return commit;
 };
 
@@ -193,12 +209,40 @@ export const createCommit = async (options) => {
 export const pushCommits = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
+  // In this local simulation, 'push' will just confirm the local commit exists
+  const walgitDir = getWalGitDir();
+  const headPath = path.join(walgitDir, 'HEAD');
+
+  if (!fs.existsSync(headPath)) {
+    throw new Error("No commits to push. Please make a commit first.");
+  }
+
+  const headContent = fs.readFileSync(headPath, 'utf-8').trim();
+  let latestCommitHash = null;
+
+  if (headContent.startsWith('ref: ')) {
+    const refPath = path.join(walgitDir, headContent.substring(5));
+    if (fs.existsSync(refPath)) {
+      latestCommitHash = fs.readFileSync(refPath, 'utf-8').trim();
+    }
+  } else {
+    latestCommitHash = headContent;
+  }
+
+  if (!latestCommitHash) {
+     throw new Error("Could not determine the latest commit from HEAD.");
+  }
+
+  console.log(chalk.green(`[walgit] Successfully "pushed" local commit ${latestCommitHash}`));
+  console.log(chalk.yellow("Note: This is a local simulation. No data was sent to a remote."));
+
+
   // Mock push result
   return {
-    commitCount: 3,
+    commitHash: latestCommitHash,
     branch: options.branch || 'main',
-    newObjects: 12
+    status: 'local_simulation_success'
   };
 };
 
