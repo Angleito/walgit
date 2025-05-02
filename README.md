@@ -20,6 +20,41 @@ npm test
 
 The test suite uses Jest and includes mocks for Sui and Walrus integration to ensure all CLI commands work properly without requiring actual blockchain interaction.
 
+## Local Git Tree Simulation
+
+You can test the basic local commit and push functionality without connecting to the network by using a simulated Git repository structure.
+
+1.  Create a test directory and initialize a local WalGit repository:
+
+    ```bash
+    mkdir -p test-repo/.walgit
+    cd test-repo
+    ```
+
+2.  Create some files and directories within `test-repo`:
+
+    ```bash
+    echo "This is the first file." > file1.txt
+    mkdir src
+    echo "console.log('Hello, WalGit!');" > src/main.js
+    ```
+
+3.  Run the local WalGit commit command from within the `test-repo` directory:
+
+    ```bash
+    node ../WalGit-Backend/cli/bin/walgit.js commit -m "Initial local commit"
+    ```
+
+    This will create a simplified Git object structure (commit, tree, and blob files) within the `.walgit` directory.
+
+4.  Run the local WalGit push command from within the `test-repo` directory:
+
+    ```bash
+    node ../WalGit-Backend/cli/bin/walgit.js push
+    ```
+
+    This will simulate a push operation and confirm the latest local commit.
+
 ## Why WalGit?
 
 > "Developers should not have to choose between the convenience of cloud-hosted version control and the sovereignty of their own code."
