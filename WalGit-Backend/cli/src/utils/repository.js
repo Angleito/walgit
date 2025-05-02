@@ -84,24 +84,100 @@ export const createCommit = async (options) => {
   // Initialize wallet for signing
   const wallet = await initializeWallet();
   
+  // Get staged files
+  const stagedFiles = await stageFiles({ all: true });
+  
+  // This would upload file contents to Walrus in a real implementation
+  // and receive walrus_blob_ids in return
+  const uploadedBlobs = [];
+  for (const file of stagedFiles) {
+    // Mock content upload to Walrus
+    const blobId = `walrus-blob-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const sizeBytes = Math.floor(Math.random() * 10000); // Random file size for mocking
+    
+    uploadedBlobs.push({
+      path: file.path,
+      walrus_blob_id: blobId,
+      size_bytes: sizeBytes
+    });
+  }
+  
+  // In a real implementation, this would call the Sui Move contract to:
+  // 1. Create GitBlobObject for each file
+  // 2. Create GitTreeObject for each directory
+  // 3. Build the tree hierarchy
+  // 4. Create the Commit object referencing the root tree
+  
+  // Mock tree building
+  const directoryMap = {};
+  const rootTree = {
+    id: `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    entries: []
+  };
+  
+  // Group files by directory
+  for (const blob of uploadedBlobs) {
+    const pathParts = blob.path.split('/');
+    const fileName = pathParts.pop();
+    const dirPath = pathParts.join('/');
+    
+    if (!directoryMap[dirPath]) {
+      const treeId = `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}-${dirPath.replace(/\//g, '-')}`;
+      directoryMap[dirPath] = {
+        id: treeId,
+        path: dirPath,
+        entries: []
+      };
+    }
+    
+    directoryMap[dirPath].entries.push({
+      name: fileName,
+      type: 'blob',
+      object_id: blob.walrus_blob_id,
+      mode: 0o644 // Standard file permissions
+    });
+  }
+  
+  // Build tree hierarchy
+  const trees = Object.values(directoryMap);
+  trees.sort((a, b) => b.path.length - a.path.length); // Process deepest paths first
+  
+  // Add all top-level directories to root tree
+  for (const dir of trees) {
+    if (!dir.path) {
+      // Files in root directory
+      rootTree.entries.push(...dir.entries);
+    } else {
+      // Top-level directories
+      const pathParts = dir.path.split('/');
+      if (pathParts.length === 1) {
+        rootTree.entries.push({
+          name: pathParts[0],
+          type: 'tree',
+          object_id: dir.id,
+          mode: 0o755 // Directory permissions
+        });
+      }
+    }
+  }
+  
   // Generate commit ID (would be a hash of contents in production)
   const commitId = `commit-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   
-  // Mock commit object
+  // Mock commit object with tree references
   const commit = {
     id: commitId,
     message: options.message,
     author: wallet.address,
     timestamp: new Date().toISOString(),
-    files: await stageFiles({ all: true }),
+    rootTree: rootTree,
+    files: stagedFiles,
+    blobs: uploadedBlobs,
+    trees: trees,
     repositoryId: options.repositoryId
   };
   
-  // In a real implementation, this would:
-  // 1. Calculate file contents hash
-  // 2. Create tree objects
-  // 3. Create commit object
-  // 4. Update branch reference
+  // Update branch reference in a real implementation
   
   return commit;
 };
@@ -638,4 +714,119 @@ export const deleteRepository = async (repoId) => {
   // 2. Delete content from Walrus storage
   
   return true;
-}; 
+};
+
+/**
+ * Get tree structure for a commit
+ * @param {object} options - Tree options
+ * @param {string} options.commit - Commit ID (defaults to HEAD)
+ * @param {string} options.path - Path within the tree to display
+ * @param {boolean} options.recursive - Recursively include subtrees
+ * @param {object} options.repository - Repository object
+ * @returns {Promise<object>} Tree structure data
+ */
+export const getTreeStructure = async (options) => {
+  // Initialize wallet for authentication
+  const wallet = await initializeWallet();
+  
+  // In a real implementation, this would:
+  // 1. Fetch commit object from blockchain
+  // 2. Fetch root tree object
+  // 3. Traverse to the specified path
+  // 4. Fetch all subtrees if recursive option is enabled
+  
+  // Mock commit ID
+  const commitId = options.commit || `commit-${Date.now() - 86400000}-${Math.floor(Math.random() * 1000)}`;
+  
+  // Create mock root tree
+  const rootTree = {
+    id: `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    entries: [
+      {
+        name: 'README.md',
+        type: 'blob',
+        object_id: `blob-${Date.now()}-1`,
+        mode: 0o644
+      },
+      {
+        name: 'src',
+        type: 'tree',
+        object_id: `tree-${Date.now()}-2`,
+        mode: 0o755,
+        subtree: {
+          id: `tree-${Date.now()}-2`,
+          entries: [
+            {
+              name: 'index.js',
+              type: 'blob',
+              object_id: `blob-${Date.now()}-3`,
+              mode: 0o644
+            },
+            {
+              name: 'utils',
+              type: 'tree',
+              object_id: `tree-${Date.now()}-4`,
+              mode: 0o755,
+              subtree: {
+                id: `tree-${Date.now()}-4`,
+                entries: [
+                  {
+                    name: 'helper.js',
+                    type: 'blob',
+                    object_id: `blob-${Date.now()}-5`,
+                    mode: 0o644
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        name: 'package.json',
+        type: 'blob',
+        object_id: `blob-${Date.now()}-6`,
+        mode: 0o644
+      }
+    ]
+  };
+  
+  // Handle path filtering
+  let targetTree = rootTree;
+  if (options.path) {
+    const pathParts = options.path.split('/').filter(part => part);
+    
+    for (const part of pathParts) {
+      const treeEntry = targetTree.entries.find(entry => 
+        entry.type === 'tree' && entry.name === part && entry.subtree
+      );
+      
+      if (!treeEntry) {
+        throw new Error(`Path '${options.path}' not found in tree`);
+      }
+      
+      targetTree = treeEntry.subtree;
+    }
+  }
+  
+  // If not recursive, remove subtree property from tree entries
+  if (!options.recursive) {
+    const removeSubtrees = (tree) => {
+      if (!tree || !tree.entries) return;
+      
+      tree.entries.forEach(entry => {
+        if (entry.type === 'tree') {
+          delete entry.subtree;
+        }
+      });
+    };
+    
+    removeSubtrees(targetTree);
+  }
+  
+  return {
+    commitId,
+    tree: targetTree,
+    repositoryId: options.repository.id
+  };
+};
