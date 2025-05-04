@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## IMPORTANT: Use Aider for Code Edits
 
 For all code editing tasks, use Aider (an AI coding assistant):
-- Run Aider: `aider --cache-prompts --no-stream --cache-keepalive-pings 4`
+- Run Aider: `aider --openai-api-base https://openrouter.ai/api/v1 --openai-api-key "$OPENROUTER_API_KEY" --cache-prompts --cache-keepalive-pings 4 --no-stream --model google/gemini-2.5-flash-preview`
 - Treat Aider as a junior engineer - provide clear, specific instructions
 - Aider will make the necessary changes to the codebase
 

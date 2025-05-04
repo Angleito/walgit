@@ -26,45 +26,64 @@ const calculateHash = (content) => {
 export const createRepository = async (options) => {
   // Initialize wallet for Sui interaction
   const wallet = await initializeWallet();
-  
-  // Generate repository ID (would actually be created on-chain in production)
-  const repoId = `walgit-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  
-  // Create repository metadata
-  const repository = {
-    id: repoId,
-    name: options.name,
-    description: options.description || '',
-    isPrivate: options.private || false,
-    owner: wallet.address,
-    defaultBranch: 'main',
-    branches: [
-      {
-        name: 'main',
-        commitCount: 0,
-        lastCommit: null
-      }
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
+
+  // Check if we should use on-chain operations
+  const useOnChain = process.env.WALGIT_USE_BLOCKCHAIN === 'true';
+  const isPackageValid = useOnChain ? await validatePackageId() : false;
+
+  let repository;
+
+  if (useOnChain && isPackageValid) {
+    // Create repository on blockchain
+    console.log(chalk.blue('Creating repository on blockchain...'));
+    repository = await createRepositoryOnChain(options);
+  } else {
+    // Local simulation mode
+    if (useOnChain) {
+      console.log(chalk.yellow('Falling back to local simulation mode due to invalid package ID or configuration.'));
+    } else {
+      console.log(chalk.blue('Using local simulation mode.'));
+    }
+
+    // Generate repository ID (would actually be created on-chain in production)
+    const repoId = `walgit-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    // Create repository metadata
+    repository = {
+      id: repoId,
+      name: options.name,
+      description: options.description || '',
+      isPrivate: options.private || false,
+      owner: wallet.address,
+      defaultBranch: 'main',
+      branches: [
+        {
+          name: 'main',
+          commitCount: 0,
+          lastCommit: null
+        }
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
   // Create .walgit directory and store repository configuration
   await saveCurrentRepository(repository);
-  
+
   // Create initial structure
   const walgitDir = path.join(process.cwd(), '.walgit');
-  
+
   // Create objects directory to store git-like objects
   fs.mkdirSync(path.join(walgitDir, 'objects'), { recursive: true });
-  
+
   // Create refs directory to store branch and tag references
   fs.mkdirSync(path.join(walgitDir, 'refs', 'heads'), { recursive: true });
   fs.mkdirSync(path.join(walgitDir, 'refs', 'tags'), { recursive: true });
-  
+
   // Create initial HEAD file pointing to main branch
   fs.writeFileSync(path.join(walgitDir, 'HEAD'), 'ref: refs/heads/main\n');
-  
+
   return repository;
 };
 
@@ -210,7 +229,7 @@ export const pushCommits = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
 
-  // In this local simulation, 'push' will just confirm the local commit exists
+  // Get the latest commit hash from HEAD
   const walgitDir = getWalGitDir();
   const headPath = path.join(walgitDir, 'HEAD');
 
@@ -234,16 +253,46 @@ export const pushCommits = async (options) => {
      throw new Error("Could not determine the latest commit from HEAD.");
   }
 
-  console.log(chalk.green(`[walgit] Successfully "pushed" local commit ${latestCommitHash}`));
-  console.log(chalk.yellow("Note: This is a local simulation. No data was sent to a remote."));
+  // Check if we should use on-chain operations
+  const useOnChain = process.env.WALGIT_USE_BLOCKCHAIN === 'true';
+  const isPackageValid = useOnChain ? await validatePackageId() : false;
 
+  if (useOnChain && isPackageValid) {
+    // Get current repository
+    const repository = await getCurrentRepository();
+    if (!repository) {
+      throw new Error('Not in a WalGit repository');
+    }
 
-  // Mock push result
-  return {
-    commitHash: latestCommitHash,
-    branch: options.branch || 'main',
-    status: 'local_simulation_success'
-  };
+    // Push commits to blockchain
+    console.log(chalk.blue('Pushing commits to blockchain...'));
+    const pushResult = await pushCommitsOnChain({
+      repositoryId: repository.id,
+      branch: options.branch || 'main',
+      commitId: latestCommitHash
+    });
+
+    console.log(chalk.green(`[walgit] Successfully pushed commit ${latestCommitHash} to blockchain`));
+
+    return pushResult;
+  } else {
+    // Local simulation mode
+    if (useOnChain) {
+      console.log(chalk.yellow('Falling back to local simulation mode due to invalid package ID or configuration.'));
+    } else {
+      console.log(chalk.blue('Using local simulation mode.'));
+    }
+
+    console.log(chalk.green(`[walgit] Successfully "pushed" local commit ${latestCommitHash}`));
+    console.log(chalk.yellow("Note: This is a local simulation. No data was sent to a remote."));
+
+    // Mock push result
+    return {
+      commitHash: latestCommitHash,
+      branch: options.branch || 'main',
+      status: 'local_simulation_success'
+    };
+  }
 };
 
 /**
@@ -257,7 +306,7 @@ export const pushCommits = async (options) => {
 export const pullCommits = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock pull result
   return {
     commitCount: 5,
@@ -281,12 +330,12 @@ export const pullCommits = async (options) => {
 export const cloneRepository = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // In a real implementation, this would:
   // 1. Fetch repository metadata from blockchain
   // 2. Download content from Walrus storage
   // 3. Set up local repository structure
-  
+
   // Mock clone result
   return {
     success: true,
@@ -307,10 +356,10 @@ export const cloneRepository = async (options) => {
 export const getRepositoryStatus = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Get current repository
   const repository = await getCurrentRepository();
-  
+
   // Mock status result
   return {
     currentBranch: 'main',
@@ -340,7 +389,7 @@ export const getRepositoryStatus = async (options) => {
 export const listBranches = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock branches list
   return [
     { name: 'main', current: true, upstream: 'origin/main', ahead: 2, behind: 0 },
@@ -360,7 +409,7 @@ export const listBranches = async (options) => {
 export const createBranch = async (branchName, options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock branch creation
   return {
     name: branchName,
@@ -376,7 +425,7 @@ export const createBranch = async (branchName, options = {}) => {
 export const deleteBranch = async (branchName) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock branch deletion
   return { success: true };
 };
@@ -390,12 +439,12 @@ export const deleteBranch = async (branchName) => {
 export const renameBranch = async (oldName, newName) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock branch renaming
-  return { 
+  return {
     oldName,
     newName,
-    success: true 
+    success: true
   };
 };
 
@@ -409,7 +458,7 @@ export const renameBranch = async (oldName, newName) => {
 export const checkoutBranch = async (branchName, options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock branch checkout
   return {
     name: branchName,
@@ -425,7 +474,7 @@ export const checkoutBranch = async (branchName, options = {}) => {
 export const listRemotes = async () => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock remotes list
   return [
     { name: 'origin', url: 'walgit://walrus-dev/walgit-core', pushUrl: null },
@@ -445,7 +494,7 @@ export const listRemotes = async () => {
 export const addRemote = async (name, url, options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock remote addition
   return { success: true };
 };
@@ -458,7 +507,7 @@ export const addRemote = async (name, url, options = {}) => {
 export const removeRemote = async (name) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock remote removal
   return { success: true };
 };
@@ -475,7 +524,7 @@ export const removeRemote = async (name) => {
 export const setRemoteUrl = async (name, url, options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock remote URL update
   return { success: true };
 };
@@ -496,7 +545,7 @@ export const setRemoteUrl = async (name, url, options = {}) => {
 export const getCommitHistory = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock commit history
   return [
     {
@@ -538,7 +587,7 @@ export const getCommitHistory = async (options = {}) => {
 export const fetchRemote = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock fetch result
   return {
     remoteUrl: 'walgit://walrus-dev/walgit-core',
@@ -564,7 +613,7 @@ export const fetchRemote = async (options = {}) => {
 export const mergeChanges = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock merge result
   return {
     success: true,
@@ -589,7 +638,7 @@ export const mergeChanges = async (options = {}) => {
 export const createTag = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock tag creation
   return {
     name: options.name,
@@ -607,7 +656,7 @@ export const createTag = async (options = {}) => {
 export const deleteTag = async (tagName) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock tag deletion
   return { success: true };
 };
@@ -620,7 +669,7 @@ export const deleteTag = async (tagName) => {
 export const listTags = async (pattern) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock tags list
   return [
     { name: 'v1.0.0', commit: 'abcdef1', annotation: 'Version 1.0.0 release' },
@@ -640,7 +689,7 @@ export const listTags = async (pattern) => {
 export const resetRepository = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock reset result
   return {
     success: true,
@@ -663,7 +712,7 @@ export const resetRepository = async (options = {}) => {
 export const revertCommit = async (options = {}) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock revert result
   return {
     success: true,
@@ -682,7 +731,7 @@ export const revertCommit = async (options = {}) => {
 export const listRepositories = async () => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock repositories list
   return [
     {
@@ -712,7 +761,7 @@ export const listRepositories = async () => {
 export const getRepositoryDetails = async (repoId) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // Mock repository details
   return {
     id: repoId || 'walgit-repo-1',
@@ -752,11 +801,11 @@ export const getRepositoryDetails = async (repoId) => {
 export const deleteRepository = async (repoId) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // In a real implementation, this would:
   // 1. Call contract to remove repository from blockchain
   // 2. Delete content from Walrus storage
-  
+
   return true;
 };
 
@@ -772,16 +821,16 @@ export const deleteRepository = async (repoId) => {
 export const getTreeStructure = async (options) => {
   // Initialize wallet for authentication
   const wallet = await initializeWallet();
-  
+
   // In a real implementation, this would:
   // 1. Fetch commit object from blockchain
   // 2. Fetch root tree object
   // 3. Traverse to the specified path
   // 4. Fetch all subtrees if recursive option is enabled
-  
+
   // Mock commit ID
   const commitId = options.commit || `commit-${Date.now() - 86400000}-${Math.floor(Math.random() * 1000)}`;
-  
+
   // Create mock root tree
   const rootTree = {
     id: `tree-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -834,40 +883,40 @@ export const getTreeStructure = async (options) => {
       }
     ]
   };
-  
+
   // Handle path filtering
   let targetTree = rootTree;
   if (options.path) {
     const pathParts = options.path.split('/').filter(part => part);
-    
+
     for (const part of pathParts) {
-      const treeEntry = targetTree.entries.find(entry => 
+      const treeEntry = targetTree.entries.find(entry =>
         entry.type === 'tree' && entry.name === part && entry.subtree
       );
-      
+
       if (!treeEntry) {
         throw new Error(`Path '${options.path}' not found in tree`);
       }
-      
+
       targetTree = treeEntry.subtree;
     }
   }
-  
+
   // If not recursive, remove subtree property from tree entries
   if (!options.recursive) {
     const removeSubtrees = (tree) => {
       if (!tree || !tree.entries) return;
-      
+
       tree.entries.forEach(entry => {
         if (entry.type === 'tree') {
           delete entry.subtree;
         }
       });
     };
-    
+
     removeSubtrees(targetTree);
   }
-  
+
   return {
     commitId,
     tree: targetTree,

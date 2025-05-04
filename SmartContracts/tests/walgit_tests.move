@@ -1,4 +1,5 @@
 #[test_only]
+#[allow(unused_use, duplicate_alias)]
 module walgit::walgittests {
     use sui::test_scenario::{Self, next_tx, ctx}; // Used by all tests
     use std::string; // Used by all tests
@@ -17,7 +18,7 @@ module walgit::walgittests {
     use sui::clock; // Import clock for commit test
     // std::option is available without an explicit alias
 
-    const ADMIN: address = @0xA;
+    const ADMIN: address = @0x495ca410a2e2e83fe2e390ec0b8e0a25392a07b5c53e916c210ab050b5d49253;
     const USER1: address = @0xB; // Add a user for testing
     const ENotImplemented: u64 = 1;
     // We don't need this constant anymore as we're using storage::EInsufficientStorage

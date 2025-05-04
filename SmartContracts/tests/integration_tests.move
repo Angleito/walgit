@@ -1,4 +1,5 @@
 #[test_only]
+#[allow(unused_use, duplicate_alias, unused_const, unused_let_mut)]
 module walgit::integration_tests {
     use sui::test_scenario::{Self, next_tx, ctx};
     use std::string;
@@ -17,7 +18,7 @@ module walgit::integration_tests {
     use std::option;
     use std::vector;
     
-    const ADMIN: address = @0xA;
+    const ADMIN: address = @0x495ca410a2e2e83fe2e390ec0b8e0a25392a07b5c53e916c210ab050b5d49253;
     const CONTRIBUTOR: address = @0xB;
     
     // Constants from modules

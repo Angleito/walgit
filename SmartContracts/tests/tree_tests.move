@@ -1,4 +1,5 @@
 #[test_only]
+#[allow(unused_use, duplicate_alias)]
 module walgit::tree_tests {
     use sui::test_scenario::{Self, next_tx, ctx};
     use std::string;
@@ -14,7 +15,7 @@ module walgit::tree_tests {
     use sui::clock;
     use std::vector;
 
-    const ADMIN: address = @0xA;
+    const ADMIN: address = @0x495ca410a2e2e83fe2e390ec0b8e0a25392a07b5c53e916c210ab050b5d49253;
 
     #[test]
     fun test_create_tree_and_blobs() {
