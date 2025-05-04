@@ -15,6 +15,7 @@ export const commitCommand = (program) => {
     .option('-m, --message <message>', 'Commit message')
     .option('-a, --all', 'Stage all modified and deleted files', false)
     .option('--amend', 'Amend the previous commit', false)
+    .option('-v, --verbose', 'Show verbose output with tree structure', false)
     .action(async (options) => {
       try {
         // Validate wallet connection
@@ -51,6 +52,20 @@ export const commitCommand = (program) => {
         commitSpinner.succeed(`Commit created: ${chalk.green(commit.id.substring(0, 8))}`);
         console.log(`Message: ${commit.message}`);
         console.log(`Files: ${commit.files.length} changed`);
+        console.log(`Root tree: ${chalk.cyan(commit.rootTree.id.substring(0, 8))}`);
+        console.log(`Trees: ${commit.trees.length}, Blobs: ${commit.blobs.length}`);
+        
+        // Display tree structure if requested
+        if (options.verbose) {
+          console.log('\nTree structure:');
+          console.log(`${chalk.cyan(commit.rootTree.id.substring(0, 8))} (root)`);
+          
+          // Display root tree entries
+          commit.rootTree.entries.forEach(entry => {
+            const prefix = entry.type === 'tree' ? chalk.blue('tree') : chalk.green('blob');
+            console.log(`  ${prefix} ${entry.name} (${entry.object_id.substring(0, 8)})`);
+          });
+        }
       } catch (error) {
         console.error(chalk.red('Failed to create commit:'), error.message);
         process.exit(1);

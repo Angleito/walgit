@@ -15,6 +15,7 @@ import { mergeCommand } from './merge.js';
 import { tagCommand } from './tag.js';
 import { resetCommand } from './reset.js';
 import { revertCommand } from './revert.js';
+import { treeCommand } from './tree.js';
 
 /**
  * Register all commands with the CLI program
@@ -44,6 +45,7 @@ export const registerCommands = (program) => {
   mergeCommand(program);
   resetCommand(program);
   revertCommand(program);
+  treeCommand(program);
   
   // Repository operations
   cloneCommand(program);

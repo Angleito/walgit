@@ -82,6 +82,18 @@ Cargo.lock
 move/build/
 .aptos/
 .sui/
+SmartContracts/build/
+*.mv.json
+
+# Sui specific
+.move-build/
+.move/
+move-cache/
+*.hash
+*.bytecode.json
+local_sui_config/
+sui.log.*
+sui-client.yaml
 
 # Documentation
 .docusaurus
@@ -99,6 +111,39 @@ temp/
 .DS_Store
 .DS_Store?
 ._*
+
+# AI tools
+.github/copilot/
+.vscode/copilot/
+.vscode-insiders/
+.copilot-*
+.ai_tools/
+.cascade/
+.nova/
+ai_generated_code/
+.ai-playground/
+*__gen.py
+*__gen.js
+*__gen.ts
+*__auto.py
+*__auto.js
+*__auto.ts
+.aider*
+.openai*
+.claude*
+.anthropic*
+.claude-cache/
+.claude-history/
+.claude-chat/
+.anthropic-api/
+anthropicrc
+.anthropicrc
+claude-settings.json
+claude_assistant_*.json
+claude_output/
+claude-temp/
+*_by_claude.*
+*_claude_generated.*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
@@ -128,3 +173,5 @@ CLAUDE.md
 *.keystore
 wallet.dat
 *.secret
+
+**/.claude/settings.local.json

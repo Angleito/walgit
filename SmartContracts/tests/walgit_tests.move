@@ -7,9 +7,13 @@ module walgit::walgittests {
     use sui::sui::SUI;
     use walgit::storage::{Self as storage, StorageQuota};
     // Import repository for testing create_repository calls
-    use walgit::repository::{Self as repository, Repository};
+    use walgit::git_repository::{Self as repository, GitRepository as Repository};
     // Import commit for testing create_commit calls
-    use walgit::commit::{Self as commit, Commit}; // Re-add commit import
+    use walgit::git_commit_object::{Self as commit, GitCommitObject as Commit}; 
+    // Import tree for testing tree creation
+    use walgit::git_tree_object::{Self as tree, GitTreeObject};
+    use walgit::git_blob_object::{Self as blob, GitBlobObject};
+    use sui::transfer::public_share_object;
     use sui::clock; // Import clock for commit test
     // std::option is available without an explicit alias
 
@@ -27,8 +31,8 @@ module walgit::walgittests {
         let mut scenario = test_scenario::begin(ADMIN);
         let name = string::utf8(b"test-repo");
         let description = string::utf8(b"A test repository");
-        let blob_id = string::utf8(b"blob123");
-        let initial_size_bytes = 1024; // Example initial size needed
+        let _blob_id = string::utf8(b"blob123"); // Prefix with underscore as unused
+        let _initial_size_bytes = 1024; // Example initial size needed
 
         // 1. Create StorageQuota for ADMIN first and include purchase in same transaction
         next_tx(&mut scenario, ADMIN);
@@ -57,8 +61,7 @@ module walgit::walgittests {
             repository::create_repository(
                 name,               // name: String
                 description,        // description: String
-                blob_id,            // walrus_blob_id: String
-                initial_size_bytes, // initial_size_bytes: u64
+                string::utf8(b"main"),  // default_branch: String
                 &mut admin_quota,   // storage: &mut StorageQuota
                 ctx(&mut scenario)  // ctx: &mut TxContext
             );
@@ -71,7 +74,8 @@ module walgit::walgittests {
         {
             let repo = test_scenario::take_shared<Repository>(&scenario);
             assert!(repository::owner(&repo) == ADMIN, 4);
-            assert!(repository::walrus_blob_id(&repo) == string::utf8(b"blob123"), 5);
+            // Check for other fields instead since walrus_blob_id doesn't exist
+            assert!(repository::default_branch(&repo) == string::utf8(b"main"), 5);
             test_scenario::return_shared(repo);
             // Also take and return the quota to clean up sender's state
              let quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
@@ -83,15 +87,13 @@ module walgit::walgittests {
 
     #[test]
     fun test_create_commit() {
-        // use walgit::repository::{Self as repository, Repository}; // Imported above
-        // use walgit::commit::{Self as commit, Commit}; // Imported above
-        // use sui::clock; // Imported above
+        // This test is now a simplified version that focuses on the tree integration
 
         let mut scenario = test_scenario::begin(ADMIN);
         let name = string::utf8(b"test-repo");
         let description = string::utf8(b"A test repository");
-        let repo_blob_id = string::utf8(b"repo_blob1");
-        let repo_initial_size = 1024; // Example size
+        let _repo_blob_id = string::utf8(b"repo_blob1"); // Prefix with underscore as unused
+        let _repo_initial_size = 1024; // Example size
 
         // 1. Create StorageQuota for ADMIN
         next_tx(&mut scenario, ADMIN);
@@ -104,58 +106,74 @@ module walgit::walgittests {
         {
             let mut quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
             let mut payment = mint_coin<SUI>(1_000_000, ctx(&mut scenario)); // Mint 1 SUI
-             // Buy enough storage (e.g., 2 MiB)
             storage::purchase_storage(&mut quota, &mut payment, 2 * 1024*1024, ctx(&mut scenario));
             test_scenario::return_to_sender(&scenario, quota);
             burn_coin(payment); // Clean up coin
         };
 
-        // 3. Create Repository first (6 args expected)
+        // 3. Create Repository
         next_tx(&mut scenario, ADMIN);
         {
             let mut admin_quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
             repository::create_repository(
                 name,
                 description,
-                repo_blob_id,
-                repo_initial_size,
-                &mut admin_quota,   // 5th argument is the quota
+                string::utf8(b"main"),  // default_branch: String
+                &mut admin_quota,
                 ctx(&mut scenario)
             );
             test_scenario::return_to_sender(&scenario, admin_quota);
         };
 
-        // 4. Get created repository, clock and create commit (6 args expected)
+        // 4. Create and share a tree
         next_tx(&mut scenario, ADMIN);
         {
             let repo = test_scenario::take_shared<Repository>(&scenario);
-            let clock = clock::create_for_testing(ctx(&mut scenario));
-            let message = string::utf8(b"Initial commit"); // This variable is now used
-            let commit_blob_id = string::utf8(b"commit_blob1"); // This variable is now used
-
-            commit::create_commit(
-                &repo,                                  // repo: &Repository
-                message,                                // message: String
-                commit_blob_id,                         // walrus_blob_id: String
-                std::option::none<sui::object::ID>(),      // parent_commit_id: Option<ID>
-                &clock,                                 // clock: &Clock
-                ctx(&mut scenario)                      // ctx: &mut TxContext
-            );
-
-            clock::destroy_for_testing(clock);
+            
+            // Create a tree
+            // Create a tree with a hash
+            let root_tree = tree::create(string::utf8(b"roottreehash"), ctx(&mut scenario));
+            public_share_object(root_tree);
+            
+            // Return repo
             test_scenario::return_shared(repo);
         };
-
-        // 5. Check if Commit object exists
+        
+        // 5. Get repo, tree, and create commit
         next_tx(&mut scenario, ADMIN);
         {
-            let commit_obj = test_scenario::take_shared<Commit>(&scenario); // Commit type is now recognized
-            assert!(commit::author(&commit_obj) == ADMIN, 14); // commit alias is now recognized
-            assert!(commit::walrus_blob_id(&commit_obj) == string::utf8(b"commit_blob1"), 15); // commit alias is now recognized
+            let repo = test_scenario::take_shared<Repository>(&scenario);
+            let tree_obj = test_scenario::take_shared<GitTreeObject>(&scenario);
+            let clock = clock::create_for_testing(ctx(&mut scenario));
+            let _message = string::utf8(b"Initial commit"); // Prefix with underscore as unused
+            
+            // Create commit
+            let commit_obj = commit::create(
+                object::id(&tree_obj),
+                option::none(),
+                string::utf8(b"Initial commit"),
+                string::utf8(b"commithash"),
+                option::none(),
+                ctx(&mut scenario)
+            );
+            public_share_object(commit_obj);
+            
+            // Return objects
+            test_scenario::return_shared(tree_obj);
+            test_scenario::return_shared(repo);
+            clock::destroy_for_testing(clock);
+        };
+        
+        // 6. Check if Commit object exists
+        next_tx(&mut scenario, ADMIN);
+        {
+            let commit_obj = test_scenario::take_shared<Commit>(&scenario);
+            assert!(commit::author(&commit_obj) == ADMIN, 14);
             test_scenario::return_shared(commit_obj);
-             // Also take and return the quota to clean up sender's state
-             let quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
-             test_scenario::return_to_sender(&scenario, quota);
+            
+            // Cleanup
+            let quota = test_scenario::take_from_sender<StorageQuota>(&scenario);
+            test_scenario::return_to_sender(&scenario, quota);
         };
 
         test_scenario::end(scenario);

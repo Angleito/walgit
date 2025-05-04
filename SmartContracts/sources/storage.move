@@ -4,7 +4,7 @@ module walgit::storage {
     // Import necessary modules and types
     use sui::coin::{Self as coin, Coin}; // Using 'coin' alias for coin functions
     use sui::sui::SUI;                   // The native SUI coin type
-    use sui::object::UID;                // Import UID type
+    use sui::object::{Self, UID};        // Import object module and UID type
     use sui::tx_context::sender;         // Import sender function
     use sui::tx_context;                 // For TxContext type
     use sui::transfer::{transfer, public_transfer}; // For transferring objects
@@ -142,5 +142,16 @@ module walgit::storage {
     // Returns the number of bytes currently used in the storage quota.
     public fun bytes_used(storage: &StorageQuota): u64 {
         storage.bytes_used
+    }
+    
+    // Creates a test storage quota with a specific amount of bytes
+    // This is primarily used for testing and development purposes
+    public fun create_test_quota(bytes: u64, owner: address, ctx: &mut tx_context::TxContext): StorageQuota {
+        StorageQuota {
+            id: object::new(ctx),
+            owner,
+            bytes_available: bytes,
+            bytes_used: 0
+        }
     }
 }
