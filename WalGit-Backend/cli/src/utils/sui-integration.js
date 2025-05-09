@@ -4,6 +4,9 @@ import { getWalletConfig } from './config.js';
 import { initializeWallet } from './auth.js';
 import chalk from 'chalk';
 import ora from 'ora';
+import fs from 'fs';
+import path from 'path';
+import { buildAndCreateTreeInTransaction, processFileList, serializeTree, buildTreeFromFiles } from './tree-builder.js';
 
 // Package ID for the WalGit smart contract
 // This should be updated with the actual deployed package ID
@@ -140,16 +143,19 @@ export const createCommitOnChain = async (options) => {
       });
     }
     
-    // Create tree structure
-    // This is simplified - in a real implementation, you'd need to build
-    // a proper tree structure based on file paths
-    const rootTreeResult = tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::git_tree_object::create_tree`,
-      arguments: [
-        // Tree entries would be constructed here
-        tx.pure([]) // Simplified for now
-      ]
-    });
+    // Process the files for tree building - filter out local simulation files
+    const filteredFiles = options.files.filter(file => !file.walrusBlobId.startsWith('local-'));
+    
+    // If no valid Walrus blobs, throw error
+    if (filteredFiles.length === 0) {
+      throw new Error('No valid Walrus blob references found. Cannot create commit.');
+    }
+    
+    // Process the filtered files
+    const processedFiles = processFileList(filteredFiles);
+    
+    // Build the tree structure and create tree objects in the transaction
+    const rootTreeResult = buildAndCreateTreeInTransaction(tx, processedFiles);
     
     // Create commit object
     const commitResult = tx.moveCall({
@@ -186,12 +192,17 @@ export const createCommitOnChain = async (options) => {
       event.type.includes('::git_commit_object::CommitCreated')
     );
     
+    const treeEvent = result.events.find(event => 
+      event.type.includes('::git_tree_object::TreeCreated')
+    );
+    
     if (!commitEvent) {
       throw new Error('Commit creation event not found in transaction result');
     }
     
-    // Extract commit ID from event
+    // Extract commit ID and tree ID from events
     const commitId = commitEvent.parsedJson.commit_id;
+    const treeId = treeEvent ? treeEvent.parsedJson.tree_id : 'root-tree-id';
     
     spinner.succeed('Commit created on-chain');
     
@@ -201,10 +212,11 @@ export const createCommitOnChain = async (options) => {
       author: wallet.address,
       timestamp: new Date().toISOString(),
       rootTree: {
-        id: 'root-tree-id', // This would come from the actual event
-        entries: []         // This would be populated from the actual tree
+        id: treeId,
+        entries: []         // This would be populated from the actual tree structure
       },
       files: options.files,
+      treeInfo: serializeTree(buildTreeFromFiles(processedFiles)),
       transactionDigest: result.digest
     };
   } catch (error) {
@@ -215,11 +227,277 @@ export const createCommitOnChain = async (options) => {
 };
 
 /**
+ * Get the current state of a remote branch
+ * @param {string} repositoryId - Repository ID
+ * @param {string} branchName - Branch name
+ * @returns {Promise<object>} Branch state information
+ */
+export const getRemoteBranchState = async (repositoryId, branchName) => {
+  const client = await initializeSuiClient();
+  
+  try {
+    // First, fetch the repository object to get reference to branch refs
+    const repository = await client.getObject({
+      id: repositoryId,
+      options: {
+        showContent: true,
+        showOwner: true
+      }
+    });
+    
+    if (!repository || !repository.data || !repository.data.content) {
+      throw new Error(`Repository with ID ${repositoryId} not found`);
+    }
+    
+    // Extract repository details from the object
+    const repoData = repository.data.content;
+    
+    // Try to get reference collection ID
+    const referencesId = repoData.references_id;
+    if (!referencesId) {
+      // No references collection means no remote conflicts
+      return {
+        exists: false,
+        commitId: null,
+        diverged: false,
+        ahead: 0,
+        behind: 0,
+        hasConflicts: false
+      };
+    }
+    
+    // Fetch references collection
+    const references = await client.getObject({
+      id: referencesId,
+      options: {
+        showContent: true
+      }
+    });
+    
+    if (!references || !references.data || !references.data.content) {
+      throw new Error(`References collection with ID ${referencesId} not found`);
+    }
+    
+    const refsData = references.data.content;
+    
+    // Check if branch exists
+    const branchExists = await branchExistsOnChain(referencesId, branchName);
+    
+    if (!branchExists) {
+      // Branch doesn't exist, so no conflicts
+      return {
+        exists: false,
+        commitId: null,
+        diverged: false,
+        ahead: 0,
+        behind: 0,
+        hasConflicts: false
+      };
+    }
+    
+    // Get branch reference ID
+    const branchId = await getBranchReferenceId(referencesId, branchName);
+    
+    if (!branchId) {
+      // Branch not found, no conflicts
+      return {
+        exists: false,
+        commitId: null,
+        diverged: false,
+        ahead: 0,
+        behind: 0,
+        hasConflicts: false
+      };
+    }
+    
+    // Fetch branch reference
+    const branchRef = await client.getObject({
+      id: branchId,
+      options: {
+        showContent: true
+      }
+    });
+    
+    if (!branchRef || !branchRef.data || !branchRef.data.content) {
+      throw new Error(`Branch reference with ID ${branchId} not found`);
+    }
+    
+    const branchData = branchRef.data.content;
+    const remoteCommitId = branchData.target_id;
+    
+    // Get local commit reference
+    const { getCurrentRepository, getWalGitDir } = await import('./config.js');
+    const { compareCommitHistories } = await import('./repository.js');
+    const repository = await getCurrentRepository();
+    const walgitDir = getWalGitDir();
+    
+    // Get the latest local commit hash for this branch
+    const headContent = fs.readFileSync(path.join(walgitDir, 'HEAD'), 'utf-8').trim();
+    let localCommitHash;
+    
+    if (headContent.startsWith('ref: ')) {
+      const refPath = headContent.substring(5);
+      const localBranch = refPath.split('/').pop();
+      
+      // Only compare if the branch names match
+      if (localBranch === branchName) {
+        const branchRefPath = path.join(walgitDir, refPath);
+        if (fs.existsSync(branchRefPath)) {
+          localCommitHash = fs.readFileSync(branchRefPath, 'utf-8').trim();
+        } else {
+          // If branch ref doesn't exist yet, use HEAD value
+          localCommitHash = headContent;
+        }
+      } else {
+        // Different branch, check if we have a local reference for the requested branch
+        const branchRefPath = path.join(walgitDir, 'refs', 'heads', branchName);
+        if (fs.existsSync(branchRefPath)) {
+          localCommitHash = fs.readFileSync(branchRefPath, 'utf-8').trim();
+        }
+      }
+    } else {
+      // Detached HEAD state
+      localCommitHash = headContent;
+    }
+    
+    if (!localCommitHash) {
+      // Local branch doesn't exist, no conflicts
+      return {
+        exists: true,
+        commitId: remoteCommitId,
+        diverged: false,
+        ahead: 0,
+        behind: 0,
+        hasConflicts: false
+      };
+    }
+    
+    // Now that we have both local and remote commit IDs, compare histories
+    const comparison = await compareCommitHistories(
+      walgitDir,
+      localCommitHash,
+      remoteCommitId,
+      branchName
+    );
+    
+    // Determine if there are conflicts
+    // Branches have diverged (they both have commits the other doesn't have)
+    const hasConflicts = comparison.diverged;
+    
+    return {
+      exists: true,
+      commitId: remoteCommitId,
+      diverged: comparison.diverged,
+      ahead: comparison.remoteAhead, // Remote is ahead by this many commits
+      behind: comparison.localAhead,  // Local is ahead by this many commits
+      fastForwardable: comparison.fastForwardable,
+      commonAncestor: comparison.commonAncestor,
+      hasConflicts
+    };
+  } catch (error) {
+    console.error(chalk.yellow('Warning: Could not determine remote branch state'), error.message);
+    
+    // Return safe defaults
+    return {
+      exists: false,
+      commitId: null,
+      diverged: false,
+      ahead: 0,
+      behind: 0,
+      hasConflicts: false
+    };
+  }
+};
+
+/**
+ * Check if a branch exists in the repository on chain
+ * @param {string} referencesId - References collection ID
+ * @param {string} branchName - Branch name
+ * @returns {Promise<boolean>} Whether the branch exists
+ * @private
+ */
+async function branchExistsOnChain(referencesId, branchName) {
+  const client = await initializeSuiClient();
+  
+  try {
+    // Call the branch_exists function in the git_reference module
+    const tx = new TransactionBlock();
+    
+    // Using dryRunTransactionBlock to simulate calling a view function
+    const result = await client.devInspectTransactionBlock({
+      sender: '0x0000000000000000000000000000000000000000000000000000000000000000', // Dummy sender
+      transactionBlock: tx.pure({
+        id: referencesId,
+        branch: branchName
+      }),
+      targetFunction: `${WALGIT_PACKAGE_ID}::git_reference::branch_exists`
+    });
+    
+    // Extract the result
+    if (result && result.results && result.results.length > 0 && result.results[0].returnValues) {
+      return result.results[0].returnValues[0] === 'true';
+    }
+    
+    return false;
+  } catch (error) {
+    console.error(chalk.yellow('Warning: Could not check if branch exists on chain'), error.message);
+    return false;
+  }
+}
+
+/**
+ * Get a branch reference ID from the repository
+ * @param {string} referencesId - References collection ID
+ * @param {string} branchName - Branch name
+ * @returns {Promise<string|null>} Branch reference ID or null if not found
+ * @private
+ */
+async function getBranchReferenceId(referencesId, branchName) {
+  const client = await initializeSuiClient();
+  
+  try {
+    // Fetch the references object
+    const references = await client.getObject({
+      id: referencesId,
+      options: {
+        showContent: true
+      }
+    });
+    
+    if (!references || !references.data || !references.data.content) {
+      return null;
+    }
+    
+    const refsData = references.data.content;
+    
+    // Get branches table
+    if (!refsData.branches || !refsData.branches.fields || !refsData.branches.fields.contents) {
+      return null;
+    }
+    
+    // Find the branch in the table
+    const branchEntry = refsData.branches.fields.contents.find(entry => 
+      entry && entry.length === 2 && entry[0] === branchName
+    );
+    
+    if (!branchEntry || !branchEntry[1]) {
+      return null;
+    }
+    
+    return branchEntry[1];
+  } catch (error) {
+    console.error(chalk.yellow('Warning: Could not get branch reference ID'), error.message);
+    return null;
+  }
+}
+
+/**
  * Push commits to the blockchain
  * @param {object} options - Push options
  * @param {string} options.repositoryId - Repository ID
  * @param {string} options.branch - Branch name
- * @param {string} options.commitId - Commit ID to push
+ * @param {Array<object>} options.commits - Array of commit objects to push
+ * @param {boolean} options.force - Force push (overwrites remote)
  * @returns {Promise<object>} Push result
  */
 export const pushCommitsOnChain = async (options) => {
@@ -230,15 +508,40 @@ export const pushCommitsOnChain = async (options) => {
     // Create transaction block
     const tx = new TransactionBlock();
     
-    // Update branch reference to point to the new commit
-    tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::git_reference::update_branch`,
-      arguments: [
-        tx.pure(options.repositoryId), // Repository ID
-        tx.pure(options.branch),       // Branch name
-        tx.pure(options.commitId)      // Commit ID
-      ]
-    });
+    // Get the latest commit from the array
+    const latestCommit = options.commits && options.commits.length > 0 
+      ? options.commits[0] 
+      : null;
+    
+    if (!latestCommit) {
+      throw new Error('No commits provided to push');
+    }
+    
+    // If this is a force push, we need to use a different approach
+    if (options.force) {
+      // Force update branch reference to point to the new commit
+      tx.moveCall({
+        target: `${WALGIT_PACKAGE_ID}::git_reference::force_update_branch`,
+        arguments: [
+          tx.pure(options.repositoryId), // Repository ID
+          tx.pure(options.branch),       // Branch name
+          tx.pure(latestCommit.hash)     // Commit hash
+        ]
+      });
+    } else {
+      // Standard update branch reference to point to the new commit
+      tx.moveCall({
+        target: `${WALGIT_PACKAGE_ID}::git_reference::update_branch`,
+        arguments: [
+          tx.pure(options.repositoryId), // Repository ID
+          tx.pure(options.branch),       // Branch name
+          tx.pure(latestCommit.hash)     // Commit hash
+        ]
+      });
+    }
+    
+    // Add extra gas for large transactions
+    tx.setGasBudget(50000000); // Increased gas budget for complex transactions
     
     // Sign and execute the transaction
     const result = await wallet.client.signAndExecuteTransactionBlock({
@@ -246,17 +549,30 @@ export const pushCommitsOnChain = async (options) => {
       transactionBlock: tx,
       options: {
         showEffects: true,
-        showEvents: true
+        showEvents: true,
+        showObjectChanges: true
       }
     });
+    
+    // Check for events that indicate success
+    const updateEvents = result.events.filter(event => 
+      event.type.includes('::git_reference::ReferenceUpdated')
+    );
+    
+    if (updateEvents.length === 0) {
+      spinner.warn('Branch update transaction completed, but no ReferenceUpdated event was emitted');
+    }
     
     spinner.succeed('Commits pushed to blockchain');
     
     return {
       branch: options.branch,
-      commitId: options.commitId,
+      commitId: latestCommit.hash,
+      commitCount: options.commits.length,
+      force: options.force || false,
       transactionDigest: result.digest,
-      status: 'success'
+      status: 'success',
+      gasUsed: result.effects?.gasUsed || null
     };
   } catch (error) {
     spinner.fail('Failed to push commits to blockchain');

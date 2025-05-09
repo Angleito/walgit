@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { StarIcon, GitForkIcon, Users } from "lucide-react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { WalletProfile } from "@/components/wallet/WalletProfile";
 
 // Mock data for demonstration
 const mockUserData = {
@@ -66,6 +68,15 @@ export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const [userData] = useState(mockUserData);
   const [repos] = useState(mockRepos);
+  const account = useCurrentAccount();
+  const [isCurrentUserProfile, setIsCurrentUserProfile] = useState(false);
+  
+  // Check if the current profile belongs to the logged-in user
+  useEffect(() => {
+    if (account && username) {
+      setIsCurrentUserProfile(account.address === username);
+    }
+  }, [account, username]);
   
   // In a real implementation, you would fetch user data and repos based on the username parameter
 
@@ -160,6 +171,9 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
+          
+          {/* Show wallet profile if this is the current user's profile */}
+          {isCurrentUserProfile && <WalletProfile />}
         </div>
 
         {/* Main content area */}

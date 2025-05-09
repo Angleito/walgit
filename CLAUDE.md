@@ -9,13 +9,31 @@ For all code editing tasks, use Aider (an AI coding assistant):
 - Treat Aider as a junior engineer - provide clear, specific instructions
 - Aider will make the necessary changes to the codebase
 
+## Project Architecture
+
+WalGit is a decentralized version control system with three main components:
+
+1. **WalGit Client (Backend)**: JavaScript/Node.js CLI tool that interacts with Sui blockchain and Walrus storage
+2. **Smart Contracts**: Sui Move contracts that manage repository structure (commits, trees, references)
+3. **Frontend**: React-TypeScript application for browser-based interaction
+
 ## Commands
 
-- **Build**: `npm run build` (Frontend); Move compilation: CLI to be added
-- **Lint**: `npm run lint` (Frontend, checks TS/TSX files)
-- **Test**: `npm test` (Backend tests)
+### Frontend (WalGit-Frontend)
+- **Build**: `npm run build` 
+- **Lint**: `npm run lint` (checks TS/TSX files)
+- **Dev**: `npm run dev` (runs Vite development server)
+- **Preview**: `npm run preview` (preview production build locally)
+
+### Backend (WalGit-Backend)
+- **Test**: `npm test` (runs Jest tests)
 - **Single Test**: `node --experimental-vm-modules node_modules/jest/bin/jest.js WalGit-Backend/tests/specific.test.js`
-- **Dev**: `npm run dev` (Frontend)
+- **Start CLI**: `npm start` (runs the CLI)
+
+### Smart Contracts (SmartContracts)
+- **Compile**: `cd SmartContracts && sui move build`
+- **Test**: `cd SmartContracts && sui move test`
+- **Publish**: `cd SmartContracts && sui client publish --gas-budget 100000000`
 
 ## Code Style Guidelines
 
@@ -27,3 +45,24 @@ For all code editing tasks, use Aider (an AI coding assistant):
 - **Component Structure**: UI components reuse shadcn/ui-based primitives in `src/components/ui`
 - **Formatting**: ESLint for TS/JS files, all imports should use absolute paths from tsconfig
 - **Types**: Explicit TypeScript interfaces for props, avoid `any`
+
+## Key Files and Modules
+
+### Smart Contracts
+- `walgit.move`: Main entry point for interacting with Git repositories
+- `git_repository.move`: Repository structure and management
+- `git_commit_object.move`: Commit representation
+- `git_tree_object.move`: Directory structure representation
+- `git_blob_object.move`: File content representation
+- `git_reference.move`: Branch/tag references
+- `storage.move`: Storage quota management for Walrus integration
+
+### Backend CLI
+- `WalGit-Backend/cli/src/commands/*.js`: Git command implementations
+- `WalGit-Backend/cli/src/utils/`: Utilities for authentication, config, and repository operations
+- `WalGit-Backend/cli/src/utils/sui-integration.js`: Integration with Sui blockchain
+
+### Frontend
+- `WalGit-Frontend/src/pages/`: Main application views
+- `WalGit-Frontend/src/components/`: UI components (uses shadcn/ui)
+- `WalGit-Frontend/src/hooks/`: React hooks for state management

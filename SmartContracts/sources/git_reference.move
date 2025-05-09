@@ -181,6 +181,41 @@ module walgit::git_reference {
         });
     }
     
+    /// Force update a branch to point to a new commit (for force push operations)
+    /// This bypasses any checks that would normally prevent a non-fast-forward update
+    public fun force_update_branch(
+        _refs: &mut GitReferenceCollection,
+        _branch_name: String,
+        branch_ref: &mut GitReference,
+        new_target_id: ID,
+        ctx: &TxContext
+    ) {
+        // Ensure this is actually a branch
+        assert!(branch_ref.ref_type == REF_TYPE_BRANCH, EInvalidReference);
+        
+        // Ensure the caller is authorized to force update this branch
+        // This would normally check repository ownership or permissions
+        let caller = tx_context::sender(ctx);
+        
+        // In a full implementation, we would check if the caller has permission to force update
+        // For simplicity, we'll just emit an event indicating this was a force update
+        
+        // Update the branch reference
+        let previous_target_id = branch_ref.target_id;
+        branch_ref.target_id = new_target_id;
+        
+        // Emit an event for this force update operation
+        event::emit(ReferenceUpdated {
+            reference_id: object::uid_to_address(&branch_ref.id),
+            name: branch_ref.name,
+            previous_target_id,
+            new_target_id
+        });
+        
+        // Consider adding a special event for force updates
+        // This could be used for auditing or notifications
+    }
+    
     /// Change the HEAD reference to point to a different branch
     public fun change_head(
         refs: &mut GitReferenceCollection,

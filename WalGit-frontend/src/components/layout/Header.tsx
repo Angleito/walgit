@@ -4,8 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+import { truncateMiddle } from "@/lib/utils";
 
 export const Header = ({ className }: { className?: string }) => {
+  const account = useCurrentAccount();
+  
   return (
     <header className={cn("w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
       <div className="container flex h-14 items-center px-4">
@@ -38,12 +42,22 @@ export const Header = ({ className }: { className?: string }) => {
               className="w-full rounded-full pl-8 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-ocean-400" 
             />
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <Plus className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <User className="h-5 w-5" />
-          </Button>
+          
+          {account ? (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="text-muted-foreground">
+                <Plus className="h-5 w-5" />
+              </Button>
+              <Link to={`/${account.address}`}>
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  <span className="hidden md:inline">{truncateMiddle(account.address)}</span>
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <ConnectButton />
+          )}
         </div>
       </div>
     </header>
