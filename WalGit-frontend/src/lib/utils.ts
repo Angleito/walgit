@@ -1,24 +1,23 @@
-import { clsx, type ClassValue } from "clsx"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/**
- * Truncates a string in the middle, preserving the start and end characters.
- * Useful for displaying wallet addresses in a user-friendly way.
- * @param str The string to truncate
- * @param startChars Number of characters to preserve at the beginning
- * @param endChars Number of characters to preserve at the end
- * @returns The truncated string with an ellipsis in the middle
- */
-export function truncateMiddle(str: string, startChars: number = 4, endChars: number = 4): string {
-  if (!str) return '';
-  if (str.length <= startChars + endChars) return str;
-  
-  const start = str.substring(0, startChars);
-  const end = str.substring(str.length - endChars);
-  
-  return `${start}...${end}`;
+export function truncateMiddle(text: string, startLength = 6, endLength = 4) {
+  if (!text) return "";
+  if (text.length <= startLength + endLength) return text;
+  return `${text.substring(0, startLength)}...${text.substring(
+    text.length - endLength
+  )}`;
+}
+
+export function formatDate(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
