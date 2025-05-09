@@ -1,65 +1,46 @@
-import { Link } from "react-router-dom";
-import { Search, Book, Star, GitFork, Menu, Plus, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { truncateMiddle } from "@/lib/utils";
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
-export const Header = ({ className }: { className?: string }) => {
-  const account = useCurrentAccount();
-  
+export default function Header({ className }: { className?: string }) {
   return (
-    <header className={cn("w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
-      <div className="container flex h-14 items-center px-4">
-        <div className="mr-4 flex">
-          <Link to="/" className="mr-8 flex items-center space-x-2">
-            <div className="relative h-7 w-7 overflow-hidden rounded-full">
-              <img 
-                src="/walgitv3.png"
-                alt="WalGit Logo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="hidden font-bold sm:inline-block">WalGit</span>
+    <header className={cn("w-full border-b border-gray-200 bg-white shadow-sm", className)}>
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center">
+          <Link 
+            href="/" 
+            className="text-xl font-bold text-blue-600 flex items-center"
+          >
+            WalGit
           </Link>
-          <nav className="flex items-center space-x-4 lg:space-x-6">
-            <Link to="/repositories" className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-ocean-600">
-              <Book className="h-4 w-4" />
-              <span>Repositories</span>
+          
+          <nav className="ml-10 hidden md:flex space-x-8">
+            <Link 
+              href="/repositories" 
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Repositories
             </Link>
-            <Link to="/explore" className="text-sm font-medium transition-colors hover:text-ocean-600">Explore</Link>
-            <Link to="/network" className="text-sm font-medium transition-colors hover:text-ocean-600">Network</Link>
+            <Link 
+              href="/explore" 
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Explore
+            </Link>
+            <Link 
+              href="/docs" 
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Documentation
+            </Link>
           </nav>
         </div>
-        <div className="flex-1 flex items-center justify-end space-x-2">
-          <div className="w-full max-w-[400px] relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="Search repositories..." 
-              className="w-full rounded-full pl-8 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-ocean-400" 
-            />
-          </div>
-          
-          {account ? (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-muted-foreground">
-                <Plus className="h-5 w-5" />
-              </Button>
-              <Link to={`/${account.address}`}>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  <span className="hidden md:inline">{truncateMiddle(account.address)}</span>
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <ConnectButton />
-          )}
+        
+        <div className="flex items-center gap-4">
+          <button className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Connect Wallet
+          </button>
         </div>
       </div>
     </header>
   );
-};
+}
