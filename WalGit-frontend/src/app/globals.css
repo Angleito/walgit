@@ -1,0 +1,1015 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 11, 11, 22;
+  --background-end-rgb: 5, 5, 10;
+  --cyberpunk-primary: #05d9e8;
+  --cyberpunk-secondary: #ff2a6d;
+  --cyberpunk-accent: #00ff9f;
+  --cyberpunk-dark: #0b0b16;
+  --cyberpunk-darker: #050510;
+  --cyberpunk-glow-intensity: 1;
+  --cyberpunk-animation-speed: 1;
+  --neon-blue: #05d9e8;
+  --neon-purple: #bf5af2;
+  --neon-teal: #00ff9f;
+  --neon-pink: #ff2a6d;
+  --neon-yellow: #f9f871;
+  --text-light: #e1e1fa;
+  --text-dim: #a9a9c9;
+  --text-accent: #05d9e8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: var(--text-light);
+  background-color: var(--cyberpunk-dark);
+  background-image: linear-gradient(to bottom, var(--cyberpunk-dark), var(--cyberpunk-darker));
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+
+/* Cyberpunk Clip Path and Border Styling */
+.cyber-clip {
+  clip-path: polygon(
+    0 10px,
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+}
+
+/* Enhanced corner styles for more variety */
+.cyber-corners-sharp {
+  clip-path: polygon(
+    0 5px,
+    5px 0,
+    calc(100% - 5px) 0,
+    100% 5px,
+    100% calc(100% - 5px),
+    calc(100% - 5px) 100%,
+    5px 100%,
+    0 calc(100% - 5px)
+  );
+}
+
+.cyber-corners-rounded {
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cyber-corners-diagonal {
+  clip-path: polygon(
+    0 15px,
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%
+  );
+}
+
+.cyber-corners-jagged {
+  clip-path: polygon(
+    0% 15%,
+    15% 0%,
+    35% 5%,
+    85% 0%,
+    100% 15%,
+    95% 35%,
+    100% 85%,
+    85% 100%,
+    35% 95%,
+    15% 100%,
+    0% 85%,
+    5% 35%
+  );
+}
+
+.cyber-corners-asymmetric {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 85%,
+    85% 100%,
+    0 100%
+  );
+}
+
+.cyberpunk-border {
+  position: relative;
+  border: 1px solid var(--neon-blue);
+  box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+}
+
+/* Text styling for better readability */
+.text-cyber-primary {
+  color: var(--text-light);
+  text-shadow: 0 0 5px rgba(5, 217, 232, 0.5);
+}
+
+.text-cyber-secondary {
+  color: var(--text-dim);
+}
+
+.text-cyber-accent {
+  color: var(--neon-blue);
+  text-shadow: 0 0 8px rgba(5, 217, 232, 0.3);
+}
+
+.text-cyber-title {
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+}
+
+/* Text shadow glow effect */
+.text-shadow-glow {
+  text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue)/50;
+}
+
+/* Enhanced glitch effect for important elements */
+.glitch-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitch-effect::before,
+.glitch-effect::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  background: transparent;
+}
+
+.glitch-effect::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--neon-blue);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim-stronger 3s infinite linear alternate-reverse;
+}
+
+.glitch-effect::after {
+  left: -2px;
+  text-shadow: 1px 0 var(--neon-pink);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim2-stronger 4s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-stronger {
+  0% { clip: rect(71px, 9999px, 19px, 0); transform: skew(0.65deg); }
+  5% { clip: rect(64px, 9999px, 93px, 0); transform: skew(0.4deg); }
+  10% { clip: rect(3px, 9999px, 10px, 0); transform: skew(0.9deg); }
+  15% { clip: rect(33px, 9999px, 26px, 0); transform: skew(0.61deg); }
+  20% { clip: rect(81px, 9999px, 91px, 0); transform: skew(0.37deg); }
+  25% { clip: rect(2px, 9999px, 47px, 0); transform: skew(0.69deg); }
+  30% { clip: rect(42px, 9999px, 39px, 0); transform: skew(0.2deg); }
+  35% { clip: rect(92px, 9999px, 67px, 0); transform: skew(0.7deg); }
+  40% { clip: rect(14px, 9999px, 30px, 0); transform: skew(0.61deg); }
+  45% { clip: rect(24px, 9999px, 14px, 0); transform: skew(0.56deg); }
+  50% { clip: rect(53px, 9999px, 54px, 0); transform: skew(0.94deg); }
+  55% { clip: rect(22px, 9999px, 23px, 0); transform: skew(0.91deg); }
+  60% { clip: rect(74px, 9999px, 33px, 0); transform: skew(0.63deg); }
+  65% { clip: rect(68px, 9999px, 91px, 0); transform: skew(0.31deg); }
+  70% { clip: rect(24px, 9999px, 90px, 0); transform: skew(0.48deg); }
+  75% { clip: rect(41px, 9999px, 23px, 0); transform: skew(0.75deg); }
+  80% { clip: rect(67px, 9999px, 51px, 0); transform: skew(0.5deg); }
+  85% { clip: rect(5px, 9999px, 14px, 0); transform: skew(0.7deg); }
+  90% { clip: rect(37px, 9999px, 25px, 0); transform: skew(0.83deg); }
+  95% { clip: rect(39px, 9999px, 39px, 0); transform: skew(0.96deg); }
+  100% { clip: rect(76px, 9999px, 32px, 0); transform: skew(0.6deg); }
+}
+
+@keyframes glitch-anim2-stronger {
+  0% { clip: rect(35px, 9999px, 100px, 0); transform: skew(0.4deg); }
+  5% { clip: rect(89px, 9999px, 63px, 0); transform: skew(0.5deg); }
+  10% { clip: rect(63px, 9999px, 23px, 0); transform: skew(0.6deg); }
+  15% { clip: rect(69px, 9999px, 56px, 0); transform: skew(0.3deg); }
+  20% { clip: rect(28px, 9999px, 81px, 0); transform: skew(0.4deg); }
+  25% { clip: rect(16px, 9999px, 42px, 0); transform: skew(0.5deg); }
+  30% { clip: rect(66px, 9999px, 65px, 0); transform: skew(0.6deg); }
+  35% { clip: rect(32px, 9999px, 75px, 0); transform: skew(0.7deg); }
+  40% { clip: rect(49px, 9999px, 42px, 0); transform: skew(0.8deg); }
+  45% { clip: rect(44px, 9999px, 68px, 0); transform: skew(0.9deg); }
+  50% { clip: rect(33px, 9999px, 49px, 0); transform: skew(0.3deg); }
+  55% { clip: rect(52px, 9999px, 97px, 0); transform: skew(0.4deg); }
+  60% { clip: rect(84px, 9999px, 51px, 0); transform: skew(0.5deg); }
+  65% { clip: rect(98px, 9999px, 81px, 0); transform: skew(0.6deg); }
+  70% { clip: rect(34px, 9999px, 73px, 0); transform: skew(0.7deg); }
+  75% { clip: rect(55px, 9999px, 36px, 0); transform: skew(0.8deg); }
+  80% { clip: rect(57px, 9999px, 44px, 0); transform: skew(0.9deg); }
+  85% { clip: rect(15px, 9999px, 34px, 0); transform: skew(0.3deg); }
+  90% { clip: rect(37px, 9999px, 46px, 0); transform: skew(0.4deg); }
+  95% { clip: rect(49px, 9999px, 38px, 0); transform: skew(0.5deg); }
+  100% { clip: rect(16px, 9999px, 21px, 0); transform: skew(0.6deg); }
+}
+
+/* Enhanced background patterns */
+.cyber-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.cyber-grid-detailed {
+  background-image:
+    linear-gradient(to right, rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+    linear-gradient(to right, rgba(191, 90, 242, 0.05) 10px, transparent 10px),
+    linear-gradient(to bottom, rgba(191, 90, 242, 0.05) 10px, transparent 10px);
+  background-size: 20px 20px, 20px 20px, 60px 60px, 60px 60px;
+}
+
+.cyber-radial-bg {
+  background: radial-gradient(circle at center, var(--cyberpunk-dark) 0%, var(--cyberpunk-darker) 100%);
+}
+
+/* Cyber razor edge */
+.cyber-razor-top::before,
+.cyber-razor-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 15px;
+  clip-path: polygon(
+    0% 0%,
+    5% 100%,
+    10% 0%,
+    15% 100%,
+    20% 0%,
+    25% 100%,
+    30% 0%,
+    35% 100%,
+    40% 0%,
+    45% 100%,
+    50% 0%,
+    55% 100%,
+    60% 0%,
+    65% 100%,
+    70% 0%,
+    75% 100%,
+    80% 0%,
+    85% 100%,
+    90% 0%,
+    95% 100%,
+    100% 0%
+  );
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+}
+
+.cyber-razor-top::before {
+  top: 0;
+  transform: translateY(-10px);
+}
+
+.cyber-razor-bottom::after {
+  bottom: 0;
+  transform: translateY(10px) rotate(180deg);
+}
+
+/* CRT effects */
+.crt-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-effect::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crt-effect::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  z-index: 2;
+  animation: flicker 0.15s infinite;
+  pointer-events: none;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.3; }
+  50% { opacity: 0; }
+  100% { opacity: 0.3; }
+}
+
+/* Glitch effect animation for cyberpunk buttons */
+@keyframes glitch-effect {
+  0%, 100% {
+    transform: translate(0);
+    filter: none;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.animate-glitch-effect {
+  animation: glitch-effect 0.3s ease-in-out;
+}
+
+.cyberpunk-border::before,
+.cyberpunk-border::after {
+  content: '';
+  position: absolute;
+  background-color: var(--neon-blue);
+}
+
+.cyberpunk-border::before {
+  top: -1px;
+  right: 20px;
+  width: 40px;
+  height: 2px;
+}
+
+.cyberpunk-border::after {
+  bottom: -1px;
+  left: 20px;
+  width: 40px;
+  height: 2px;
+}
+
+.cyberpunk-glow {
+  box-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+}
+
+.cyber-glow-blue {
+  box-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  text-shadow: 0 0 5px rgba(5, 217, 232, 0.3);
+}
+
+.cyber-glow-purple {
+  box-shadow: 0 0 10px rgba(191, 90, 242, 0.5);
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+  text-shadow: 0 0 5px rgba(191, 90, 242, 0.3);
+}
+
+.cyber-glow-teal {
+  box-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
+  border-color: var(--neon-teal);
+  color: var(--neon-teal);
+  text-shadow: 0 0 5px rgba(0, 255, 159, 0.3);
+}
+
+.cyberpunk-text {
+  position: relative;
+  display: inline-block;
+}
+
+.cyberpunk-text::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, var(--neon-blue), transparent);
+}
+
+/* Animation for pulse effects */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s infinite;
+}
+
+/* Animation for stronger pulse effects on hover */
+@keyframes pulse-strong {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-strong {
+  animation: pulse-strong 1.5s infinite;
+}
+
+/* Animation for neon breathing effect */
+@keyframes neon-breathe {
+  0%, 100% { 
+    filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 8px currentColor);
+    text-shadow: 0 0 5px currentColor, 0 0 8px currentColor;
+  }
+  50% { 
+    filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 15px currentColor);
+    text-shadow: 0 0 10px currentColor, 0 0 15px currentColor;
+  }
+}
+
+.animate-neon-breathe {
+  animation: neon-breathe 3s ease-in-out infinite;
+}
+
+/* Shine animation for button highlights */
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+.animate-shine {
+  animation: shine 1.5s ease-in-out;
+}
+
+/* Energy pulse effect animation */
+@keyframes energy-pulse {
+  0% { transform: scale(0.97); opacity: 0.5; }
+  50% { transform: scale(1.03); opacity: 0.8; }
+  100% { transform: scale(0.97); opacity: 0.5; }
+}
+
+.animate-energy-pulse {
+  animation: energy-pulse 2s infinite;
+}
+
+/* Flicker animation for text */
+@keyframes flicker-text {
+  0%, 19.999%, 22%, 62.999%, 64%, 97.999%, 99.999%, 100% {
+    opacity: 0.99;
+  }
+  20%, 21.999%, 63%, 63.999%, 98%, 99.998% {
+    opacity: 0.4;
+  }
+}
+
+.animate-flicker {
+  animation: flicker-text 4s infinite;
+}
+
+/* Glitch effect for text */
+.cyber-glitch {
+  position: relative;
+}
+
+.cyber-glitch::before,
+.cyber-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.cyber-glitch::before {
+  color: #ff00ff;
+  z-index: -1;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.cyber-glitch::after {
+  color: #00ffff;
+  z-index: -2;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(55px, 9999px, 28px, 0); transform: skew(0.15deg); }
+  5% { clip: rect(82px, 9999px, 71px, 0); transform: skew(0.8deg); }
+  10% { clip: rect(53px, 9999px, 7px, 0); transform: skew(0.5deg); }
+  15% { clip: rect(59px, 9999px, 53px, 0); transform: skew(0.1deg); }
+  20% { clip: rect(29px, 9999px, 92px, 0); transform: skew(0.2deg); }
+  25% { clip: rect(56px, 9999px, 42px, 0); transform: skew(0.8deg); }
+  30% { clip: rect(6px, 9999px, 8px, 0); transform: skew(0.7deg); }
+  35% { clip: rect(82px, 9999px, 97px, 0); transform: skew(0.1deg); }
+  40% { clip: rect(89px, 9999px, 98px, 0); transform: skew(0.6deg); }
+  45% { clip: rect(84px, 9999px, 86px, 0); transform: skew(0.5deg); }
+  50% { clip: rect(73px, 9999px, 79px, 0); transform: skew(0.4deg); }
+  55% { clip: rect(2px, 9999px, 79px, 0); transform: skew(0.3deg); }
+  60% { clip: rect(54px, 9999px, 19px, 0); transform: skew(0.2deg); }
+  65% { clip: rect(98px, 9999px, 61px, 0); transform: skew(0.1deg); }
+  70% { clip: rect(64px, 9999px, 30px, 0); transform: skew(0.98deg); }
+  75% { clip: rect(75px, 9999px, 3px, 0); transform: skew(0.15deg); }
+  80% { clip: rect(7px, 9999px, 11px, 0); transform: skew(0.5deg); }
+  85% { clip: rect(35px, 9999px, 54px, 0); transform: skew(0.8deg); }
+  90% { clip: rect(77px, 9999px, 35px, 0); transform: skew(0.3deg); }
+  95% { clip: rect(89px, 9999px, 39px, 0); transform: skew(0.56deg); }
+  100% { clip: rect(66px, 9999px, 92px, 0); transform: skew(0.2deg); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(65px, 9999px, 100px, 0); transform: skew(0.4deg); }
+  5% { clip: rect(59px, 9999px, 93px, 0); transform: skew(0.5deg); }
+  10% { clip: rect(33px, 9999px, 23px, 0); transform: skew(0.6deg); }
+  15% { clip: rect(39px, 9999px, 46px, 0); transform: skew(0.3deg); }
+  20% { clip: rect(68px, 9999px, 51px, 0); transform: skew(0.4deg); }
+  25% { clip: rect(26px, 9999px, 32px, 0); transform: skew(0.5deg); }
+  30% { clip: rect(76px, 9999px, 85px, 0); transform: skew(0.6deg); }
+  35% { clip: rect(22px, 9999px, 75px, 0); transform: skew(0.7deg); }
+  40% { clip: rect(49px, 9999px, 52px, 0); transform: skew(0.8deg); }
+  45% { clip: rect(14px, 9999px, 68px, 0); transform: skew(0.9deg); }
+  50% { clip: rect(13px, 9999px, 59px, 0); transform: skew(0.3deg); }
+  55% { clip: rect(82px, 9999px, 97px, 0); transform: skew(0.4deg); }
+  60% { clip: rect(64px, 9999px, 91px, 0); transform: skew(0.5deg); }
+  65% { clip: rect(78px, 9999px, 81px, 0); transform: skew(0.6deg); }
+  70% { clip: rect(54px, 9999px, 63px, 0); transform: skew(0.7deg); }
+  75% { clip: rect(55px, 9999px, 56px, 0); transform: skew(0.8deg); }
+  80% { clip: rect(57px, 9999px, 44px, 0); transform: skew(0.9deg); }
+  85% { clip: rect(15px, 9999px, 14px, 0); transform: skew(0.3deg); }
+  90% { clip: rect(17px, 9999px, 16px, 0); transform: skew(0.4deg); }
+  95% { clip: rect(19px, 9999px, 28px, 0); transform: skew(0.5deg); }
+  100% { clip: rect(36px, 9999px, 31px, 0); transform: skew(0.6deg); }
+}
+
+/* Cyberpunk theme base styles */
+.cyberpunk-theme {
+  --glow-color: var(--cyberpunk-primary);
+  --glow-spread: 2px;
+  --glow-blur: 5px;
+  --glow-intensity: var(--cyberpunk-glow-intensity);
+  --animation-speed: var(--cyberpunk-animation-speed);
+  --pulse-color: var(--neon-blue);
+  --pulse-color-alt: var(--neon-purple);
+  --hologram-primary: rgba(5, 217, 232, 0.7);
+  --hologram-secondary: rgba(191, 90, 242, 0.5);
+  --glitch-strength: 1;
+}
+
+/* Scanline Effect */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 51%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 50;
+  mix-blend-mode: overlay;
+}
+
+/* Fallback for browsers that don't support mix-blend-mode */
+@supports not (mix-blend-mode: overlay) {
+  .scanlines::before {
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 0, 0, 0.05) 51%
+    );
+    opacity: 0.3;
+  }
+}
+
+/* Neon Text Effect */
+.neon-text {
+  color: var(--glow-color);
+  text-shadow: 0 0 calc(var(--glow-blur) * var(--glow-intensity)) 
+               rgba(var(--glow-color-rgb), calc(0.8 * var(--glow-intensity)));
+}
+
+/* Enhanced Cyber Button Styles */
+.cyber-button-glitch {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cyber-button:hover .cyber-button-glitch {
+  opacity: 0.05;
+  animation: glitch-button 0.3s infinite alternate;
+}
+
+@keyframes glitch-button {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.cyber-button-shine {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.cyber-button:hover .cyber-button-shine {
+  left: 150%;
+  transition: left 1s ease;
+}
+
+/* GitHub-inspired spacing utilities (Primer CSS inspired) */
+.gh-container {
+  max-width: 1280px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* GitHub's Base 8 spacing system */
+/* Padding utilities */
+.gh-p-1 { padding: 4px !important; }
+.gh-p-2 { padding: 8px !important; }
+.gh-p-3 { padding: 16px !important; }
+.gh-p-4 { padding: 24px !important; }
+.gh-p-5 { padding: 32px !important; }
+
+.gh-py-1 { padding-top: 4px !important; padding-bottom: 4px !important; }
+.gh-py-2 { padding-top: 8px !important; padding-bottom: 8px !important; }
+.gh-py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
+.gh-py-4 { padding-top: 24px !important; padding-bottom: 24px !important; }
+.gh-py-5 { padding-top: 32px !important; padding-bottom: 32px !important; }
+
+.gh-px-1 { padding-left: 4px !important; padding-right: 4px !important; }
+.gh-px-2 { padding-left: 8px !important; padding-right: 8px !important; }
+.gh-px-3 { padding-left: 16px !important; padding-right: 16px !important; }
+.gh-px-4 { padding-left: 24px !important; padding-right: 24px !important; }
+.gh-px-5 { padding-left: 32px !important; padding-right: 32px !important; }
+
+.gh-pt-1 { padding-top: 4px !important; }
+.gh-pt-2 { padding-top: 8px !important; }
+.gh-pt-3 { padding-top: 16px !important; }
+.gh-pt-4 { padding-top: 24px !important; }
+.gh-pt-5 { padding-top: 32px !important; }
+
+.gh-pb-1 { padding-bottom: 4px !important; }
+.gh-pb-2 { padding-bottom: 8px !important; }
+.gh-pb-3 { padding-bottom: 16px !important; }
+.gh-pb-4 { padding-bottom: 24px !important; }
+.gh-pb-5 { padding-bottom: 32px !important; }
+
+.gh-pl-1 { padding-left: 4px !important; }
+.gh-pl-2 { padding-left: 8px !important; }
+.gh-pl-3 { padding-left: 16px !important; }
+.gh-pl-4 { padding-left: 24px !important; }
+.gh-pl-5 { padding-left: 32px !important; }
+
+.gh-pr-1 { padding-right: 4px !important; }
+.gh-pr-2 { padding-right: 8px !important; }
+.gh-pr-3 { padding-right: 16px !important; }
+.gh-pr-4 { padding-right: 24px !important; }
+.gh-pr-5 { padding-right: 32px !important; }
+
+/* Margin utilities */
+.gh-m-1 { margin: 4px !important; }
+.gh-m-2 { margin: 8px !important; }
+.gh-m-3 { margin: 16px !important; }
+.gh-m-4 { margin: 24px !important; }
+.gh-m-5 { margin: 32px !important; }
+
+.gh-my-1 { margin-top: 4px !important; margin-bottom: 4px !important; }
+.gh-my-2 { margin-top: 8px !important; margin-bottom: 8px !important; }
+.gh-my-3 { margin-top: 16px !important; margin-bottom: 16px !important; }
+.gh-my-4 { margin-top: 24px !important; margin-bottom: 24px !important; }
+.gh-my-5 { margin-top: 32px !important; margin-bottom: 32px !important; }
+
+.gh-mx-1 { margin-left: 4px !important; margin-right: 4px !important; }
+.gh-mx-2 { margin-left: 8px !important; margin-right: 8px !important; }
+.gh-mx-3 { margin-left: 16px !important; margin-right: 16px !important; }
+.gh-mx-4 { margin-left: 24px !important; margin-right: 24px !important; }
+.gh-mx-5 { margin-left: 32px !important; margin-right: 32px !important; }
+
+.gh-mt-1 { margin-top: 4px !important; }
+.gh-mt-2 { margin-top: 8px !important; }
+.gh-mt-3 { margin-top: 16px !important; }
+.gh-mt-4 { margin-top: 24px !important; }
+.gh-mt-5 { margin-top: 32px !important; }
+
+.gh-mb-1 { margin-bottom: 4px !important; }
+.gh-mb-2 { margin-bottom: 8px !important; }
+.gh-mb-3 { margin-bottom: 16px !important; }
+.gh-mb-4 { margin-bottom: 24px !important; }
+.gh-mb-5 { margin-bottom: 32px !important; }
+
+.gh-mr-1 { margin-right: 4px !important; }
+.gh-mr-2 { margin-right: 8px !important; }
+.gh-mr-3 { margin-right: 16px !important; }
+.gh-mr-4 { margin-right: 24px !important; }
+.gh-mr-5 { margin-right: 32px !important; }
+
+.gh-ml-1 { margin-left: 4px !important; }
+.gh-ml-2 { margin-left: 8px !important; }
+.gh-ml-3 { margin-left: 16px !important; }
+.gh-ml-4 { margin-left: 24px !important; }
+.gh-ml-5 { margin-left: 32px !important; }
+
+/* Gap utilities */
+.gh-gap-1 { gap: 4px !important; }
+.gh-gap-2 { gap: 8px !important; }
+.gh-gap-3 { gap: 16px !important; }
+.gh-gap-4 { gap: 24px !important; }
+.gh-gap-5 { gap: 32px !important; }
+
+/* GitHub color palette */
+.gh-text-primary { color: #c9d1d9 !important; }
+.gh-text-secondary { color: #8b949e !important; }
+.gh-text-link { color: #58a6ff !important; }
+.gh-text-success { color: #56d364 !important; }
+.gh-text-warning { color: #e3b341 !important; }
+.gh-text-danger { color: #f85149 !important; }
+
+.gh-bg-canvas { background-color: #0d1117 !important; }
+.gh-bg-canvas-subtle { background-color: #161b22 !important; }
+.gh-bg-canvas-inset { background-color: #010409 !important; }
+.gh-bg-success { background-color: #238636 !important; }
+.gh-bg-danger { background-color: #da3633 !important; }
+
+.gh-border-subtle { border-color: #30363d !important; }
+.gh-border-success { border-color: #238636 !important; }
+.gh-border-danger { border-color: #da3633 !important; }
+
+/* GitHub text for SVG elements */
+svg.gh-text-primary { fill: #c9d1d9 !important; }
+svg.gh-text-secondary { fill: #8b949e !important; }
+svg.gh-text-link { fill: #58a6ff !important; }
+svg.gh-text-success { fill: #56d364 !important; }
+svg.gh-text-warning { fill: #e3b341 !important; }
+svg.gh-text-danger { fill: #f85149 !important; }
+
+/* GitHub button sizes - exact dimensions */
+.gh-btn-sm {
+  height: 28px !important;
+  padding: 3px 12px !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.gh-btn-md {
+  height: 32px !important;
+  padding: 5px 16px !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Mobile and responsive optimizations */
+@media (max-width: 768px) {
+  :root {
+    --cyberpunk-glow-intensity: 0.7; /* Reduce glow on mobile */
+    --cyberpunk-animation-speed: 0.8; /* Slow down animations */
+  }
+
+  /* Optimize performance by simplifying effects */
+  .scanlines::before {
+    background-size: 100% 6px; /* Larger scanlines are less resource-intensive */
+  }
+
+  /* GitHub container on mobile */
+  .gh-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Reduce some visual effects */
+  .cyberpunk-border::before,
+  .cyberpunk-border::after {
+    width: 20px; /* Smaller border elements */
+  }
+}
+
+/* Small screens */
+@media (max-width: 640px) {
+  /* Further reduce effects on very small screens */
+  .cyber-radial-bg {
+    background: var(--cyberpunk-dark);
+  }
+
+  /* Simplify animations for better performance */
+  .animate-pulse-subtle,
+  .animate-pulse-strong,
+  .animate-energy-pulse,
+  .animate-neon-breathe {
+    animation: none;
+  }
+
+  /* Adjust card layouts for small screens */
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* GitHub container on small mobile */
+  .gh-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* Medium to large screens - optimize layout for Git-like centered appearance */
+@media (min-width: 769px) and (max-width: 1280px) {
+  /* GitHub container on medium screens */
+  .gh-container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* Extra large screens - prevent content from becoming too stretched */
+@media (min-width: 1281px) {
+  .gh-container {
+    max-width: 1280px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Cyberpunk UI Components */
+.cyberpunk-card {
+  position: relative;
+  background-color: rgba(11, 11, 22, 0.7);
+  border: 1px solid rgba(5, 217, 232, 0.5);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Card glow effect with fallbacks */
+.cyberpunk-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 217, 232, 0.15);
+  filter: blur(15px);
+  z-index: -1;
+  opacity: var(--glow-intensity);
+}
+
+/* Enhanced interactive states across browsers */
+.cyberpunk-button {
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+  border: 1px solid var(--cyberpunk-primary);
+  color: var(--cyberpunk-primary);
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  font-family: var(--font-rajdhani), ui-sans-serif, system-ui, sans-serif;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.neon-gradient-pink-purple {
+  background: linear-gradient(to right, var(--neon-pink), var(--neon-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 8px rgba(var(--neon-pink-rgb), 0.3);
+}
+
+/* Cyber badge styles for wallet connection status */
+.cyber-badge-success {
+  @apply inline-flex items-center py-1 px-3 bg-gradient-to-r from-emerald-900/50 to-black border border-emerald-500 text-emerald-400 rounded-md;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.cyber-badge-success::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.cyber-badge-success::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.8), rgba(16, 185, 129, 0.3));
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Cyber badge for pending status */
+.cyber-badge-pending {
+  @apply inline-flex items-center py-1 px-3 bg-gradient-to-r from-amber-900/50 to-black border border-amber-500 text-amber-400 rounded-md;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.cyber-badge-pending::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.cyber-badge-pending::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.8), rgba(245, 158, 11, 0.3));
+}

@@ -1,0 +1,209 @@
+/* 
+ * Mobile-optimized cyberpunk theme styling
+ * This CSS is designed for optimal mobile performance while maintaining the cyberpunk aesthetic
+ */
+
+@media (max-width: 768px) {
+  /* Root variables that change based on intensity level */
+  :root {
+    --mobile-animation-speed: 1;
+    --mobile-glow-intensity: 0.5;
+    --mobile-blur-radius: 5px;
+    --mobile-primary-color: #05d9e8;
+    --mobile-secondary-color: #ff2a6d;
+    --mobile-accent-color: #00ff9f;
+  }
+
+  /* Variable intensity classes */
+  .cyberpunk-low {
+    --mobile-animation-speed: 0.5;
+    --mobile-glow-intensity: 0.2;
+    --mobile-blur-radius: 2px;
+  }
+
+  .cyberpunk-medium {
+    --mobile-animation-speed: 0.7;
+    --mobile-glow-intensity: 0.5;
+    --mobile-blur-radius: 5px;
+  }
+
+  .cyberpunk-high {
+    --mobile-animation-speed: 1;
+    --mobile-glow-intensity: 0.7;
+    --mobile-blur-radius: 8px;
+  }
+
+  /* Optimized text styles */
+  .cyberpunk-text {
+    color: var(--mobile-primary-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(5, 217, 232, calc(0.2 * var(--mobile-glow-intensity)));
+  }
+
+  .cyberpunk-text-highlight {
+    color: var(--mobile-secondary-color);
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-shadow: 0 0 5px rgba(255, 42, 109, calc(0.2 * var(--mobile-glow-intensity)));
+  }
+
+  /* Optimized scanlines */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(5, 217, 232, calc(0.03 * var(--mobile-glow-intensity))) 0px,
+      rgba(5, 217, 232, calc(0.03 * var(--mobile-glow-intensity))) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    background-size: 100% 4px;
+    animation: scanline-scroll calc(10s / var(--mobile-animation-speed)) linear infinite;
+    opacity: calc(0.1 * var(--mobile-glow-intensity));
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes scanline-scroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+  }
+
+  /* Optimize flicker animations */
+  .flicker-text {
+    animation: text-flicker calc(4s / var(--mobile-animation-speed)) infinite alternate;
+  }
+
+  @keyframes text-flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 97.999%, 99.999%, 100% {
+      opacity: 0.99;
+      text-shadow: 0 0 4px rgba(5, 217, 232, calc(0.2 * var(--mobile-glow-intensity)));
+    }
+    20%, 21.999%, 63%, 63.999%, 98%, 99.998% {
+      opacity: 0.4;
+      text-shadow: none;
+    }
+  }
+
+  /* Optimized neon elements */
+  .neon-border {
+    border: 1px solid rgba(5, 217, 232, calc(0.4 * var(--mobile-glow-intensity)));
+    box-shadow: 0 0 var(--mobile-blur-radius) rgba(5, 217, 232, calc(0.3 * var(--mobile-glow-intensity)));
+  }
+
+  .neon-border-pink {
+    border: 1px solid rgba(255, 42, 109, calc(0.4 * var(--mobile-glow-intensity)));
+    box-shadow: 0 0 var(--mobile-blur-radius) rgba(255, 42, 109, calc(0.3 * var(--mobile-glow-intensity)));
+  }
+
+  .neon-border-green {
+    border: 1px solid rgba(0, 255, 159, calc(0.4 * var(--mobile-glow-intensity)));
+    box-shadow: 0 0 var(--mobile-blur-radius) rgba(0, 255, 159, calc(0.3 * var(--mobile-glow-intensity)));
+  }
+
+  /* Optimized cyber glitch effect - only used for highlights, not continuous */
+  .glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  .cyber-glitch-active .glitch-text::before,
+  .cyber-glitch-active .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+
+  .cyber-glitch-active .glitch-text::before {
+    color: var(--mobile-primary-color);
+    z-index: -1;
+    transform: translateX(-2px);
+    animation: glitch-anim-1 250ms linear infinite alternate-reverse;
+  }
+
+  .cyber-glitch-active .glitch-text::after {
+    color: var(--mobile-secondary-color);
+    z-index: -2;
+    transform: translateX(2px);
+    animation: glitch-anim-2 250ms linear infinite alternate-reverse;
+  }
+
+  @keyframes glitch-anim-1 {
+    0% { transform: translate(0); }
+    30% { transform: translate(-1px, 1px); }
+    60% { transform: translate(-2px, -1px); }
+    100% { transform: translate(1px, -1px); }
+  }
+
+  @keyframes glitch-anim-2 {
+    0% { transform: translate(0); }
+    30% { transform: translate(1px, -1px); }
+    60% { transform: translate(2px, 1px); }
+    100% { transform: translate(-1px, 1px); }
+  }
+
+  /* Touch-friendly interactive elements */
+  .cyber-touch-element {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+
+  .cyber-touch-element:active {
+    transform: scale(0.98) translateY(1px);
+  }
+
+  /* Optimized page transitions */
+  .cyber-page-transition {
+    animation: cyber-fade-in 0.4s ease-out;
+  }
+
+  @keyframes cyber-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Text legibility optimizations for mobile */
+  .cyber-readable-text {
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+    text-shadow: none; /* Remove text shadow for better readability */
+  }
+
+  /* Optimize form element focus states for touch */
+  .cyber-input:focus {
+    border-color: var(--mobile-primary-color);
+    box-shadow: 0 0 0 1px var(--mobile-primary-color);
+    outline: none;
+  }
+
+  /* Reduce motion when the user has requested it */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .scanlines, .flicker-text, .cyber-glitch-active .glitch-text::before, 
+    .cyber-glitch-active .glitch-text::after {
+      animation: none !important;
+    }
+  }
+
+  /* Battery saving mode */
+  @media (prefers-color-scheme: dark) and (max-width: 768px) {
+    .battery-saving-mode {
+      --mobile-animation-speed: 0.1;
+      --mobile-glow-intensity: 0.1;
+      --mobile-blur-radius: 0px;
+    }
+  }
+}

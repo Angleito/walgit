@@ -1,0 +1,16 @@
+{
+  "network": "testnet",
+  "owner": "0xca793690985183dc8e2180fd059d76f3b0644f5c2ecd3b01cdebe7d40b0cca39",
+  "site_name": "walgit-frontend",
+  "metadata": {
+    "link": "https://angleito.github.io/walgit",
+    "name": "WalGit Frontend",
+    "description": "WalGit - Git Powered by Walrus Storage Protocol",
+    "project_url": "https://github.com/Angleito/walgit",
+    "creator": "Angleito"
+  },
+  "epochs": 30,
+  "path": "/home/runner/work/walgit/walgit/WalGit-frontend/dist",
+  "gas_budget": 100000000,
+  "write_retry_limit": 3
+} 

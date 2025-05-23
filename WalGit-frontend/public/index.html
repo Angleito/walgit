@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WalGit - Decentralized Version Control</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <header>
+      <div class="grid-bg"></div>
+      <h1 class="logo" data-text="WalGit">WalGit</h1>
+      <p class="subtitle">Decentralized Version Control Powered by Blockchain Technology</p>
+    </header>
+    
+    <div class="header-graphic">
+      <img src="/walgitlogo.png" alt="WalGit Interface" onerror="this.src='/walgitv3.png'; this.onerror=null;">
+      <div class="overlay"></div>
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+      <div class="scanner"></div>
+    </div>
+    
+    <div class="card-grid">
+      <div class="card">
+        <h2>Decentralized Storage</h2>
+        <p>Store your code securely across distributed networks with multi-tier optimization for different code components.</p>
+        <ul class="feature-list">
+          <li class="feature-item">Blockchain-powered repositories</li>
+          <li class="feature-item">Distributed file storage</li>
+          <li class="feature-item">Optimized blob compression</li>
+        </ul>
+      </div>
+      
+      <div class="card purple">
+        <h2>Blockchain Security</h2>
+        <p>Immutable commit history with cryptographic verification on the Sui blockchain for maximum code integrity.</p>
+        <ul class="feature-list">
+          <li class="feature-item">Cryptographically secured commits</li>
+          <li class="feature-item">Smart contract validation</li>
+          <li class="feature-item">Transparent history</li>
+        </ul>
+      </div>
+      
+      <div class="card teal">
+        <h2>Modern Collaboration</h2>
+        <p>Seamless code review process with built-in conflict resolution and parallel transaction handling.</p>
+        <ul class="feature-list">
+          <li class="feature-item">Advanced merge strategies</li>
+          <li class="feature-item">Pull request automation</li>
+          <li class="feature-item">Code review workflows</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <a href="#" class="btn">Create Repository</a>
+      <a href="#" class="btn btn-purple">Explore Projects</a>
+      <a href="#" class="btn btn-teal">View Documentation</a>
+    </div>
+  </div>
+
+  <script>
+    // Simple animation for the cards
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.card');
+      
+      // Slightly delayed appearance of cards
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+      
+      // Interactive hover effects
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          // Calculate the position for the glow effect
+          const glowX = (x / rect.width) * 100;
+          const glowY = (y / rect.height) * 100;
+          
+          // Apply a subtle gradient based on mouse position
+          card.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(11, 11, 22, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.background = 'rgba(0, 0, 0, 0.3)';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

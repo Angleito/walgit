@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repositories - WalGit</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .repo-list {
+      margin-top: 2rem;
+    }
+    
+    .repo-card {
+      background-color: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--neon-blue);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+      transition: all 0.3s ease;
+      clip-path: polygon(
+        0 10px,
+        10px 0,
+        calc(100% - 10px) 0,
+        100% 10px,
+        100% calc(100% - 10px),
+        calc(100% - 10px) 100%,
+        10px 100%,
+        0 calc(100% - 10px)
+      );
+    }
+    
+    .repo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
+    }
+    
+    .repo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .repo-name {
+      color: var(--neon-blue);
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    
+    .repo-owner {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+    
+    .repo-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .repo-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .repo-description {
+      margin-bottom: 1rem;
+      color: var(--text-light);
+    }
+    
+    .repo-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .repo-tag {
+      background-color: rgba(5, 217, 232, 0.1);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 2px;
+    }
+    
+    .repo-tag.purple {
+      background-color: rgba(191, 90, 242, 0.1);
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+    }
+    
+    .repo-tag.teal {
+      background-color: rgba(0, 255, 159, 0.1);
+      border-color: var(--neon-teal);
+      color: var(--neon-teal);
+    }
+    
+    .repo-filter {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+    
+    .filter-btn {
+      background-color: transparent;
+      border: 1px solid var(--text-dim);
+      color: var(--text-dim);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+      border-color: var(--neon-blue);
+      color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+    }
+    
+    .search-container {
+      position: relative;
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      padding-left: 2.5rem;
+      background-color: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--text-dim);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      border: 1px solid var(--text-dim);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .page-btn.active, .page-btn:hover {
+      border-color: var(--neon-blue);
+      color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <header>
+      <div class="grid-bg"></div>
+      <h1 class="logo" data-text="Repositories">Repositories</h1>
+      <p class="subtitle">Discover and explore blockchain-powered Git repositories</p>
+    </header>
+    
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search repositories...">
+      <div class="search-icon">🔍</div>
+    </div>
+    
+    <div class="repo-filter">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Starred</button>
+      <button class="filter-btn">Popular</button>
+      <button class="filter-btn">Recently Updated</button>
+    </div>
+    
+    <div class="repo-list">
+      <!-- Repository 1 -->
+      <div class="repo-card">
+        <div class="repo-header">
+          <div>
+            <h3 class="repo-name">walgit-core</h3>
+            <div class="repo-owner">by SuiFoundation</div>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat">👁️ 245</div>
+            <div class="repo-stat">⭐ 128</div>
+            <div class="repo-stat">🔄 36</div>
+          </div>
+        </div>
+        <p class="repo-description">
+          Core implementation of the WalGit distributed version control system for blockchain integration.
+        </p>
+        <div class="repo-tags">
+          <span class="repo-tag">blockchain</span>
+          <span class="repo-tag">git</span>
+          <span class="repo-tag">sui</span>
+          <span class="repo-tag purple">featured</span>
+        </div>
+      </div>
+      
+      <!-- Repository 2 -->
+      <div class="repo-card">
+        <div class="repo-header">
+          <div>
+            <h3 class="repo-name">walgit-client</h3>
+            <div class="repo-owner">by web3dev</div>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat">👁️ 189</div>
+            <div class="repo-stat">⭐ 94</div>
+            <div class="repo-stat">🔄 27</div>
+          </div>
+        </div>
+        <p class="repo-description">
+          Client-side implementation and CLI tools for interacting with WalGit repositories.
+        </p>
+        <div class="repo-tags">
+          <span class="repo-tag">javascript</span>
+          <span class="repo-tag">cli</span>
+          <span class="repo-tag">client</span>
+        </div>
+      </div>
+      
+      <!-- Repository 3 -->
+      <div class="repo-card">
+        <div class="repo-header">
+          <div>
+            <h3 class="repo-name">walgit-frontend</h3>
+            <div class="repo-owner">by Angleito</div>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat">👁️ 156</div>
+            <div class="repo-stat">⭐ 87</div>
+            <div class="repo-stat">🔄 19</div>
+          </div>
+        </div>
+        <p class="repo-description">
+          Web interface for WalGit with repository management, code browsing, and collaboration features.
+        </p>
+        <div class="repo-tags">
+          <span class="repo-tag">typescript</span>
+          <span class="repo-tag">react</span>
+          <span class="repo-tag">nextjs</span>
+          <span class="repo-tag teal">ui</span>
+        </div>
+      </div>
+      
+      <!-- Repository 4 -->
+      <div class="repo-card">
+        <div class="repo-header">
+          <div>
+            <h3 class="repo-name">enhanced-walrus-integration</h3>
+            <div class="repo-owner">by storage-labs</div>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat">👁️ 112</div>
+            <div class="repo-stat">⭐ 64</div>
+            <div class="repo-stat">🔄 12</div>
+          </div>
+        </div>
+        <p class="repo-description">
+          Advanced integration with Walrus storage for optimized blob storage and retrieval in WalGit.
+        </p>
+        <div class="repo-tags">
+          <span class="repo-tag">storage</span>
+          <span class="repo-tag">optimization</span>
+          <span class="repo-tag">walrus</span>
+        </div>
+      </div>
+      
+      <!-- Repository 5 -->
+      <div class="repo-card">
+        <div class="repo-header">
+          <div>
+            <h3 class="repo-name">walgit-docs</h3>
+            <div class="repo-owner">by docs-team</div>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat">👁️ 98</div>
+            <div class="repo-stat">⭐ 41</div>
+            <div class="repo-stat">🔄 23</div>
+          </div>
+        </div>
+        <p class="repo-description">
+          Comprehensive documentation for the WalGit ecosystem, including guides, tutorials, and API references.
+        </p>
+        <div class="repo-tags">
+          <span class="repo-tag">documentation</span>
+          <span class="repo-tag">markdown</span>
+          <span class="repo-tag teal">beginner-friendly</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">4</button>
+      <button class="page-btn">5</button>
+      <button class="page-btn">→</button>
+    </div>
+    
+    <div class="actions">
+      <a href="/" class="btn">Back to Home</a>
+      <a href="#" class="btn btn-purple">Create Repository</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate repository cards on load
+      const repoCards = document.querySelectorAll('.repo-card');
+      
+      repoCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+          card.style.transition = 'all 0.3s ease';
+        }, 100 * index);
+      });
+      
+      // Filter buttons
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove active class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          // Add active class to clicked button
+          button.classList.add('active');
+        });
+      });
+      
+      // Pagination buttons
+      const pageButtons = document.querySelectorAll('.page-btn');
+      
+      pageButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove active class from all buttons
+          pageButtons.forEach(btn => btn.classList.remove('active'));
+          // Add active class to clicked button
+          button.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

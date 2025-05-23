@@ -1,0 +1,58 @@
+{
+  "name": "walgit",
+  "version": "0.1.0",
+  "description": "Decentralized, self-controlled version control powered by Sui and Walrus",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "walgit-frontend",
+    "walgit-backend"
+  ],
+  "scripts": {
+    "dev": "./start-dev.sh",
+    "test": "./test-walgit.sh",
+    "setup": "npm install && cd walgit-frontend && npm install && cd ../walgit-backend && npm install && cd ..",
+    "build": "cd walgit-frontend && npm run build",
+    "start": "cd walgit-frontend && npm start",
+    "frontend": "cd walgit-frontend && npm run dev",
+    "cli": "cd walgit-backend/cli && node bin/walgit.js",
+    "lint": "cd walgit-frontend && npm run lint",
+    "clean": "rm -rf node_modules walgit-frontend/node_modules walgit-backend/node_modules walgit-frontend/.next",
+    "contracts:build": "cd move && sui move build",
+    "contracts:test": "cd move && sui move test"
+  },
+  "bin": {
+    "walgit": "walgit-backend/cli/bin/walgit.js"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit": "^0.16.2",
+    "@mysten/sui.js": "^0.54.1",
+    "@tanstack/react-query": "^5.74.4",
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.14.1",
+    "jest": "^29.6.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "git",
+    "version-control",
+    "decentralized",
+    "sui",
+    "walrus",
+    "seal",
+    "encryption",
+    "blockchain"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/walgit.git"
+  }
+}

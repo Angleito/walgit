@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>walgit-client - Repository Details</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .repo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .repo-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .repo-icon {
+      font-size: 1.5rem;
+    }
+    
+    .repo-name {
+      color: var(--neon-blue);
+      font-size: 2rem;
+      margin: 0;
+    }
+    
+    .repo-owner {
+      font-size: 1rem;
+      color: var(--text-dim);
+    }
+    
+    .repo-stats {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 1rem;
+    }
+    
+    .repo-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .repo-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .small-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: transparent;
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .small-btn:hover {
+      background-color: rgba(5, 217, 232, 0.1);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+    }
+    
+    .small-btn.purple {
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+    }
+    
+    .small-btn.purple:hover {
+      background-color: rgba(191, 90, 242, 0.1);
+      box-shadow: 0 0 10px rgba(191, 90, 242, 0.3);
+    }
+    
+    .small-btn.teal {
+      border-color: var(--neon-teal);
+      color: var(--neon-teal);
+    }
+    
+    .small-btn.teal:hover {
+      background-color: rgba(0, 255, 159, 0.1);
+      box-shadow: 0 0 10px rgba(0, 255, 159, 0.3);
+    }
+    
+    .repo-nav {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+    
+    .nav-item {
+      padding: 0.75rem 1.25rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-item.active {
+      color: var(--neon-blue);
+    }
+    
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+    }
+    
+    .nav-item:hover {
+      color: var(--text-light);
+    }
+    
+    .repo-content {
+      background-color: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(5, 217, 232, 0.3);
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(5, 217, 232, 0.1);
+    }
+    
+    .file-browser {
+      width: 100%;
+    }
+    
+    .file-item {
+      display: flex;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .file-item:hover {
+      background-color: rgba(5, 217, 232, 0.05);
+    }
+    
+    .file-icon {
+      margin-right: 1rem;
+      color: var(--text-dim);
+    }
+    
+    .file-name {
+      flex: 1;
+      color: var(--text-light);
+    }
+    
+    .file-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .file-name a:hover {
+      color: var(--neon-blue);
+    }
+    
+    .file-meta {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    
+    .branch-selector {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    
+    .branch-display {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(5, 217, 232, 0.3);
+      color: var(--text-light);
+      background-color: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      width: fit-content;
+    }
+    
+    .commit-list {
+      margin-top: 1.5rem;
+    }
+    
+    .commit-item {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .commit-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--neon-blue);
+      opacity: 0.3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .commit-details {
+      flex: 1;
+    }
+    
+    .commit-message {
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .commit-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    
+    .commit-hash {
+      font-family: monospace;
+      color: var(--neon-purple);
+    }
+    
+    .repo-about {
+      margin-top: 2rem;
+    }
+    
+    .readme-title {
+      color: var(--text-light);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .readme-content {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+    
+    .readme-content h2 {
+      color: var(--neon-blue);
+      margin-top: 1.5rem;
+    }
+    
+    .readme-content code {
+      font-family: monospace;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+    }
+    
+    .readme-content pre {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow-x: auto;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+      color: var(--neon-blue);
+      text-decoration: none;
+    }
+    
+    .breadcrumb .separator {
+      margin: 0 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span class="separator">/</span>
+      <a href="/repositories.html">Repositories</a>
+      <span class="separator">/</span>
+      <span>walgit-client</span>
+    </div>
+    
+    <div class="repo-header">
+      <div>
+        <div class="repo-title">
+          <span class="repo-icon">📦</span>
+          <h1 class="repo-name">walgit-client</h1>
+        </div>
+        <div class="repo-owner">by web3dev</div>
+      </div>
+      
+      <div class="repo-stats">
+        <div class="repo-stat">👁️ 189 Watchers</div>
+        <div class="repo-stat">⭐ 94 Stars</div>
+        <div class="repo-stat">🔄 27 Forks</div>
+      </div>
+    </div>
+    
+    <div class="repo-actions">
+      <button class="small-btn">
+        <span>⭐</span> Star
+      </button>
+      <button class="small-btn purple">
+        <span>🔄</span> Fork
+      </button>
+      <button class="small-btn teal">
+        <span>⬇️</span> Clone
+      </button>
+    </div>
+    
+    <div class="repo-nav">
+      <a href="#" class="nav-item active">Code</a>
+      <a href="#" class="nav-item">Issues (24)</a>
+      <a href="#" class="nav-item">Pull Requests (7)</a>
+      <a href="#" class="nav-item">Actions</a>
+      <a href="#" class="nav-item">Projects</a>
+      <a href="#" class="nav-item">Wiki</a>
+      <a href="#" class="nav-item">Security</a>
+      <a href="#" class="nav-item">Insights</a>
+    </div>
+    
+    <div class="branch-selector">
+      <div class="branch-display">
+        <span>🔀</span> main
+      </div>
+    </div>
+    
+    <div class="repo-content">
+      <div class="file-browser">
+        <div class="file-item">
+          <span class="file-icon">📁</span>
+          <span class="file-name"><a href="#">cli</a></span>
+          <span class="file-meta">Last updated 2 days ago</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📁</span>
+          <span class="file-name"><a href="#">src</a></span>
+          <span class="file-meta">Last updated 5 days ago</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📁</span>
+          <span class="file-name"><a href="#">test</a></span>
+          <span class="file-meta">Last updated 1 week ago</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📄</span>
+          <span class="file-name"><a href="#">.gitignore</a></span>
+          <span class="file-meta">386 bytes</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📄</span>
+          <span class="file-name"><a href="#">LICENSE</a></span>
+          <span class="file-meta">MIT License</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📄</span>
+          <span class="file-name"><a href="#">README.md</a></span>
+          <span class="file-meta">2.4 KB</span>
+        </div>
+        <div class="file-item">
+          <span class="file-icon">📄</span>
+          <span class="file-name"><a href="#">package.json</a></span>
+          <span class="file-meta">1.2 KB</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="repo-about">
+      <h2 class="readme-title">README.md</h2>
+      <div class="readme-content">
+        <h1>WalGit Client</h1>
+        <p>
+          Client-side implementation and CLI tools for interacting with WalGit repositories on the Sui blockchain.
+        </p>
+        
+        <h2>Features</h2>
+        <ul>
+          <li>Full Git-compatible command line interface</li>
+          <li>Blockchain transaction management with retry and batching</li>
+          <li>Multi-tier storage optimization for different code components</li>
+          <li>Credential management with secure key storage</li>
+          <li>Advanced merge strategies with conflict resolution</li>
+        </ul>
+        
+        <h2>Installation</h2>
+        <pre><code>npm install -g walgit-client</code></pre>
+        
+        <h2>Usage</h2>
+        <pre><code>walgit init
+walgit add .
+walgit commit -m "Initial commit"
+walgit push</code></pre>
+        
+        <p>See the <a href="#">documentation</a> for complete usage instructions.</p>
+        
+        <h2>Contributing</h2>
+        <p>
+          Contributions are welcome! Please check out our <a href="#">contribution guidelines</a> before getting started.
+        </p>
+      </div>
+    </div>
+    
+    <h2>Recent Commits</h2>
+    <div class="commit-list">
+      <div class="commit-item">
+        <div class="commit-avatar">W</div>
+        <div class="commit-details">
+          <div class="commit-message">Add multi-tier blob storage for optimized performance</div>
+          <div class="commit-meta">
+            <span>web3dev committed 2 days ago</span>
+            <span class="commit-hash">83cf2a9</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="commit-item">
+        <div class="commit-avatar">S</div>
+        <div class="commit-details">
+          <div class="commit-message">Implement credential manager with secure key storage</div>
+          <div class="commit-meta">
+            <span>suiDev committed 5 days ago</span>
+            <span class="commit-hash">47b1d3e</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="commit-item">
+        <div class="commit-avatar">W</div>
+        <div class="commit-details">
+          <div class="commit-message">Fix transaction batching for improved performance</div>
+          <div class="commit-meta">
+            <span>web3dev committed 1 week ago</span>
+            <span class="commit-hash">9a2c18f</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <a href="/repositories.html" class="btn">Back to Repositories</a>
+      <a href="#" class="btn btn-purple">Create Issue</a>
+      <a href="#" class="btn btn-teal">Clone Repository</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate file items on load
+      const fileItems = document.querySelectorAll('.file-item');
+      
+      fileItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-10px)';
+        
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateX(0)';
+          item.style.transition = 'all 0.2s ease';
+        }, 50 * index);
+      });
+      
+      // Simulate loading commit items
+      const commitItems = document.querySelectorAll('.commit-item');
+      
+      commitItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transition = 'opacity 0.3s ease';
+        }, 300 + (100 * index));
+      });
+    });
+  </script>
+</body>
+</html>

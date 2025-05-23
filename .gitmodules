@@ -1,0 +1,4 @@
+[submodule "walrus-sites"]
+	path = walrus-sites
+	url = https://github.com/Angleito/walrus-sites.git
+	branch = mainnet

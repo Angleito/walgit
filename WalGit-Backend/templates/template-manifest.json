@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0",
+  "templates": [
+    {
+      "id": "js-basic",
+      "name": "JavaScript Starter",
+      "description": "Basic Node.js project with modern JavaScript setup",
+      "category": "javascript",
+      "tags": ["node", "javascript", "beginner"],
+      "recommended": true,
+      "files": [
+        {
+          "path": "README.md",
+          "content": "# JavaScript Starter Project\n\nA basic Node.js project with modern JavaScript setup.\n\n## Features\n\n- ESM modules\n- Jest testing\n- ESLint configuration\n- GitHub Actions CI\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Testing\n\n```bash\nnpm test\n```\n"
+        },
+        {
+          "path": "package.json",
+          "content": "{\n  \"name\": \"js-starter\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Basic Node.js project with modern JavaScript setup\",\n  \"main\": \"src/index.js\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js\",\n    \"lint\": \"eslint src/**/*.js\",\n    \"dev\": \"node src/index.js\"\n  },\n  \"keywords\": [],\n  \"author\": \"\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {\n    \"jest\": \"^29.0.0\",\n    \"eslint\": \"^8.0.0\"\n  }\n}\n"
+        },
+        {
+          "path": "src/index.js",
+          "content": "// Main entry point for the application\n\nconsole.log('Hello, World!');\n\nexport function add(a, b) {\n  return a + b;\n}\n\nexport function subtract(a, b) {\n  return a - b;\n}\n"
+        },
+        {
+          "path": "src/utils.js",
+          "content": "/**\n * Utility functions for the application\n */\n\n/**\n * Formats a string with placeholders\n * @param {string} template - Template string with {placeholders}\n * @param {Object} values - Values to replace placeholders\n * @returns {string} Formatted string\n */\nexport function format(template, values) {\n  return template.replace(/{([^}]+)}/g, (_, key) => values[key]);\n}\n\n/**\n * Delays execution for specified milliseconds\n * @param {number} ms - Milliseconds to delay\n * @returns {Promise<void>}\n */\nexport function delay(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n"
+        },
+        {
+          "path": "tests/index.test.js",
+          "content": "import { add, subtract } from '../src/index.js';\n\ndescribe('Math functions', () => {\n  test('add should sum two numbers', () => {\n    expect(add(1, 2)).toBe(3);\n    expect(add(-1, 1)).toBe(0);\n  });\n\n  test('subtract should subtract second number from first', () => {\n    expect(subtract(5, 2)).toBe(3);\n    expect(subtract(1, 1)).toBe(0);\n  });\n});\n"
+        },
+        {
+          "path": ".gitignore",
+          "content": "# Dependency directories\nnode_modules/\n\n# Coverage directory\ncoverage/\n\n# Logs\nlogs\n*.log\nnpm-debug.log*\n\n# Environment variables\n.env\n.env.local\n\n# Build outputs\ndist/\nbuild/\n\n# OS specific files\n.DS_Store\nThumbs.db\n"
+        },
+        {
+          "path": ".eslintrc.json",
+          "content": "{\n  \"env\": {\n    \"node\": true,\n    \"es2021\": true,\n    \"jest\": true\n  },\n  \"extends\": \"eslint:recommended\",\n  \"parserOptions\": {\n    \"ecmaVersion\": 2022,\n    \"sourceType\": \"module\"\n  },\n  \"rules\": {\n    \"indent\": [\"error\", 2],\n    \"linebreak-style\": [\"error\", \"unix\"],\n    \"quotes\": [\"error\", \"single\"],\n    \"semi\": [\"error\", \"always\"]\n  }\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "move-basic",
+      "name": "Sui Move Project",
+      "description": "Basic Sui Move smart contract project",
+      "category": "move",
+      "tags": ["sui", "move", "blockchain"],
+      "files": [
+        {
+          "path": "README.md",
+          "content": "# Sui Move Project\n\nA basic Sui Move smart contract project.\n\n## Prerequisites\n\n- [Sui CLI](https://docs.sui.io/build/install)\n\n## Development\n\nCompile the Move code:\n\n```bash\nsui move build\n```\n\nRun tests:\n\n```bash\nsui move test\n```\n\nPublish the package:\n\n```bash\nsui client publish --gas-budget 100000000\n```\n"
+        },
+        {
+          "path": "Move.toml",
+          "content": "[package]\nname = \"move_project\"\nversion = \"0.1.0\"\n\n[dependencies]\nSui = { git = \"https://github.com/MystenLabs/sui.git\", subdir = \"crates/sui-framework/packages/sui-framework\", rev = \"framework/testnet\" }\n\n[addresses]\nmove_project = \"0x0\"\n"
+        },
+        {
+          "path": "sources/module.move",
+          "content": "module move_project::counter {\n    use sui::object::{Self, UID};\n    use sui::transfer;\n    use sui::tx_context::{Self, TxContext};\n\n    /// A counter with a value that can only be incremented\n    struct Counter has key {\n        id: UID,\n        value: u64,\n    }\n\n    /// Create a new counter with initial value 0\n    public fun create(ctx: &mut TxContext) {\n        let counter = Counter {\n            id: object::new(ctx),\n            value: 0,\n        };\n        transfer::share_object(counter);\n    }\n\n    /// Increment the counter by 1\n    public entry fun increment(counter: &mut Counter) {\n        counter.value = counter.value + 1;\n    }\n\n    /// Get the current value of the counter\n    public fun value(counter: &Counter): u64 {\n        counter.value\n    }\n}\n"
+        },
+        {
+          "path": "tests/counter_tests.move",
+          "content": "#[test_only]\nmodule move_project::counter_tests {\n    use sui::test_scenario as ts;\n    use move_project::counter::{Self, Counter};\n\n    #[test]\n    fun test_counter() {\n        let owner = @0xC0FFEE;\n        \n        // Create a test scenario\n        let scenario = ts::begin(owner);\n        \n        // Create a counter\n        {\n            let ctx = ts::ctx(&mut scenario);\n            counter::create(ctx);\n        };\n        \n        // Increment the counter\n        ts::next_tx(&mut scenario, owner);\n        {\n            let counter = ts::take_shared<Counter>(&scenario);\n            counter::increment(&mut counter);\n            assert!(counter::value(&counter) == 1, 0);\n            ts::return_shared(counter);\n        };\n        \n        // Increment again\n        ts::next_tx(&mut scenario, owner);\n        {\n            let counter = ts::take_shared<Counter>(&scenario);\n            counter::increment(&mut counter);\n            assert!(counter::value(&counter) == 2, 0);\n            ts::return_shared(counter);\n        };\n        \n        ts::end(scenario);\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "react-dapp",
+      "name": "React Sui dApp",
+      "description": "React application integrated with Sui wallet",
+      "category": "ui",
+      "tags": ["react", "sui", "dapp", "frontend"],
+      "recommended": true,
+      "files": [
+        {
+          "path": "README.md",
+          "content": "# React Sui dApp\n\nA React application integrated with Sui wallet.\n\n## Features\n\n- React with TypeScript\n- Sui wallet integration\n- Sample components for blockchain interaction\n- Responsive UI with Tailwind CSS\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Build for Production\n\n```bash\nnpm run build\n```\n"
+        },
+        {
+          "path": "package.json",
+          "content": "{\n  \"name\": \"react-sui-dapp\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"@mysten/dapp-kit\": \"^0.3.0\",\n    \"@mysten/sui.js\": \"^0.34.0\",\n    \"@tanstack/react-query\": \"^4.29.5\",\n    \"react\": \"^18.2.0\",\n    \"react-dom\": \"^18.2.0\"\n  },\n  \"devDependencies\": {\n    \"@types/react\": \"^18.0.28\",\n    \"@types/react-dom\": \"^18.0.11\",\n    \"@vitejs/plugin-react\": \"^3.1.0\",\n    \"autoprefixer\": \"^10.4.14\",\n    \"postcss\": \"^8.4.21\",\n    \"tailwindcss\": \"^3.3.1\",\n    \"typescript\": \"^5.0.2\",\n    \"vite\": \"^4.2.0\"\n  },\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc && vite build\",\n    \"preview\": \"vite preview\"\n  }\n}\n"
+        },
+        {
+          "path": "src/App.tsx",
+          "content": "import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';\nimport { WalletInfo } from './components/WalletInfo';\n\nfunction App() {\n  const account = useCurrentAccount();\n\n  return (\n    <div className=\"min-h-screen bg-gray-100 dark:bg-gray-900\">\n      <header className=\"bg-white dark:bg-gray-800 shadow\">\n        <div className=\"max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center\">\n          <h1 className=\"text-xl font-bold text-gray-900 dark:text-white\">React Sui dApp</h1>\n          <ConnectButton />\n        </div>\n      </header>\n\n      <main className=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\">\n        <div className=\"px-4 py-6 sm:px-0\">\n          <div className=\"border-2 border-gray-200 dark:border-gray-700 rounded-lg p-6 min-h-[500px] bg-white dark:bg-gray-800\">\n            {account ? (\n              <WalletInfo />\n            ) : (\n              <div className=\"text-center py-12\">\n                <h2 className=\"text-2xl font-semibold text-gray-900 dark:text-white mb-4\">\n                  Welcome to Your Sui dApp\n                </h2>\n                <p className=\"text-gray-500 dark:text-gray-400 mb-8\">\n                  Connect your wallet to get started.\n                </p>\n                <div className=\"flex justify-center\">\n                  <ConnectButton />\n                </div>\n              </div>\n            )}\n          </div>\n        </div>\n      </main>\n    </div>\n  );\n}\n\nexport default App;\n"
+        },
+        {
+          "path": "src/components/WalletInfo.tsx",
+          "content": "import { useCurrentAccount, useCurrentWallet, useSuiClient } from '@mysten/dapp-kit';\nimport { useEffect, useState } from 'react';\n\nexport function WalletInfo() {\n  const account = useCurrentAccount();\n  const { currentWallet } = useCurrentWallet();\n  const client = useSuiClient();\n  const [balance, setBalance] = useState<string | null>(null);\n  const [isLoading, setIsLoading] = useState(false);\n\n  useEffect(() => {\n    async function getBalance() {\n      if (!account) return;\n      setIsLoading(true);\n      try {\n        const { totalBalance } = await client.getBalance({\n          owner: account.address,\n          coinType: '0x2::sui::SUI'\n        });\n        setBalance(BigInt(totalBalance).toString());\n      } catch (e) {\n        console.error('Failed to get balance:', e);\n        setBalance('Error');\n      } finally {\n        setIsLoading(false);\n      }\n    }\n\n    getBalance();\n  }, [account, client]);\n\n  if (!account) return null;\n\n  return (\n    <div className=\"space-y-6\">\n      <div className=\"bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg\">\n        <h2 className=\"text-lg font-medium text-gray-900 dark:text-white mb-2\">Connected Wallet</h2>\n        <div className=\"space-y-1\">\n          <p className=\"text-sm text-gray-500 dark:text-gray-400\">\n            <span className=\"font-medium\">Wallet:</span> {currentWallet?.name}\n          </p>\n          <p className=\"text-sm text-gray-500 dark:text-gray-400\">\n            <span className=\"font-medium\">Address:</span> {account.address}\n          </p>\n          <p className=\"text-sm text-gray-500 dark:text-gray-400\">\n            <span className=\"font-medium\">Balance:</span>{' '}\n            {isLoading ? 'Loading...' : balance ? `${formatBalance(balance)} SUI` : 'Unknown'}\n          </p>\n        </div>\n      </div>\n\n      <div className=\"bg-white dark:bg-gray-800 shadow overflow-hidden rounded-lg\">\n        <div className=\"px-4 py-5 sm:px-6\">\n          <h3 className=\"text-lg leading-6 font-medium text-gray-900 dark:text-white\">\n            Sample Actions\n          </h3>\n          <p className=\"mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400\">\n            Interact with the Sui blockchain\n          </p>\n        </div>\n        <div className=\"px-4 py-5 sm:p-6\">\n          <div className=\"flex flex-col space-y-4\">\n            <button\n              className=\"inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"\n              onClick={() => alert('Not implemented in template')}\n            >\n              Execute Transaction\n            </button>\n            <button\n              className=\"inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500\"\n              onClick={() => alert('Not implemented in template')}\n            >\n              Create Object\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}\n\nfunction formatBalance(balance: string): string {\n  const num = BigInt(balance);\n  return (Number(num) / 1e9).toFixed(4);\n}\n"
+        },
+        {
+          "path": "src/main.tsx",
+          "content": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\nimport { SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';\nimport { QueryClient, QueryClientProvider } from '@tanstack/react-query';\nimport { getFullnodeUrl } from '@mysten/sui.js/client';\nimport './index.css';\n\nconst queryClient = new QueryClient();\n\nReactDOM.createRoot(document.getElementById('root')!).render(\n  <React.StrictMode>\n    <QueryClientProvider client={queryClient}>\n      <SuiClientProvider networks={{\n        mainnet: { url: getFullnodeUrl('mainnet') },\n        testnet: { url: getFullnodeUrl('testnet') },\n        devnet: { url: getFullnodeUrl('devnet') },\n      }} defaultNetwork=\"devnet\">\n        <WalletProvider>\n          <App />\n        </WalletProvider>\n      </SuiClientProvider>\n    </QueryClientProvider>\n  </React.StrictMode>\n);\n"
+        },
+        {
+          "path": "src/index.css",
+          "content": "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n"
+        },
+        {
+          "path": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>React Sui dApp</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.tsx\"></script>\n  </body>\n</html>\n"
+        },
+        {
+          "path": "tailwind.config.js",
+          "content": "/** @type {import('tailwindcss').Config} */\nexport default {\n  content: [\n    \"./index.html\",\n    \"./src/**/*.{js,ts,jsx,tsx}\",\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}\n"
+        },
+        {
+          "path": ".gitignore",
+          "content": "# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n"
+        }
+      ]
+    }
+  ]
+}

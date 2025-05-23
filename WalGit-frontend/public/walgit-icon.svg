@@ -1,0 +1,26 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="30" fill="#0D1117" stroke="url(#paint0_linear)" strokeWidth="3"/>
+  <path d="M42 22L32 16L22 22V36L32 42L42 36V22Z" stroke="url(#paint1_linear)" strokeWidth="2"/>
+  <path d="M32 16V28" stroke="#05D9E8" strokeWidth="2"/>
+  <path d="M32 42V30" stroke="#BF5AF2" strokeWidth="2"/>
+  <path d="M22 22L32 28L42 22" stroke="#00FF9F" strokeWidth="2"/>
+  <path d="M22 36L32 30L42 36" stroke="#FF2A6D" strokeWidth="2"/>
+  <circle cx="32" cy="16" r="3" fill="#05D9E8"/>
+  <circle cx="32" cy="42" r="3" fill="#BF5AF2"/>
+  <circle cx="22" cy="22" r="3" fill="#00FF9F"/>
+  <circle cx="42" cy="22" r="3" fill="#00FF9F"/>
+  <circle cx="22" cy="36" r="3" fill="#FF2A6D"/>
+  <circle cx="42" cy="36" r="3" fill="#FF2A6D"/>
+  <circle cx="32" cy="28" r="3" fill="#FFFFFF"/>
+  <circle cx="32" cy="30" r="3" fill="#FFFFFF"/>
+  <defs>
+    <linearGradient id="paint0_linear" x1="2" y1="32" x2="62" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#05D9E8"/>
+      <stop offset="1" stopColor="#BF5AF2"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear" x1="22" y1="29" x2="42" y2="29" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#00FF9F"/>
+      <stop offset="1" stopColor="#FF2A6D"/>
+    </linearGradient>
+  </defs>
+</svg>

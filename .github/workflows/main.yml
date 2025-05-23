@@ -1,0 +1,88 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install backend dependencies
+      run: |
+        cd walgit-backend
+        npm ci
+    
+    - name: Run backend tests
+      run: |
+        cd walgit-backend
+        npm test
+    
+    - name: Install frontend dependencies
+      run: |
+        cd walgit-frontend
+        npm ci
+    
+    - name: Run frontend tests
+      run: |
+        cd walgit-frontend
+        npm test
+    
+    - name: Run frontend lint
+      run: |
+        cd walgit-frontend
+        npm run lint
+    
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Install Sui CLI
+      run: |
+        cargo install --locked --git https://github.com/MystenLabs/sui.git --branch main sui
+    
+    - name: Build and test Move contracts
+      run: |
+        cd move
+        sui move build
+        sui move test
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install and build frontend
+      run: |
+        cd walgit-frontend
+        npm ci
+        npm run build
+    
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-build
+        path: walgit-frontend/.next
+        retention-days: 5

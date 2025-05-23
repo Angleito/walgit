@@ -1,0 +1,18 @@
+# This file defines the code owners for the WalGit project
+# Each line is a file pattern followed by one or more owners
+
+# Default owners for everything in the repo
+* @Angleito
+
+# Backend code owners
+/walgit-backend/ @Angleito
+/walgit-backend/cli/ @Angleito
+/walgit-backend/src/ @Angleito
+/walgit-backend/tests/ @Angleito
+
+# Frontend code owners
+/walgit-frontend/ @Angleito
+/walgit-frontend/src/ @Angleito
+
+# Smart contracts code owners
+/move/ @Angleito

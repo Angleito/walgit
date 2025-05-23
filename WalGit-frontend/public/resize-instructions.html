@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resize WalGit Logo</title>
+    <style>
+        body { 
+            font-family: system-ui, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 { color: #0366d6; }
+        pre { 
+            background: #f6f8fa; 
+            padding: 16px; 
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        .note {
+            background: #fffbdd;
+            border-left: 4px solid #eea236;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Instructions to Resize WalGit Logo to 500x500</h1>
+    
+    <div class="note">
+        <p><strong>Note:</strong> Since we cannot directly manipulate binary image files through the available tools in this environment, these instructions provide several methods to manually resize the logo.</p>
+    </div>
+
+    <h2>Option 1: Using ImageMagick (Command Line)</h2>
+    <p>If you have ImageMagick installed, run the following command:</p>
+    <pre>convert walgitlogo.png -resize 500x500 walgitlogo-500.png</pre>
+    
+    <h2>Option 2: Using a Graphics Editor</h2>
+    <p>1. Open walgitlogo.png in a graphics editor like Photoshop, GIMP, or even Preview on macOS</p>
+    <p>2. Resize the image to 500x500 pixels</p>
+    <p>3. Save the result as "walgitlogo-500.png" in the /public folder</p>
+    
+    <h2>Option 3: Using Online Tools</h2>
+    <p>1. Visit a web-based image resizer like <a href="https://www.iloveimg.com/resize-image" target="_blank">iLoveIMG</a> or <a href="https://www.img2go.com/resize-image" target="_blank">IMG2GO</a></p>
+    <p>2. Upload walgitlogo.png</p>
+    <p>3. Set the dimensions to 500x500 pixels</p>
+    <p>4. Download the result and save it as "walgitlogo-500.png" in the /public folder</p>
+
+    <h2>After Resizing</h2>
+    <p>Once you have created walgitlogo-500.png, update the image references in the code to use this new file instead of the original.</p>
+    
+    <script>
+        // We could also provide a JavaScript-based resizing option if needed
+        // This would work in a browser but not directly in this environment
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, 500, 500);
+                // This would normally provide a way to download the resized image
+                console.log('Image loaded and resized in canvas');
+            };
+            img.src = '/walgitlogo.png';
+        });
+    </script>
+</body>
+</html>
