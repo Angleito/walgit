@@ -1,7 +1,7 @@
 # WalGit: Decentralized, Self-Controlled Version Control
 
 <p align="center">
-  <img src="walgit-frontend/public/walgitv3.png" alt="WalGit Logo - Cool Walrus with Sunglasses" width="200" style="background: transparent;" />
+  <img src="walgitlogo.png" alt="WalGit Logo - Cool Walrus with Sunglasses" width="200" style="background: transparent;" />
 </p>
 
 ## Overview
