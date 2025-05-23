@@ -85,6 +85,62 @@ yarn-error.log*
 debug.log
 lerna-debug.log*
 sui.log.*
+console.log
+error.log
+
+# ==============================
+# Temporary & Cache Files
+# ==============================
+.cache/
+tmp/
+temp/
+*.tmp
+*.temp
+*_tmp
+*_temp
+*.cache
+.docusaurus
+.cache-loader
+docs/_build/
+
+# System temporary files
+/tmp/
+~$*
+.~*
+
+# ==============================
+# Backup & Numbered Files
+# ==============================
+# Backup files
+*.bak
+*.backup
+*_backup.*
+*-backup.*
+*~
+*.orig
+*.rej
+
+# Numbered backups and duplicates
+*\ 2.*
+*\ 2\ *
+*\ (2).*
+*\ (2)\ *
+*\ copy.*
+*_2.*
+*_copy.*
+*-2.*
+*-copy.*
+*.2
+*.copy
+
+# macOS Finder duplicates
+*\ copy\ [0-9]*.*
+
+# Editor autosave/backup files
+#*#
+.#*
+*_$*
+*$*
 
 # ==============================
 # IDE & Editor Files
@@ -99,12 +155,29 @@ sui.log.*
 *.sublime-workspace
 *.sublime-project
 .nova/
-*.bak
-*~
 
 # Editor backup files
 *_backup.*
 *.orig
+
+# Vim files
+*.swn
+*.swm
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Emacs files
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
 
 # ==============================
 # OS Generated Files
@@ -117,6 +190,16 @@ sui.log.*
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+$RECYCLE.BIN/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
 $RECYCLE.BIN/
 
 # ==============================
@@ -166,18 +249,6 @@ move-cache/
 *.bytecode.json
 
 # ==============================
-# Cache & Temporary Files
-# ==============================
-.cache/
-tmp/
-temp/
-*.tmp
-*.temp
-.docusaurus
-.cache-loader
-docs/_build/
-
-# ==============================
 # Project Specific
 # ==============================
 walrus.jpeg
@@ -189,12 +260,39 @@ backup_*/
 next_backup_*/
 
 # ==============================
-# AI Tools & Development
+# AI Tools & Development Files
 # ==============================
+# Claude AI
+CLAUDE.md
+.claude/
+**/.claude/
+.claude-*
+claude-*
+*claude*
+*-claude.*
+*_claude.*
+*by-claude*
+*claude-generated*
+claude_assistant_*.json
+claude-settings.json
+claude-temp/
+.claude-cache/
+.claude-history/
+.claude-chat/
+
+# GitHub Copilot
 .github/copilot/
 .vscode/copilot/
 .vscode-insiders/
 .copilot-*
+
+# Cursor AI
+.cursor/
+.cursorrules
+.cursor-*
+cursor-*
+
+# Other AI tools
 .ai_tools/
 .cascade/
 ai_generated_code/
@@ -206,27 +304,15 @@ ai_generated_code/
 *__auto.js
 *__auto.ts
 .openai*
-.claude*
 .anthropic*
-.claude-cache/
-.claude-history/
-.claude-chat/
 .anthropic-api/
 anthropicrc
 .anthropicrc
-claude-settings.json
-claude_assistant_*.json
-claude-temp/
-*_by_claude.*
-*_claude_generated.*
-CLAUDE.md
-.cursor/
-.cursorrules
-.github/copilot-instructions.md
 
-# Claude specific
-.claude/
-**/.claude/settings.local.json
+# AI development instructions
+.github/copilot-instructions.md
+.ai-instructions.md
+AI_INSTRUCTIONS.md
 
 # ==============================
 # Documentation & Reports
@@ -235,3 +321,10 @@ CLAUDE.md
 *.report.html
 *.report.json
 performance-report/
+report/
+reports/
+
+# Generated documentation
+docs/generated/
+docs/api-docs/
+docs/_site/
