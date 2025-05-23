@@ -108,6 +108,14 @@ docs/_build/
 ~$*
 .~*
 
+# Development and test files
+dev-log.txt
+*dev-log*
+test-demo/
+*test-demo*
+project_review_temp.md
+*_temp.md
+
 # ==============================
 # Backup & Numbered Files
 # ==============================
