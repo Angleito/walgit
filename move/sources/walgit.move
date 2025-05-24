@@ -67,7 +67,7 @@ module walgit::walgit {
         );
         
         // Share the repository object to make it accessible
-        transfer::share_object(repo);
+        sui::transfer::share_object(repo);
     }
 
     /// Helper function to get the version

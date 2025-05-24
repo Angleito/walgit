@@ -25,9 +25,21 @@ export const cloneCommand = (program) => {
           throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
         }
 
+        // Validate current working directory
+        const currentDir = process.cwd();
+        try {
+          const stat = fs.statSync(currentDir);
+          if (!stat.isDirectory()) {
+            throw new Error('Current working directory is not accessible');
+          }
+        } catch (error) {
+          throw new Error(`Cannot access current directory: ${error.message}`);
+        }
+
         // Determine target directory
-        const targetDir = options.directory || 
-                         path.join(process.cwd(), `walgit-repo-${repositoryId.slice(0, 8)}`);
+        const targetDir = options.directory ? 
+                         path.resolve(options.directory) :
+                         path.join(currentDir, `walgit-repo-${repositoryId.slice(0, 8)}`);
 
         const spinner = ora('Fetching repository information...').start();
 

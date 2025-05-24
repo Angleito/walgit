@@ -14,8 +14,14 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK || 'devnet',
-    NEXT_PUBLIC_WALGIT_PACKAGE_ID: process.env.NEXT_PUBLIC_WALGIT_PACKAGE_ID,
-    NEXT_PUBLIC_WALRUS_API_KEY: process.env.NEXT_PUBLIC_WALRUS_API_KEY,
+    NEXT_PUBLIC_WALGIT_PACKAGE_ID: process.env.NEXT_PUBLIC_WALGIT_PACKAGE_ID || "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    NEXT_PUBLIC_WALRUS_API_KEY: process.env.NEXT_PUBLIC_WALRUS_API_KEY || "walgit-demo-key-123456",
+    NEXT_PUBLIC_SUI_NETWORK: process.env.NEXT_PUBLIC_SUI_NETWORK || "devnet",
+    NEXT_PUBLIC_SUI_DEVNET_URL: process.env.NEXT_PUBLIC_SUI_DEVNET_URL || "https://fullnode.devnet.sui.io",
+    NEXT_PUBLIC_SUI_TESTNET_URL: process.env.NEXT_PUBLIC_SUI_TESTNET_URL || "https://fullnode.testnet.sui.io",
+    NEXT_PUBLIC_SUI_MAINNET_URL: process.env.NEXT_PUBLIC_SUI_MAINNET_URL || "https://fullnode.mainnet.sui.io",
+    NEXT_PUBLIC_THEME_VARIANT: process.env.NEXT_PUBLIC_THEME_VARIANT || 'cyberpunk',
+    NEXT_PUBLIC_ENABLE_ANIMATIONS: process.env.NEXT_PUBLIC_ENABLE_ANIMATIONS || "true",
   },
   eslint: {
     ignoreDuringBuilds: true,

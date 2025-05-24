@@ -74,11 +74,29 @@ export const initCommand = (program) => {
         const description = options.description || `${repoName} repository`;
         const spinner = ora('Initializing repository...').start();
 
-        // Initialize local .walgit directory
-        const walgitDir = path.join(process.cwd(), '.walgit');
-        if (!fs.existsSync(walgitDir)) {
-          fs.mkdirSync(walgitDir, { recursive: true });
+        // Validate current working directory
+        const currentDir = process.cwd();
+        try {
+          const stat = fs.statSync(currentDir);
+          if (!stat.isDirectory()) {
+            throw new Error('Current working directory is not accessible');
+          }
+          
+          // Test write permissions
+          const testFile = path.join(currentDir, '.walgit-init-test');
+          fs.writeFileSync(testFile, 'test');
+          fs.unlinkSync(testFile);
+        } catch (error) {
+          throw new Error(`Cannot initialize repository in current directory: ${error.message}`);
         }
+
+        // Initialize local .walgit directory
+        const walgitDir = path.join(currentDir, '.walgit');
+        if (fs.existsSync(walgitDir)) {
+          throw new Error('Directory is already a WalGit repository');
+        }
+        
+        fs.mkdirSync(walgitDir, { recursive: true });
 
         // Generate SEAL policy ID based on repo name and user
         const userAddress = walletManager.getCurrentAddress();
@@ -114,7 +132,7 @@ export const initCommand = (program) => {
           if (template) {
             const result = await templateManager.applyTemplate(
               options.template,
-              process.cwd(),
+              currentDir,
               {
                 repositoryName: repoName,
                 description: description
@@ -122,21 +140,32 @@ export const initCommand = (program) => {
             );
             if (result.success) {
               console.log(`Applied template: ${chalk.green(template.name)}`);
+              if (result.filesCreated && result.filesCreated.length > 0) {
+                console.log(`Created ${result.filesCreated.length} files from template`);
+              }
+            } else {
+              console.warn(chalk.yellow(`Failed to apply template: ${result.error}`));
             }
+          } else {
+            console.warn(chalk.yellow(`Template '${options.template}' not found`));
           }
         }
 
         // Scan for files to include in initial commit
         spinner.text = 'Scanning files for initial commit...';
-        const workingCopy = new WorkingCopyManager(process.cwd());
+        const workingCopy = new WorkingCopyManager(currentDir);
         const allFiles = await workingCopy.scanFiles();
         
         // Add files to initial commit (exclude .walgit directory)
         for (const filePath of allFiles) {
           if (!filePath.startsWith('.walgit/')) {
-            const fullPath = path.join(process.cwd(), filePath);
-            const content = fs.readFileSync(fullPath);
-            initialFiles.push({ path: filePath, content });
+            const fullPath = path.join(currentDir, filePath);
+            try {
+              const content = fs.readFileSync(fullPath);
+              initialFiles.push({ path: filePath, content });
+            } catch (error) {
+              console.warn(chalk.yellow(`Warning: Could not read file ${filePath}: ${error.message}`));
+            }
           }
         }
 

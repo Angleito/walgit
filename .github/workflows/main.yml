@@ -20,27 +20,27 @@ jobs:
     
     - name: Install backend dependencies
       run: |
-        cd walgit-backend
+        cd WalGit-Backend
         npm ci
     
     - name: Run backend tests
       run: |
-        cd walgit-backend
+        cd WalGit-Backend
         npm test
     
     - name: Install frontend dependencies
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm ci
     
     - name: Run frontend tests
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm test
     
     - name: Run frontend lint
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm run lint
     
     - name: Set up Rust
@@ -76,7 +76,7 @@ jobs:
     
     - name: Install and build frontend
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm ci
         npm run build
     
@@ -84,5 +84,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: frontend-build
-        path: walgit-frontend/.next
+        path: WalGit-frontend/.next
         retention-days: 5

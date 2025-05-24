@@ -45,6 +45,8 @@ module walgit::git_repository {
         encrypted_dek_cid: String, // Walrus CID for SEAL-encrypted Data Encryption Key
         seal_policy_id: String, // SEAL policy identifier for access control
         default_branch: String,
+        head_commit_id: Option<ID>, // Current HEAD commit ID
+        walrus_config_blob_id: Option<u256>, // Walrus blob ID for config
         created_at: u64,
         updated_at: u64
     }
@@ -110,6 +112,12 @@ module walgit::git_repository {
         collaborator: address,
         removed_by: address
     }
+    
+    // Event emitted when HEAD commit is updated
+    public struct HeadUpdated has copy, drop {
+        repo_id: address,
+        head_commit_id: ID
+    }
 
     /// Creates a new repository object (not entry function)
     /// Following Sui best practices for object creation
@@ -142,6 +150,8 @@ module walgit::git_repository {
             encrypted_dek_cid: std::string::utf8(b""),
             seal_policy_id: std::string::utf8(b""),
             default_branch,
+            head_commit_id: option::none(),
+            walrus_config_blob_id: option::none(),
             created_at,
             updated_at: created_at
         };
@@ -207,7 +217,7 @@ module walgit::git_repository {
     
     /// Add a collaborator to the repository
     public entry fun add_collaborator(
-        repo: &mut GitRepository,
+        repo: &mut Repo,
         collaborator: address,
         permission: u8,
         ctx: &mut TxContext
@@ -233,7 +243,7 @@ module walgit::git_repository {
     
     /// Update the HEAD commit of the repository
     public fun update_head(
-        repo: &mut GitRepository,
+        repo: &mut Repo,
         commit_id: ID,
         ctx: &mut TxContext
     ) {
@@ -251,7 +261,7 @@ module walgit::git_repository {
     
     /// Set the Walrus config blob ID for additional repository settings
     public fun set_config_blob_id(
-        repo: &mut GitRepository,
+        repo: &mut Repo,
         blob_id: u256,
         ctx: &mut TxContext
     ) {
@@ -263,29 +273,29 @@ module walgit::git_repository {
     }
     
     // Permission check helpers
-    public fun can_read(repo: &GitRepository, addr: address): bool {
+    public fun can_read(repo: &Repo, addr: address): bool {
         if (repo.owner == addr) return true;
         if (table::contains(&repo.collaborators, addr)) {
             let permission = *table::borrow(&repo.collaborators, addr);
-            return permission >= PERMISSION_READ
+            return permission >= ROLE_READER
         };
         false
     }
     
-    public fun can_write(repo: &GitRepository, addr: address): bool {
+    public fun can_write(repo: &Repo, addr: address): bool {
         if (repo.owner == addr) return true;
         if (table::contains(&repo.collaborators, addr)) {
             let permission = *table::borrow(&repo.collaborators, addr);
-            return permission >= PERMISSION_WRITE
+            return permission >= ROLE_WRITER
         };
         false
     }
     
-    public fun is_admin(repo: &GitRepository, addr: address): bool {
+    public fun is_admin(repo: &Repo, addr: address): bool {
         if (repo.owner == addr) return true;
         if (table::contains(&repo.collaborators, addr)) {
             let permission = *table::borrow(&repo.collaborators, addr);
-            return permission >= PERMISSION_ADMIN
+            return permission >= ROLE_ADMIN
         };
         false
     }

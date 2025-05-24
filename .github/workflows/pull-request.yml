@@ -17,15 +17,16 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
+        cache-dependency-path: WalGit-Backend/package-lock.json
     
     - name: Install dependencies
       run: |
-        cd walgit-backend
+        cd WalGit-Backend
         npm ci
     
     - name: Run tests
       run: |
-        cd walgit-backend
+        cd WalGit-Backend
         npm test
 
   frontend-tests:
@@ -40,20 +41,21 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
+        cache-dependency-path: WalGit-frontend/package-lock.json
     
     - name: Install dependencies
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm ci
     
     - name: Run tests
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm test
     
     - name: Run lint
       run: |
-        cd walgit-frontend
+        cd WalGit-frontend
         npm run lint
 
   smart-contracts:

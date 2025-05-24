@@ -133,7 +133,19 @@ export const templateCommand = (program) => {
         }
         
         // Create target directory if specified, otherwise use current directory
-        const targetDir = options.dir ? path.resolve(options.dir, name) : path.join(process.cwd(), name);
+        const currentDir = process.cwd();
+        const targetDir = options.dir ? path.resolve(options.dir, name) : path.join(currentDir, name);
+        
+        // Validate current working directory
+        try {
+          const stat = fs.statSync(currentDir);
+          if (!stat.isDirectory()) {
+            throw new Error('Current working directory is not accessible');
+          }
+        } catch (error) {
+          spinner.fail(`Cannot access current directory: ${error.message}`);
+          return;
+        }
         
         // Check if directory already exists
         if (fs.existsSync(targetDir)) {

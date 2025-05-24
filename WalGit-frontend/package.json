@@ -4,20 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:cyberpunk": "NODE_ENV=development node -r dotenv/config ./node_modules/.bin/next dev -p 3000 --config next.config.cyberpunk.js",
     "build": "next build",
-    "build:cyberpunk": "NODE_ENV=production node -r dotenv/config ./node_modules/.bin/next build --config next.config.cyberpunk.js",
     "start": "next start",
-    "start:cyberpunk": "NODE_ENV=production next start --config next.config.cyberpunk.js",
-    "analyze": "ANALYZE=true next build --config next.config.cyberpunk.js",
-    "analyze:cyberpunk": "ANALYZE=true next build --config next.config.cyberpunk.js",
     "lint": "next lint",
     "test": "jest --config jest.config.ts",
     "test:watch": "jest --config jest.config.ts --watch",
     "test:coverage": "jest --config jest.config.ts --coverage",
-    "export": "next build && next export",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d .next/static"
+    "export": "next build && next export"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.6",

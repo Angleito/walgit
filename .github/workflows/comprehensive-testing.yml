@@ -102,32 +102,32 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: walgit-backend/package.json
+          cache-dependency-path: WalGit-Backend/package-lock.json
           
       - name: Install backend dependencies
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm ci
         
       - name: Run ESLint
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm run lint --if-present
         
       - name: Run unit tests
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm test
         env:
           NODE_ENV: test
           WALGIT_TEST_MODE: true
           
       - name: Run integration tests
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm run test:integration --if-present
         env:
           NODE_ENV: test
           WALGIT_TEST_MODE: true
           
       - name: Test CLI commands
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: |
           # Test CLI installation
           npm link
@@ -140,7 +140,7 @@ jobs:
           ! walgit invalid-command 2>/dev/null
           
       - name: Generate backend coverage report
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm run coverage --if-present
         
       - name: Upload backend test results
@@ -149,8 +149,8 @@ jobs:
         with:
           name: backend-test-results-node${{ matrix.node-version }}
           path: |
-            walgit-backend/coverage/
-            walgit-backend/test-results/
+            WalGit-Backend/coverage/
+            WalGit-Backend/test-results/
           retention-days: 7
 
   # Job 3: Frontend Tests
@@ -168,34 +168,34 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: walgit-frontend/package.json
+          cache-dependency-path: WalGit-frontend/package-lock.json
           
       - name: Install frontend dependencies
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm ci
         
       - name: Run TypeScript compilation
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm run build
         
       - name: Run ESLint
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm run lint
         
       - name: Run unit tests
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm test
         env:
           CI: true
           
       - name: Run component tests
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm run test:components --if-present
         env:
           CI: true
           
       - name: Generate frontend coverage report
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm run coverage --if-present
         
       - name: Upload frontend test results
@@ -204,8 +204,8 @@ jobs:
         with:
           name: frontend-test-results
           path: |
-            walgit-frontend/coverage/
-            walgit-frontend/test-results/
+            WalGit-frontend/coverage/
+            WalGit-frontend/test-results/
           retention-days: 7
 
   # Job 4: E2E Tests with Playwright
@@ -229,22 +229,22 @@ jobs:
         run: npm ci
         
       - name: Install backend dependencies
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm ci
         
       - name: Install frontend dependencies
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm ci
         
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
         
       - name: Build frontend for E2E tests
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: npm run build
         
       - name: Start frontend server
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: |
           npm start &
           sleep 30
@@ -306,13 +306,13 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          cd walgit-backend && npm ci
-          cd ../walgit-frontend && npm ci
+          cd WalGit-Backend && npm ci
+          cd ../WalGit-frontend && npm ci
           
       - name: Run security audit
         run: |
-          cd walgit-backend && npm audit --audit-level moderate
-          cd ../walgit-frontend && npm audit --audit-level moderate
+          cd WalGit-Backend && npm audit --audit-level moderate
+          cd ../WalGit-frontend && npm audit --audit-level moderate
           
       - name: Run dependency vulnerability scan
         uses: securecodewarrior/github-action-add-sarif@v1
@@ -321,14 +321,14 @@ jobs:
         continue-on-error: true
         
       - name: Performance tests - Frontend bundle size
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: |
           npm run build
           npx bundlesize
         continue-on-error: true
         
       - name: Performance tests - CLI startup time
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: |
           time node cli/bin/walgit.js --help
           time node cli/bin/walgit.js --version
@@ -341,8 +341,8 @@ jobs:
           name: security-scan-results
           path: |
             security-scan-results.sarif
-            walgit-backend/npm-audit.json
-            walgit-frontend/npm-audit.json
+            WalGit-Backend/npm-audit.json
+            WalGit-frontend/npm-audit.json
           retention-days: 30
 
   # Job 6: Cross-Platform Compatibility
@@ -365,14 +365,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: walgit-backend/package.json
+          cache-dependency-path: WalGit-Backend/package-lock.json
           
       - name: Install backend dependencies
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: npm ci
         
       - name: Test CLI on ${{ matrix.os }}
-        working-directory: ./walgit-backend
+        working-directory: ./WalGit-Backend
         run: |
           npm test
           node cli/bin/walgit.js --help
@@ -482,10 +482,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: walgit-frontend/package.json
+          cache-dependency-path: WalGit-frontend/package-lock.json
           
       - name: Build frontend
-        working-directory: ./walgit-frontend
+        working-directory: ./WalGit-frontend
         run: |
           npm ci
           npm run build

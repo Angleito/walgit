@@ -5,6 +5,90 @@ import crypto from 'crypto';
 import { getWalGitDir, getCurrentRepository } from './config.js';
 
 /**
+ * Validate and get the current working directory
+ * @param {string} [customPath] - Optional custom path to validate instead of cwd
+ * @returns {string} Validated directory path
+ * @throws {Error} If directory is not accessible
+ */
+export const validateWorkingDirectory = (customPath = null) => {
+  const dirPath = customPath || process.cwd();
+  
+  try {
+    const stat = fs.statSync(dirPath);
+    if (!stat.isDirectory()) {
+      throw new Error(`Path is not a directory: ${dirPath}`);
+    }
+    
+    // Test write permissions by creating a temporary file
+    const testFile = path.join(dirPath, '.walgit-write-test-' + Date.now());
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+    
+    return path.resolve(dirPath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Directory does not exist: ${dirPath}`);
+    } else if (error.code === 'EACCES' || error.code === 'EPERM') {
+      throw new Error(`Permission denied accessing directory: ${dirPath}`);
+    } else if (error.message.includes('.walgit-write-test')) {
+      throw new Error(`Directory is not writable: ${dirPath}`);
+    } else {
+      throw new Error(`Cannot access directory: ${dirPath} (${error.message})`);
+    }
+  }
+};
+
+/**
+ * Check if current directory is a WalGit repository
+ * @param {string} [dirPath] - Optional directory path to check
+ * @returns {boolean} True if directory contains .walgit folder
+ */
+export const isWalGitRepository = (dirPath = null) => {
+  const checkDir = dirPath || process.cwd();
+  const walgitDir = path.join(checkDir, '.walgit');
+  return fs.existsSync(walgitDir) && fs.statSync(walgitDir).isDirectory();
+};
+
+/**
+ * Find the root of the WalGit repository by traversing up the directory tree
+ * @param {string} [startPath] - Starting directory path
+ * @returns {string|null} Repository root path or null if not found
+ */
+export const findRepositoryRoot = (startPath = null) => {
+  let currentPath = startPath || process.cwd();
+  
+  // Traverse up the directory tree
+  while (currentPath !== path.dirname(currentPath)) {
+    if (isWalGitRepository(currentPath)) {
+      return currentPath;
+    }
+    currentPath = path.dirname(currentPath);
+  }
+  
+  return null;
+};
+
+/**
+ * Ensure directory exists and is writable
+ * @param {string} dirPath - Directory path to ensure
+ * @returns {boolean} True if directory is ready for use
+ */
+export const ensureDirectory = (dirPath) => {
+  try {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+    
+    // Validate the directory
+    validateWorkingDirectory(dirPath);
+    return true;
+  } catch (error) {
+    console.error(chalk.red(`Cannot ensure directory ${dirPath}:`), error.message);
+    return false;
+  }
+};
+
+/**
  * Calculate hash for a file
  * @param {string|Buffer} content - File content
  * @returns {string} Hash string

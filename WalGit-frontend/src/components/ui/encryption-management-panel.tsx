@@ -428,7 +428,7 @@ export function EncryptionManagementPanel({
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-gray-200">
-                              {entry.alias || {"'Unknown User'"}}
+                              {entry.alias || "Unknown User"}
                             </p>
                             <Badge className={getRoleColor(entry.role)}>
                               {entry.role}
@@ -442,7 +442,7 @@ export function EncryptionManagementPanel({
                             {entry.lastAccess && (
                               <span>Last access: {new Date(entry.lastAccess).toLocaleDateString()}</span>
                             )}
-                            <span>{entry.shareIds.length} key share{entry.shareIds.length !== 1 ? {"'s'"} : {"''"}</span>
+                            <span>{entry.shareIds.length} key share{entry.shareIds.length !== 1 ? "s" : ""}</span>
                           </div>
                         </div>
                       </div>
