@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useTheme } from 'next-themes';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
@@ -75,7 +75,7 @@ export const DataFlowAnimation = ({
   const { theme } = useTheme();
   
   // Determine particle count based on density
-  const getParticleCount = () => {
+  const getParticleCount = useCallback(() => {
     if (particleCount !== undefined) return particleCount;
     
     switch (density) {
@@ -84,7 +84,7 @@ export const DataFlowAnimation = ({
       case 'medium':
       default: return 6;
     }
-  };
+  }, [particleCount, density]);
 
   // Observer for source and target elements
   const { ref: fromRef, inView: fromInView } = useInView({

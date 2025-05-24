@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection, getActiveAddress, executeTransaction } from '../utils/sui-wallet-integration.js';
 import { walrusClient, CommitManifest } from '../utils/walrus-sdk-integration.js';
 import { WorkingCopyManager } from '../utils/working-copy-manager.js';
 import { initializeSuiClient } from '../utils/sui-integration.js';
@@ -23,9 +23,7 @@ export const commitCommand = (program) => {
     .action(async (options) => {
       try {
         // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        await validateWalletConnection();
         
         // Check if we're in a repository
         const walgitDir = path.join(process.cwd(), '.walgit');
@@ -92,7 +90,7 @@ export const commitCommand = (program) => {
         spinner.text = 'Creating commit manifest...';
         
         // Create commit manifest
-        const userAddress = walletManager.getCurrentAddress();
+        const userAddress = getActiveAddress();
         const manifest = new CommitManifest({
           author: userAddress,
           message: options.message,
@@ -127,7 +125,7 @@ export const commitCommand = (program) => {
           ],
         });
         
-        const result = await walletManager.signAndExecuteTransaction(tx);
+        const result = await executeTransaction(tx);
         
         // Update local config
         repoConfig.latestCommitManifestCid = manifestCid;
@@ -142,7 +140,7 @@ export const commitCommand = (program) => {
         
         fs.writeFileSync(configPath, JSON.stringify(repoConfig, null, 2));
         
-        spinner.succeed(`Commit created successfully`);
+        spinner.succeed('Commit created successfully');
         console.log(`Message: ${chalk.green(options.message)}`);
         console.log(`Manifest: ${chalk.cyan(manifestCid)}`);
         console.log(`Transaction: ${chalk.dim(result.digest)}`);

@@ -51,7 +51,7 @@ export function DiffViewer({
   const [isKeyboardNavigationActive, setIsKeyboardNavigationActive] = useState(false);
   const diffContainerRef = useRef<HTMLDivElement>(null);
 
-  const toggleFileExpansion = (filename: string) => {
+  const toggleFileExpansion = useCallback((filename: string) => {
     const newExpanded = new Set(expandedFiles);
     if (newExpanded.has(filename)) {
       newExpanded.delete(filename);
@@ -59,7 +59,7 @@ export function DiffViewer({
       newExpanded.add(filename);
     }
     setExpandedFiles(newExpanded);
-  };
+  }, [expandedFiles]);
 
   // Keyboard navigation handler
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
@@ -128,7 +128,7 @@ export function DiffViewer({
         );
         break;
     }
-  }, [diffs, focusedFileIndex, focusedLineIndex, isKeyboardNavigationActive, toggleFileExpansion]);
+  }, [diffs, focusedFileIndex, isKeyboardNavigationActive, toggleFileExpansion]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);

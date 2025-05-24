@@ -7,6 +7,7 @@ import {
   createNetworkConfig
 } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui.js/client';
+import '@mysten/dapp-kit/dist/index.css';
 import { ReactNode, useState } from 'react';
 import { ThemeProvider } from '@/components/ui/theme-switcher';
 import { NotificationProvider } from '@/components/ui/notification-system';

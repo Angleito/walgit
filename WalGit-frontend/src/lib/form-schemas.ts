@@ -14,8 +14,9 @@ export const repositorySchema = z.object({
   visibility: z.enum(["public", "private"]),
   addReadme: z.boolean().default(false),
   addGitignore: z.boolean().default(false),
+  gitignoreTemplate: z.string().optional(),
   addLicense: z.boolean().default(false),
-  licenseType: z.enum(["mit", "apache", "gpl", "mpl", "none"]).default("mit"),
+  licenseType: z.string().optional(),
   defaultBranch: z.string().default("main"),
   template: z.string().optional(),
 });

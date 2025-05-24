@@ -65,6 +65,30 @@ export const PROTECTION_LEVEL = {
   APPROVAL: 'approval_required'
 };
 
+// Network configuration constants
+export const NETWORK_CONFIG = {
+  devnet: {
+    rpcUrl: 'https://fullnode.devnet.sui.io:443',
+    walrusAggregator: 'https://walrus.devnet.sui.io',
+    walrusPublisher: 'https://walrus.devnet.sui.io'
+  },
+  testnet: {
+    rpcUrl: 'https://fullnode.testnet.sui.io:443',
+    walrusAggregator: 'https://walrus-testnet-aggregator.nodeinfra.com',
+    walrusPublisher: 'https://walrus-testnet-publisher.nodeinfra.com'
+  },
+  mainnet: {
+    rpcUrl: 'https://fullnode.mainnet.sui.io:443',
+    walrusAggregator: 'https://walrus-mainnet-aggregator.nodeinfra.com',
+    walrusPublisher: 'https://walrus-mainnet-publisher.nodeinfra.com'
+  },
+  localnet: {
+    rpcUrl: 'http://localhost:9000',
+    walrusAggregator: 'http://localhost:8080',
+    walrusPublisher: 'http://localhost:8080'
+  }
+};
+
 // Client configuration constants
 export const DEFAULT_CONFIG = {
   defaultBranch: 'main',
@@ -75,11 +99,11 @@ export const DEFAULT_CONFIG = {
 };
 
 export const DEFAULT_COMMIT_MESSAGE_TEMPLATE = 
-  "# Write a concise summary of your changes (50 chars or less)\n\n" +
-  "# More detailed explanatory text. Wrap it to 72 characters.\n" +
-  "# Explain the problem that this commit is solving. Focus on why you\n" +
-  "# are making this change as opposed to how.\n\n" +
-  "# Include any relevant task IDs or issue numbers with # prefix\n";
+  '# Write a concise summary of your changes (50 chars or less)\n\n' +
+  '# More detailed explanatory text. Wrap it to 72 characters.\n' +
+  '# Explain the problem that this commit is solving. Focus on why you\n' +
+  '# are making this change as opposed to how.\n\n' +
+  '# Include any relevant task IDs or issue numbers with # prefix\n';
 
 // Stash constants
 export const STASH_STATUS = {

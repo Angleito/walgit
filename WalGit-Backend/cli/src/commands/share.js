@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection, executeTransaction } from '../utils/sui-wallet-integration.js';
 import { initializeSuiClient } from '../utils/sui-integration.js';
 import { getConfig } from '../utils/config.js';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
@@ -18,10 +18,8 @@ export const shareCommand = (program) => {
     .option('-r, --remove', 'Remove collaborator instead of adding')
     .action(async (repoIdOrPath, collaboratorAddress, role, options) => {
       try {
-        // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        // Ensure wallet is connected
+        const wallet = await validateWalletConnection();
 
         // Validate role
         const validRoles = ['reader', 'writer', 'admin'];
@@ -70,7 +68,7 @@ export const shareCommand = (program) => {
         }
 
         const repoData = repoObject.data.content.fields;
-        const userAddress = walletManager.getCurrentAddress();
+        const userAddress = wallet.address;
 
         // Check if user is owner or admin
         const isOwner = repoData.owner === userAddress;
@@ -108,9 +106,9 @@ export const shareCommand = (program) => {
             ],
           });
 
-          const result = await walletManager.signAndExecuteTransaction(tx);
+          const result = await executeTransaction(tx);
           
-          spinner.succeed(`Collaborator removed successfully`);
+          spinner.succeed('Collaborator removed successfully');
           console.log(`Removed: ${chalk.red(collaboratorAddress)}`);
           console.log(`Transaction: ${chalk.dim(result.digest)}`);
         } else {
@@ -126,9 +124,9 @@ export const shareCommand = (program) => {
             ],
           });
 
-          const result = await walletManager.signAndExecuteTransaction(tx);
+          const result = await executeTransaction(tx);
           
-          spinner.succeed(`Collaborator added successfully`);
+          spinner.succeed('Collaborator added successfully');
           console.log(`Added: ${chalk.green(collaboratorAddress)}`);
           console.log(`Role: ${chalk.cyan(role)}`);
           console.log(`Transaction: ${chalk.dim(result.digest)}`);
@@ -164,10 +162,8 @@ export const shareCommand = (program) => {
     .description('List repository collaborators')
     .action(async (repoIdOrPath) => {
       try {
-        // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        // Ensure wallet is connected
+        const wallet = await validateWalletConnection();
 
         let repositoryId = repoIdOrPath;
 

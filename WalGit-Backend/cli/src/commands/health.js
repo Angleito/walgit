@@ -233,7 +233,7 @@ function formatTrend(trend) {
     case 'decreasing':
       return chalk.green(`↓ Decreasing (${percentage.toFixed(1)}%)`);
     case 'stable':
-      return chalk.blue(`→ Stable`);
+      return chalk.blue('→ Stable');
     default:
       return chalk.grey(direction);
   }

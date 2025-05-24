@@ -67,8 +67,8 @@ export class TemplateManager {
         const basicManifest = {
           templates: {
             basic: {
-              name: "Basic Repository",
-              description: "A basic repository template",
+              name: 'Basic Repository',
+              description: 'A basic repository template',
               files: []
             }
           }

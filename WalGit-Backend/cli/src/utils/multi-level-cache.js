@@ -1083,10 +1083,11 @@ class MultiLevelCache extends EventEmitter {
     if (this.options.enableOfflineSupport) {
       this.cache = new OfflineCache(this.cache);
       
-      // Monitor network status if available
-      if (typeof window !== 'undefined' && window.addEventListener) {
-        window.addEventListener('online', () => this.cache.setOnline(true));
-        window.addEventListener('offline', () => this.cache.setOnline(false));
+      // Monitor network status if available (browser environment)
+      // Note: This code is for browser compatibility, not used in Node.js CLI
+      if (typeof globalThis !== 'undefined' && globalThis.window && globalThis.window.addEventListener) {
+        globalThis.window.addEventListener('online', () => this.cache.setOnline(true));
+        globalThis.window.addEventListener('offline', () => this.cache.setOnline(false));
       }
     }
     

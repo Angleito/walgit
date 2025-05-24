@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection } from '../utils/sui-wallet-integration.js';
 import { walrusClient } from '../utils/walrus-sdk-integration.js';
 import { initializeSuiClient } from '../utils/sui-integration.js';
 import { getConfig } from '../utils/config.js';
@@ -21,9 +21,7 @@ export const cloneCommand = (program) => {
     .action(async (repositoryId, options) => {
       try {
         // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        const wallet = await validateWalletConnection();
 
         // Validate current working directory
         const currentDir = process.cwd();
@@ -63,7 +61,7 @@ export const cloneCommand = (program) => {
         console.log(`Owner: ${chalk.yellow(repoData.owner)}`);
 
         // Check if user has read access
-        const userAddress = walletManager.getCurrentAddress();
+        const userAddress = wallet.address;
         const isOwner = repoData.owner === userAddress;
         const isCollaborator = repoData.collaborators && 
                               repoData.collaborators.fields && 
@@ -93,7 +91,7 @@ export const cloneCommand = (program) => {
         spinner.text = 'Decrypting and downloading files...';
 
         // Create wallet adapter for SEAL integration
-        const walletAdapter = walletManager.createWalletAdapter();
+        // Wallet adapter not needed with Sui CLI integration
 
         // Download and decrypt all files
         const { files, manifest } = await walrusClient.decryptAndDownloadFiles(

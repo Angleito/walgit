@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -799,7 +799,7 @@ export const RepositoryWizard = memo(({ onComplete, onCancel }: WizardProps) => 
   }, [currentStep, form]);
 
   // Complete the wizard
-  const handleComplete = async () => {
+  const handleComplete = useCallback(async () => {
     setIsLoading(true);
 
     try {
@@ -817,7 +817,7 @@ export const RepositoryWizard = memo(({ onComplete, onCancel }: WizardProps) => 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onComplete, form]);
 
   // Go to next step - memoized callback
   const goToNextStep = useMemo(() => () => {

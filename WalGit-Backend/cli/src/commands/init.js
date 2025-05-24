@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { createRepository } from '../utils/repository.js';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection, getActiveAddress, executeTransaction } from '../utils/sui-wallet-integration.js';
 import { walrusClient, CommitManifest } from '../utils/walrus-sdk-integration.js';
 import { templateManager } from '../utils/template-manager.js';
 import { WorkingCopyManager } from '../utils/working-copy-manager.js';
@@ -65,9 +65,10 @@ export const initCommand = (program) => {
           return;
         }
 
-        // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
+        // Ensure wallet is unlocked (skip in local simulation mode)
+        const isLocalSimulation = process.env.WALGIT_LOCAL_SIMULATION === 'true';
+        if (!isLocalSimulation) {
+          await validateWalletConnection();
         }
 
         const repoName = options.name || path.basename(process.cwd());
@@ -99,7 +100,7 @@ export const initCommand = (program) => {
         fs.mkdirSync(walgitDir, { recursive: true });
 
         // Generate SEAL policy ID based on repo name and user
-        const userAddress = walletManager.getCurrentAddress();
+        const userAddress = isLocalSimulation ? 'local-sim-address' : getActiveAddress();
         const policyId = `walgit-${repoName}-${userAddress.slice(0, 8)}-${Date.now()}`;
         
         spinner.text = 'Preparing initial commit...';
@@ -154,7 +155,7 @@ export const initCommand = (program) => {
         // Scan for files to include in initial commit
         spinner.text = 'Scanning files for initial commit...';
         const workingCopy = new WorkingCopyManager(currentDir);
-        const allFiles = await workingCopy.scanFiles();
+        const allFiles = await workingCopy.getAllFiles();
         
         // Add files to initial commit (exclude .walgit directory)
         for (const filePath of allFiles) {
@@ -171,57 +172,77 @@ export const initCommand = (program) => {
 
         console.log(`Found ${initialFiles.length} files for initial commit`);
 
-        spinner.text = 'Encrypting and uploading files to Walrus...';
+        let manifestCid, encryptedDekCid;
         
-        // Create initial commit manifest
-        const manifest = new CommitManifest({
-          author: userAddress,
-          message: 'Initial commit',
-          parent_commit_cid: null
-        });
+        if (!isLocalSimulation) {
+          spinner.text = 'Encrypting and uploading files to Walrus...';
+          
+          // Create initial commit manifest
+          const manifest = new CommitManifest({
+            author: userAddress,
+            message: 'Initial commit',
+            parent_commit_cid: null
+          });
 
-        // Encrypt and upload files using Walrus SDK integration
-        const { manifestCid, encryptedDekCid } = await walrusClient.encryptAndUploadFiles(
-          initialFiles,
-          policyId,
-          manifest
-        );
+          // Encrypt and upload files using Walrus SDK integration
+          const result = await walrusClient.encryptAndUploadFiles(
+            initialFiles,
+            policyId,
+            manifest
+          );
+          
+          manifestCid = result.manifestCid;
+          encryptedDekCid = result.encryptedDekCid;
 
-        console.log(`Files uploaded to Walrus. Manifest CID: ${manifestCid}`);
-        console.log(`Encrypted DEK CID: ${encryptedDekCid}`);
-
-        spinner.text = 'Creating repository on Sui blockchain...';
-
-        // Create repository on Sui blockchain
-        const suiClient = await initializeSuiClient();
-        const config = getConfig();
-        
-        const tx = new TransactionBlock();
-        const createRepoResult = tx.moveCall({
-          target: `${config.sui.packageId}::git_repository::create_repository`,
-          arguments: [
-            tx.pure(repoName),
-            tx.pure(description),
-            tx.pure(manifestCid),
-            tx.pure(encryptedDekCid),
-            tx.pure(policyId),
-            tx.pure('main'),
-            tx.object(config.sui.storageQuotaId)
-          ],
-        });
-
-        const result = await walletManager.signAndExecuteTransaction(tx);
-        
-        // Extract repository ID from transaction results
-        const createdObjects = result.objectChanges?.filter(
-          change => change.type === 'created' && change.objectType.includes('Repo')
-        );
-        
-        if (!createdObjects || createdObjects.length === 0) {
-          throw new Error('Failed to create repository on blockchain');
+          console.log(`Files uploaded to Walrus. Manifest CID: ${manifestCid}`);
+          console.log(`Encrypted DEK CID: ${encryptedDekCid}`);
+        } else {
+          // Local simulation - generate mock CIDs
+          manifestCid = `local-manifest-${Date.now()}`;
+          encryptedDekCid = `local-dek-${Date.now()}`;
+          spinner.text = 'Creating local repository...';
         }
+
+        let repoObjectId;
         
-        const repoObjectId = createdObjects[0].objectId;
+        if (!isLocalSimulation) {
+          spinner.text = 'Creating repository on Sui blockchain...';
+
+          // Create repository on Sui blockchain
+          const suiClient = await initializeSuiClient();
+          const config = getConfig();
+          
+          const tx = new TransactionBlock();
+          const createRepoResult = tx.moveCall({
+            target: `${config.sui.packageId}::git_repository::create_repository`,
+            arguments: [
+              tx.pure(repoName),
+              tx.pure(description),
+              tx.pure(manifestCid),
+              tx.pure(encryptedDekCid),
+              tx.pure(policyId),
+              tx.pure('main'),
+              tx.object(config.sui.storageQuotaId)
+            ],
+          });
+
+          const result = await executeTransaction(tx);
+          
+          // Extract repository ID from transaction results
+          const createdObjects = result.objectChanges?.filter(
+            change => change.type === 'created' && change.objectType.includes('Repo')
+          );
+          
+          if (!createdObjects || createdObjects.length === 0) {
+            throw new Error('Failed to create repository on blockchain');
+          }
+          
+          repoObjectId = createdObjects[0].objectId;
+        } else {
+          // Local simulation - generate mock repo ID
+          repoObjectId = `local-repo-${Date.now()}`;
+          spinner.text = 'Creating local repository configuration...';
+        }
         
         // Store repository info locally
         const repoConfig = {
@@ -234,7 +255,7 @@ export const initCommand = (program) => {
           latestCommitManifestCid: manifestCid,
           encryptedDekCid,
           created_at: new Date().toISOString(),
-          network: config.sui.network
+          network: isLocalSimulation ? 'local-simulation' : (config?.sui?.network || 'devnet')
         };
         
         fs.writeFileSync(
@@ -246,7 +267,9 @@ export const initCommand = (program) => {
 
         console.log(`Repository ID: ${chalk.yellow(repoObjectId)}`);
         console.log(`SEAL Policy ID: ${chalk.cyan(policyId)}`);
-        console.log(`Transaction: ${chalk.dim(result.digest)}`);
+        if (!isLocalSimulation) {
+          console.log(`Transaction: ${chalk.dim(result.digest)}`);
+        }
         console.log(`Initial commit: ${chalk.green(manifestCid)}`);
         
         if (options.encryption === 'seal') {

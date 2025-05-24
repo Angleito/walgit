@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCurrentAccount, useSuiClient } from '@mysten/dapp-kit';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -69,7 +69,7 @@ export function RepositoryDetail({ repositoryId, owner, name }: RepositoryDetail
   const [isOwner, setIsOwner] = useState(false);
   
   // Fetch repository data
-  const fetchRepository = async () => {
+  const fetchRepository = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -139,10 +139,10 @@ export function RepositoryDetail({ repositoryId, owner, name }: RepositoryDetail
     } finally {
       setLoading(false);
     }
-  };
+  }, [repositoryId, suiClient, currentAccount]);
   
   // Fetch commit history (mock for now)
-  const fetchCommits = async () => {
+  const fetchCommits = useCallback(async () => {
     if (!repository) return;
     
     try {
@@ -172,17 +172,17 @@ export function RepositoryDetail({ repositoryId, owner, name }: RepositoryDetail
     } finally {
       setLoadingCommits(false);
     }
-  };
+  }, [repository]);
   
   useEffect(() => {
     fetchRepository();
-  }, [repositoryId, currentAccount, fetchRepository]);
+  }, [fetchRepository]);
   
   useEffect(() => {
     if (repository && userRole > 0) {
       fetchCommits();
     }
-  }, [repository, userRole, fetchCommits]);
+  }, [fetchCommits, repository, userRole]);
   
   // Copy functions
   const copyRepositoryId = () => {

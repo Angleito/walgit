@@ -15,6 +15,8 @@ import { createReadStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { EventEmitter } from 'events';
 import ora from 'ora';
+import { URL } from 'url';
+import FormData from 'form-data';
 
 // Enhanced error classes
 export class WalrusError extends Error {
@@ -218,7 +220,7 @@ export class EnhancedWalrusClient extends EventEmitter {
       const contentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
       
       const formData = new FormData();
-      formData.append('file', new Blob([fileBuffer]), path.basename(filePath));
+      formData.append('file', fileBuffer, path.basename(filePath));
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -462,7 +464,7 @@ export class EnhancedWalrusClient extends EventEmitter {
         await fd.read(buffer, 0, chunk.size, chunk.start);
         
         const formData = new FormData();
-        formData.append('file', new Blob([buffer]), `chunk-${chunk.index}`);
+        formData.append('file', buffer, `chunk-${chunk.index}`);
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -525,7 +527,7 @@ export class EnhancedWalrusClient extends EventEmitter {
     // Upload manifest
     const manifestBuffer = Buffer.from(JSON.stringify(manifest));
     const formData = new FormData();
-    formData.append('file', new Blob([manifestBuffer]), 'manifest.json');
+    formData.append('file', manifestBuffer, 'manifest.json');
     
     const response = await fetch(`${this.endpoint}/v1/store`, {
       method: 'POST',
@@ -622,10 +624,4 @@ export class EnhancedWalrusClient extends EventEmitter {
 // Export singleton instance
 export const walrusClient = new EnhancedWalrusClient();
 
-// Export error classes
-export {
-  WalrusError,
-  WalrusNetworkError,
-  WalrusStorageError,
-  WalrusValidationError
-};
+// Error classes are already exported as class declarations above

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BranchSelector } from "@/components/git/BranchSelector";
+import { BranchSelector } from "@/components/repository/BranchSelector";
 import { CloneUrlDisplay } from "@/components/git/CloneUrlDisplay";
 import { FileBrowser } from "@/components/git/FileBrowser";
 import { RepositoryStats } from "@/components/git/RepositoryStats";
@@ -46,6 +46,15 @@ export default function RepositoryOverview({
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const [readmeContent, setReadmeContent] = useState<string>('');
   const [isLoadingReadme, setIsLoadingReadme] = useState(true);
+
+  // Ensure data is defined
+  if (!data) {
+    return (
+      <div className="p-4 text-center">
+        <p>Loading repository data...</p>
+      </div>
+    );
+  }
 
   useEffect(() => {
     // Simulate fetching README content
@@ -165,7 +174,15 @@ This project is licensed under the ${data.license || 'MIT'} License.`;
                 branches={data.branches || []}
                 tags={data.tags || []}
                 currentBranch={currentBranch}
-                onBranchChange={onBranchChange}
+                onChangeBranch={onBranchChange}
+                onCreateBranch={async (name, fromBranch) => {
+                  console.log(`Creating branch ${name} from ${fromBranch}`);
+                  return Promise.resolve();
+                }}
+                onCreateTag={async (name, commitHash) => {
+                  console.log(`Creating tag ${name} at ${commitHash}`);
+                  return Promise.resolve();
+                }}
               />
               
               <Button
@@ -302,12 +319,29 @@ This project is licensed under the ${data.license || 'MIT'} License.`;
           </div>
 
           {/* Repository stats */}
-          <RepositoryStats
-            commits={data.commits || 142}
-            branches={data.branches?.length || 3}
-            tags={data.tags?.length || 5}
-            contributors={contributors.length}
-          />
+          <div className="rounded-md border border-[#30363d] overflow-hidden">
+            <div className="bg-[#161b22] p-3 border-b border-[#30363d]">
+              <h3 className="font-semibold text-[#f0f6fc]">Repository Stats</h3>
+            </div>
+            <div className="p-3 space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[#8b949e]">Commits</span>
+                <span className="font-mono">{data.commits || 142}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[#8b949e]">Branches</span>
+                <span className="font-mono">{data.branches?.length || 3}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[#8b949e]">Tags</span>
+                <span className="font-mono">{data.tags?.length || 5}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[#8b949e]">Contributors</span>
+                <span className="font-mono">{contributors.length}</span>
+              </div>
+            </div>
+          </div>
 
           {/* Languages */}
           <div className="rounded-md border border-[#30363d] overflow-hidden">

@@ -12,7 +12,7 @@ import Table from 'cli-table3';
 import { OptimizedStorageManager } from '../utils/optimized-storage.js';
 import { getCurrentRepository } from '../utils/config.js';
 import { getConfig } from '../utils/config.js';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection, executeTransaction } from '../utils/sui-wallet-integration.js';
 import { formatBytes, formatDate, formatDuration, formatPercentage } from '../utils/format-utils.js';
 import { formatErrorOutput } from '../utils/error-handler.js';
 import blobManager from '../utils/blob-manager.js';
@@ -276,17 +276,17 @@ async function showStorageInfo(options = {}) {
       // Display warning if allocation is nearly full
       if (allocation.utilization > 80) {
         console.log(chalk.yellow('\nWarning: Storage allocation is nearly full.'));
-        console.log(chalk.yellow(`Consider upgrading your storage allocation with 'walgit storage upgrade'.`));
+        console.log(chalk.yellow('Consider upgrading your storage allocation with \'walgit storage upgrade\'.'));
       }
       
       // Display warning if allocation is expiring soon
       if (remainingTime > 0 && remainingTime < 7 * 86400) {
         console.log(chalk.yellow('\nWarning: Storage allocation is expiring soon.'));
-        console.log(chalk.yellow(`Renew your allocation with 'walgit storage renew'.`));
+        console.log(chalk.yellow('Renew your allocation with \'walgit storage renew\'.'));
       }
     } else {
       console.log(chalk.yellow('\nNo storage allocation found.'));
-      console.log(chalk.yellow(`Create a storage allocation with 'walgit storage allocate'.`));
+      console.log(chalk.yellow('Create a storage allocation with \'walgit storage allocate\'.'));
     }
     
     // Display optimization tips
@@ -624,7 +624,7 @@ async function optimizeStorage(options) {
       if (integrityIssues > 0) {
         spinner.warn(`Optimization complete with ${integrityIssues} integrity issues detected`);
         console.log(chalk.yellow(`\nDetected ${integrityIssues} integrity issues that need repair.`));
-        console.log(chalk.yellow(`Run 'walgit storage verify --repair' to fix these issues.`));
+        console.log(chalk.yellow('Run \'walgit storage verify --repair\' to fix these issues.'));
       } else {
         spinner.succeed('Optimization completed successfully with data integrity verified');
       }
@@ -710,9 +710,9 @@ async function verifyStorageIntegrity(options) {
     
     // Show verification results
     if (options.repair) {
-      spinner.succeed(`Integrity verification and repair completed`);
+      spinner.succeed('Integrity verification and repair completed');
     } else {
-      spinner.succeed(`Integrity verification completed`);
+      spinner.succeed('Integrity verification completed');
     }
     
     // Create results table
@@ -916,7 +916,7 @@ async function syncStorage(options) {
           const issueCount = verifyResults.repaired.length + verifyResults.failed.length;
           
           if (issueCount === 0) {
-            console.log(chalk.green(`All verified blobs passed integrity checks.`));
+            console.log(chalk.green('All verified blobs passed integrity checks.'));
           } else {
             console.log(chalk.yellow(`Detected ${issueCount} integrity issues in synchronized blobs.`));
             console.log(chalk.yellow('Run full verification to fix these issues:'));

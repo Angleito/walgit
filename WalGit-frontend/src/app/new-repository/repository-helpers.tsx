@@ -227,32 +227,50 @@ export function RepositoryGuide() {
 }
 
 // Individual help tips to provide context during repository creation
-export function CreationContextHelp() {
+export function CreationContextHelp({ onClose, onStartTour }: { onClose: () => void; onStartTour: () => void }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-6">
-      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 flex gap-3">
-        <div className="mt-1">
-          <HelpCircle className="h-5 w-5 text-blue-500" />
+    <Card className="mb-6">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-base">Getting Started</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            &times;
+          </Button>
         </div>
-        <div>
-          <h3 className="font-medium mb-1">About Repository Names</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Choose a name that clearly describes your project. Use lowercase letters, numbers, and hyphens.
-          </p>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 flex gap-3">
+            <div className="mt-1">
+              <HelpCircle className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <h3 className="font-medium mb-1">About Repository Names</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Choose a name that clearly describes your project. Use lowercase letters, numbers, and hyphens.
+              </p>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 flex gap-3">
+            <div className="mt-1">
+              <HelpCircle className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <h3 className="font-medium mb-1">About Repository Storage</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Your files are stored on the Sui blockchain with Walrus decentralized storage for enhanced security.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 flex gap-3">
-        <div className="mt-1">
-          <HelpCircle className="h-5 w-5 text-blue-500" />
-        </div>
-        <div>
-          <h3 className="font-medium mb-1">About Repository Storage</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Your files are stored on the Sui blockchain with Walrus decentralized storage for enhanced security.
-          </p>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter className="pt-2">
+        <Button size="sm" variant="outline" className="w-full" onClick={onStartTour}>
+          <PlayCircle className="h-4 w-4 mr-2" />
+          Start Interactive Tour
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

@@ -6,7 +6,6 @@
 
 import fetch from 'node-fetch';
 import crypto from 'crypto';
-import { promisify } from 'util';
 import { setTimeout } from 'timers/promises';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
@@ -16,9 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import pLimit from 'p-limit';
-import { createReadStream, createWriteStream } from 'fs';
-import { pipeline } from 'stream/promises';
-import { Transform } from 'stream';
+import { createReadStream } from 'fs';
 
 // Enhanced Constants aligned with official Walrus documentation
 const MAX_RETRIES = 5;
@@ -37,7 +34,7 @@ const CACHE_MAX_SIZE = 500 * 1024 * 1024; // 500 MB in bytes
 const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB chunks
 const MAX_FILE_SIZE = 14 * 1024 * 1024 * 1024; // 14GB max file size
 const DEFAULT_PARALLELISM = 5;
-const ERASURE_CODING_RATIO = 0.75; // 75% storage efficiency
+// const ERASURE_CODING_RATIO = 0.75; // 75% storage efficiency
 
 // Create cache directory if it doesn't exist
 try {
@@ -100,6 +97,10 @@ async function chunkFile(filePath, chunkSize = CHUNK_SIZE) {
  */
 async function uploadChunk(filePath, chunk, options) {
   const { apiKey, contentType, retryCount = 0 } = options;
+  const config = getConfig();
+  const walrusConfig = config?.walrus;
+  const network = walrusConfig?.network || 'testnet';
+  const endpoint = WALRUS_ENDPOINTS[network];
   
   try {
     // Create read stream for the chunk
@@ -126,7 +127,7 @@ async function uploadChunk(filePath, chunk, options) {
     chunk.hash = hashStream.digest('hex');
     
     // Upload to Walrus with RedStuff encoding
-    const response = await fetch(`${WALRUS_API_ENDPOINT}/upload/chunk`, {
+    const response = await fetch(`${endpoint}/upload/chunk`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -168,7 +169,6 @@ export async function uploadToWalrus(content, options) {
     contentType, 
     maxRetries = MAX_RETRIES, 
     retryDelay = RETRY_DELAY_MS,
-    parallel = DEFAULT_PARALLELISM,
     filePath
   } = options;
   
@@ -186,7 +186,7 @@ export async function uploadToWalrus(content, options) {
   if (filePath) {
     const stats = await fs.promises.stat(filePath);
     if (stats.size > CHUNK_SIZE) {
-      return uploadLargeFile(filePath, { ...options, apiKey });
+      return uploadLargeFile(filePath, options);
     }
   }
   
@@ -251,7 +251,11 @@ export async function uploadToWalrus(content, options) {
  * @returns {Promise<Object>} - Upload result
  */
 async function uploadLargeFile(filePath, options) {
-  const { apiKey, parallel = DEFAULT_PARALLELISM } = options;
+  const { parallel = DEFAULT_PARALLELISM } = options;
+  const config = getConfig();
+  const walrusConfig = config?.walrus;
+  const network = walrusConfig?.network || 'testnet';
+  const endpoint = WALRUS_ENDPOINTS[network];
   
   console.log('Processing large file for chunked upload...');
   
@@ -263,6 +267,22 @@ async function uploadLargeFile(filePath, options) {
   // For large files, split into shards automatically by Walrus
   console.log('Note: Using Walrus Red Stuff encoding for large file optimization');
   
+  // Use apiKey from walrusConfig which is already defined
+  const apiKey = walrusConfig?.apiKey;
+  
+  // Create upload session
+  const sessionResponse = await fetch(`${endpoint}/upload/session`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      totalChunks: chunks.length,
+      fileSize: chunks.reduce((sum, chunk) => sum + chunk.size, 0)
+    })
+  });
+  
   if (!sessionResponse.ok) {
     throw new Error(`Failed to create upload session: ${sessionResponse.statusText}`);
   }
@@ -271,14 +291,14 @@ async function uploadLargeFile(filePath, options) {
   
   // Upload chunks in parallel
   const limit = pLimit(parallel);
-  const uploadPromises = chunks.map((chunk, index) => 
+  const uploadPromises = chunks.map((chunk) => 
     limit(() => uploadChunk(filePath, chunk, { ...options, sessionId: session.id }))
   );
   
   const results = await Promise.all(uploadPromises);
   
   // Finalize upload session
-  const finalizeResponse = await fetch(`${WALRUS_API_ENDPOINT}/upload/session/${session.id}/finalize`, {
+  const finalizeResponse = await fetch(`${endpoint}/upload/session/${session.id}/finalize`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -314,27 +334,15 @@ async function uploadLargeFile(filePath, options) {
  * @returns {Promise<Array>} - Selected storage nodes
  */
 async function selectStorageNodes(options = {}) {
-  const { count = 3 } = options;
-  const config = getConfig();
-  const apiKey = config?.walrus?.apiKey;
+  // const { count = 3 } = options;
+  // const config = getConfig();
+  // const apiKey = config?.walrus?.apiKey;
   
   try {
     // Walrus automatically selects optimal storage nodes
     // Return null to use default node selection
     console.log('Using Walrus automatic storage node selection');
     return null;
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch node performance: ${response.statusText}`);
-    }
-    
-    const nodes = await response.json();
-    
-    // Sort nodes by performance score (latency, throughput, reliability)
-    const sortedNodes = nodes.sort((a, b) => b.performanceScore - a.performanceScore);
-    
-    // Select top performing nodes
-    return sortedNodes.slice(0, count);
   } catch (error) {
     console.warn('Failed to select optimal nodes, using defaults:', error.message);
     return null; // Fallback to default node selection
@@ -344,13 +352,16 @@ async function selectStorageNodes(options = {}) {
 /**
  * Verify an uploaded content by its CID with enhanced validation
  * @param {string} cid - Content identifier from Walrus
- * @param {string} expectedHash - Expected SHA-256 hash
+ * @param {string} expectedHash - Expected SHA-256 hash (optional)
  * @returns {Promise<Object>} - Verification result
  */
-export async function verifyUpload(cid, expectedHash) {
+export async function verifyUpload(cid, expectedHash = null) {
   try {
     const config = getConfig();
     const apiKey = config?.walrus?.apiKey;
+    const walrusConfig = config?.walrus;
+    const network = walrusConfig?.network || 'testnet';
+    const endpoint = WALRUS_ENDPOINTS[network];
     
     if (!apiKey) {
       throw new Error('Walrus API key not found in configuration');
@@ -370,12 +381,15 @@ export async function verifyUpload(cid, expectedHash) {
     
     const result = await response.json();
     
+    // Check hash if provided
+    const verified = expectedHash && result.hash ? result.hash === expectedHash : true;
+    
     return {
-      verified: result.verified,
+      verified: verified && (result.status === 'active' || result.status === 'stored' || result.verified === true),
       cid,
-      metadata: result.metadata,
-      erasureCoding: result.erasureCoding,
-      storageNodes: result.storageNodes
+      metadata: result.metadata || {},
+      erasureCoding: result.erasureCoding || 'redstuff',
+      storageNodes: result.storageNodes || []
     };
   } catch (error) {
     console.error('Verification error:', error.message);
@@ -461,14 +475,17 @@ export async function retrieveContent(cid, options = {}) {
   try {
     const config = getConfig();
     const apiKey = config?.walrus?.apiKey;
+    const walrusConfig = config?.walrus;
+    const network = walrusConfig?.network || 'testnet';
+    const endpoint = WALRUS_ENDPOINTS[network];
     
     if (!apiKey) {
       throw new Error('Walrus API key not found in configuration');
     }
 
     // Get blob info using official Walrus API
-    const metadataResponse = await fetch(`${endpoint}/v1/blob/${cid}`, {
-      method: 'HEAD'
+    const metadataResponse = await fetch(`${endpoint}/v1/blob/${cid}/info`, {
+      method: 'GET'
     });
     
     if (!metadataResponse.ok) {
@@ -540,7 +557,12 @@ async function retrieveChunkedContent(cid, metadata, options) {
  * @returns {Promise<Object>} - Chunk data with index
  */
 async function downloadChunk(cid, chunk, apiKey) {
-  const response = await fetch(`${WALRUS_API_ENDPOINT}/content/${cid}/chunk/${chunk.index}`, {
+  const config = getConfig();
+  const walrusConfig = config?.walrus;
+  const network = walrusConfig?.network || 'testnet';
+  const endpoint = WALRUS_ENDPOINTS[network];
+  
+  const response = await fetch(`${endpoint}/content/${cid}/chunk/${chunk.index}`, {
     headers: {
       'Authorization': `Bearer ${apiKey}`,
     }
@@ -581,25 +603,6 @@ export async function checkContentExists(contentHash) {
     // Check if content exists by blob ID (Walrus uses content addressing)
     console.log('Note: Walrus uses content-addressable storage - checking by CID');
     return null; // Simplified for demo - would implement proper CID lookup
-    
-    if (response.status === 404) {
-      return null;
-    }
-    
-    if (!response.ok) {
-      throw new Error(`Failed to check content: ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    
-    // Check if content is healthy across storage nodes
-    if (result.health && result.health.status === 'healthy') {
-      return result;
-    }
-    
-    // Content exists but may need repair
-    console.warn(`Content ${contentHash} exists but health status is: ${result.health?.status}`);
-    return result;
   } catch (error) {
     console.error('Error checking content existence:', error.message);
     return null;
@@ -686,7 +689,6 @@ export async function storeContent(content, options, repoId) {
  */
 export async function batchUpload(items, repoId, options = {}) {
   const { parallel = DEFAULT_PARALLELISM } = options;
-  const results = [];
   
   // Use parallel limit to control concurrency
   const limit = pLimit(parallel);

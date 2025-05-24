@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { CyberpunkTerminal } from '@/components/ui/cyberpunk-terminal';
 import { GitBranch, ArrowRight, ShieldCheck, Globe, Copy, Code, Server, Database, Wallet } from 'lucide-react';
 import { useState } from 'react';
-// import { useCurrentAccount, ConnectButton } from '@mysten/dapp-kit';
+import { useWalletConnection } from '@/hooks/use-wallet-connection';
 
 export default function HomePage() {
   const [copied, setCopied] = useState<{[key: string]: boolean}>({});
-  // const account = useCurrentAccount();
-  const account = null; // Temporarily disable for testing
+  const { isConnected, isConnecting, hasWallets, wallets, connect, currentAccount } = useWalletConnection();
   
   const copyToClipboard = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -53,11 +52,19 @@ export default function HomePage() {
               </p>
               
               <div className="flex flex-wrap gap-4 mb-10">
-                {!account ? (
+                {!isConnected ? (
                   <div className="relative group overflow-hidden">
                     <button 
-                      onClick={() => console.log('Connect wallet clicked')}
-                      disabled={false}
+                      onClick={() => {
+                        console.log('Connect wallet clicked');
+                        if (!hasWallets) {
+                          console.warn('No wallets detected. Please install a Sui wallet.');
+                          return;
+                        }
+                        console.log('Available wallets:', wallets.map(w => w.name));
+                        connect(); // Connect to first available wallet
+                      }}
+                      disabled={isConnecting}
                       className="relative overflow-hidden z-10 px-6 py-3 min-w-[180px] bg-black border border-[#0ff] text-[#0ff] font-medium text-md rounded-sm
                         shadow-[0_0_10px_rgba(0,255,255,0.5)] hover:shadow-[0_0_20px_rgba(0,255,255,0.8)]
                         transition-all duration-300 hover:-translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed">
@@ -72,7 +79,7 @@ export default function HomePage() {
                       {/* Text with its own glow */}
                       <div className="relative z-10 flex items-center justify-center text-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
                         <Wallet className="mr-2 h-4 w-4" />
-                        Connect Wallet
+                        {isConnecting ? 'Connecting...' : hasWallets ? 'Connect Wallet' : 'Install Wallet'}
                       </div>
                     </button>
                     

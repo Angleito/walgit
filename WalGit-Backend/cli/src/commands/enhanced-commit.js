@@ -6,7 +6,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { createProgressBar } from 'cli-progress';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection, getActiveAddress, getActiveKeypair } from '../utils/sui-wallet-integration.js';
 import { EnhancedWalrusClient } from '../utils/enhanced-walrus-integration.js';
 import { WorkingCopyManager } from '../utils/working-copy-manager.js';
 import { initializeSuiClient } from '../utils/sui-integration.js';
@@ -202,9 +202,7 @@ export const enhancedCommitCommand = (program) => {
       
       try {
         // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        await validateWalletConnection();
         
         // Check if we're in a repository
         const walgitDir = path.join(process.cwd(), '.walgit');
@@ -220,7 +218,7 @@ export const enhancedCommitCommand = (program) => {
         
         // Check if commit message is provided
         if (!options.message && !options.amend) {
-          console.error(chalk.red('Commit message is required (use -m \"your message\")'));
+          console.error(chalk.red('Commit message is required (use -m "your message")'));
           process.exit(1);
         }
         
@@ -330,7 +328,7 @@ export const enhancedCommitCommand = (program) => {
         
         const commitManifest = {
           timestamp: Date.now(),
-          author: walletManager.getCurrentAddress(),
+          author: getActiveAddress(),
           message: options.message || 'Amendment',
           parent_commit_cid: repoConfig.latestCommitCid || null,
           tree: {
@@ -362,7 +360,7 @@ export const enhancedCommitCommand = (program) => {
         
         const result = await suiClient.signAndExecuteTransactionBlock({
           transactionBlock: txb,
-          signer: walletManager.getKeypair(),
+          signer: getActiveKeypair(),
           options: {
             showEffects: true,
             showEvents: true,

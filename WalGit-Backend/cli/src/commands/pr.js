@@ -14,7 +14,7 @@ import { getCurrentBranch } from '../utils/repository.js';
 import { getCurrentRepository } from '../utils/config.js';
 import { PRTransactionManager } from '../utils/pr-transaction-manager.js';
 import { getConfig } from '../utils/config.js';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection } from '../utils/sui-wallet-integration.js';
 import { 
   PR_STATUS, 
   PR_REVIEW_VERDICT, 
@@ -483,7 +483,8 @@ async function reviewPullRequest(id, options) {
     
     // Submit the review with blockchain-optimized transaction
     const suiClient = await initializeSuiClient();
-    const keypair = walletManager.currentKeypair;
+    const { getActiveKeypair } = await import('../utils/sui-wallet-integration.js');
+    const keypair = getActiveKeypair();
     
     const result = await PRTransactionManager.submitReview(id, {
       verdict,

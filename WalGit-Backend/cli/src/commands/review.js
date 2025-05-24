@@ -12,7 +12,7 @@ import { CodeReviewManager } from '../utils/code-review-manager.js';
 import { getCurrentBranch } from '../utils/repository.js';
 import { getCurrentRepository } from '../utils/config.js';
 import { getConfig } from '../utils/config.js';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection } from '../utils/sui-wallet-integration.js';
 import { formatErrorOutput } from '../utils/error-handler.js';
 
 /**

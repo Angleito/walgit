@@ -271,7 +271,7 @@ async function getConfigValue(key) {
     'wallet.package-id': config.packageId
   };
 
-  if (keyMap.hasOwnProperty(key)) {
+  if (Object.prototype.hasOwnProperty.call(keyMap, key)) {
     const value = keyMap[key];
     if (value !== undefined && value !== null) {
       console.log(value);
@@ -294,40 +294,46 @@ async function getConfigValue(key) {
 async function setConfigValue(key, value) {
   try {
     switch (key) {
-      case 'seal.api-key':
+      case 'seal.api-key': {
         updateSealConfig({ apiKey: value });
         console.log(chalk.green('Seal API key updated'));
         break;
+      }
       
-      case 'seal.endpoint':
+      case 'seal.endpoint': {
         updateSealConfig({ apiEndpoint: value });
         console.log(chalk.green('Seal endpoint updated'));
         break;
+      }
       
-      case 'tusky.api-key':
+      case 'tusky.api-key': {
         updateTuskyConfig({ apiKey: value });
         console.log(chalk.green('Tusky API key updated'));
         break;
+      }
       
-      case 'tusky.endpoint':
+      case 'tusky.endpoint': {
         updateTuskyConfig({ apiEndpoint: value });
         console.log(chalk.green('Tusky endpoint updated'));
         break;
+      }
       
-      case 'tusky.account-type':
+      case 'tusky.account-type': {
         if (!['personal', 'business'].includes(value)) {
           throw new Error('Account type must be "personal" or "business"');
         }
         updateTuskyConfig({ accountType: value });
         console.log(chalk.green('Tusky account type updated'));
         break;
+      }
       
-      case 'walrus.node-url':
+      case 'walrus.node-url': {
         updateWalrusConfig({ nodeUrl: value });
         console.log(chalk.green('Walrus node URL updated'));
         break;
+      }
       
-      case 'walrus.max-retries':
+      case 'walrus.max-retries': {
         const retries = parseInt(value);
         if (isNaN(retries) || retries < 0) {
           throw new Error('Max retries must be a positive number');
@@ -335,8 +341,9 @@ async function setConfigValue(key, value) {
         updateWalrusConfig({ maxRetries: retries });
         console.log(chalk.green('Walrus max retries updated'));
         break;
+      }
       
-      case 'walrus.chunk-size':
+      case 'walrus.chunk-size': {
         const chunkSize = parseInt(value);
         if (isNaN(chunkSize) || chunkSize < 1024) {
           throw new Error('Chunk size must be at least 1024 bytes');
@@ -344,8 +351,9 @@ async function setConfigValue(key, value) {
         updateWalrusConfig({ chunkSize });
         console.log(chalk.green('Walrus chunk size updated'));
         break;
+      }
       
-      case 'walrus.max-parallelism':
+      case 'walrus.max-parallelism': {
         const parallelism = parseInt(value);
         if (isNaN(parallelism) || parallelism < 1) {
           throw new Error('Max parallelism must be at least 1');
@@ -353,39 +361,45 @@ async function setConfigValue(key, value) {
         updateWalrusConfig({ maxParallelism: parallelism });
         console.log(chalk.green('Walrus max parallelism updated'));
         break;
+      }
       
-      case 'settings.default-network':
+      case 'settings.default-network': {
         if (!['devnet', 'testnet', 'mainnet'].includes(value)) {
           throw new Error('Network must be "devnet", "testnet", or "mainnet"');
         }
         updateSettings({ defaultNetwork: value });
         console.log(chalk.green('Default network updated'));
         break;
+      }
       
-      case 'settings.default-branch':
+      case 'settings.default-branch': {
         updateSettings({ defaultBranch: value });
         console.log(chalk.green('Default branch updated'));
         break;
+      }
       
-      case 'settings.default-storage-provider':
+      case 'settings.default-storage-provider': {
         if (!['walrus', 'tusky'].includes(value)) {
           throw new Error('Storage provider must be "walrus" or "tusky"');
         }
         updateSettings({ defaultStorageProvider: value });
         console.log(chalk.green('Default storage provider updated'));
         break;
+      }
       
-      case 'settings.storage-auto-fallback':
+      case 'settings.storage-auto-fallback': {
         const autoFallback = value.toLowerCase() === 'true';
         updateSettings({ storageAutoFallback: autoFallback });
         console.log(chalk.green('Storage auto fallback updated'));
         break;
+      }
       
-      case 'settings.enable-telemetry':
+      case 'settings.enable-telemetry': {
         const enableTelemetry = value.toLowerCase() === 'true';
         updateSettings({ enableTelemetry });
         console.log(chalk.green('Telemetry setting updated'));
         break;
+      }
       
       default:
         console.error(chalk.red(`Unknown configuration key: ${key}`));
@@ -425,7 +439,8 @@ async function showSealApiKey() {
  */
 async function setWalrusNodeUrl(url) {
   try {
-    new URL(url); // Validate URL format
+    const urlObj = new URL(url); // Validate URL format
+    if (!urlObj) throw new Error('Invalid URL');
     updateWalrusConfig({ nodeUrl: url });
     console.log(chalk.green('Walrus node URL updated successfully'));
   } catch (error) {
@@ -593,9 +608,10 @@ async function interactiveSetup() {
       default: walrusConfig.nodeUrl || 'https://walrus.devnet.sui.io',
       validate: (input) => {
         try {
-          new URL(input);
+          const urlObj = new URL(input);
+          if (!urlObj) throw new Error('Invalid URL');
           return true;
-        } catch {
+        } catch (error) {
           return 'Please enter a valid URL';
         }
       }

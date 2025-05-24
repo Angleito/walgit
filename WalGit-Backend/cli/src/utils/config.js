@@ -1,7 +1,11 @@
 import Conf from 'conf';
 import path from 'path';
 import fs from 'fs';
-import os from 'os';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // CLI configuration
 const config = new Conf({
@@ -61,6 +65,41 @@ const config = new Conf({
 // Path to .walgit directory in current project
 export const getWalGitDir = () => {
   return path.join(process.cwd(), '.walgit');
+};
+
+/**
+ * Load network-specific configuration
+ * @param {string} network - Network name (devnet, testnet, mainnet)
+ * @returns {object} Network configuration
+ */
+export const loadNetworkConfig = (network = 'devnet') => {
+  const configPath = join(__dirname, '../../config', `${network}.json`);
+  
+  // Check if network config exists
+  if (fs.existsSync(configPath)) {
+    try {
+      return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } catch (error) {
+      console.warn(`Failed to load ${network} config:`, error.message);
+    }
+  }
+  
+  // Return default configuration
+  return {
+    network,
+    rpcUrl: network === 'testnet' 
+      ? 'https://fullnode.testnet.sui.io:443' 
+      : 'https://fullnode.devnet.sui.io:443',
+    packageId: process.env.WALGIT_PACKAGE_ID || 'TO_BE_FILLED_AFTER_DEPLOYMENT',
+    walrus: {
+      aggregatorUrl: network === 'testnet'
+        ? 'https://walrus-testnet-aggregator.nodeinfra.com'
+        : 'https://walrus.devnet.sui.io',
+      publisherUrl: network === 'testnet'
+        ? 'https://walrus-testnet-publisher.nodeinfra.com'
+        : 'https://walrus.devnet.sui.io'
+    }
+  };
 };
 
 /**
@@ -208,11 +247,17 @@ export const getConfig = async () => {
   const tusky = getTuskyConfig();
   const walrus = getWalrusConfig();
   
+  // Load network-specific configuration
+  const network = walletConfig.network || settings.defaultNetwork || 'devnet';
+  const networkConfig = loadNetworkConfig(network);
+  
   return {
     walletAddress: walletConfig.address,
     privateKey: walletConfig.privateKey,
-    suiNetworkUrl: walletConfig.networkUrl || 'https://testnet.sui.io',
-    packageId: walletConfig.packageId,
+    suiNetworkUrl: walletConfig.networkUrl || networkConfig.rpcUrl,
+    packageId: walletConfig.packageId || networkConfig.packageId,
+    network,
+    networkConfig,
     repoPath: currentRepo?.path || process.cwd(),
     repoId: currentRepo?.id,
     ...settings,
@@ -221,11 +266,12 @@ export const getConfig = async () => {
     tuskyApiKey: tusky.apiKey,
     tuskyAccountType: tusky.accountType,
     tuskyEndpoint: tusky.apiEndpoint,
-    walrusNodeUrl: walrus.nodeUrl,
+    walrusNodeUrl: walrus.nodeUrl || networkConfig.walrus.aggregatorUrl,
+    walrusPublisherUrl: networkConfig.walrus.publisherUrl,
     walrusStorageNodes: walrus.storageNodes,
-    walrusMaxRetries: walrus.maxRetries,
-    walrusChunkSize: walrus.chunkSize,
-    walrusMaxParallelism: walrus.maxParallelism
+    walrusMaxRetries: walrus.maxRetries || networkConfig.walrus.maxRetries,
+    walrusChunkSize: walrus.chunkSize || networkConfig.walrus.chunkSize,
+    walrusMaxParallelism: walrus.maxParallelism || networkConfig.walrus.maxParallelism
   };
 };
 

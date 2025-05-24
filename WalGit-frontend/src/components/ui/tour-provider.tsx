@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
 import { GuidedTour, useGuidedTour, type TourStep } from './guided-tour';
 import { predefinedTours, TourLauncher } from './tour-templates';
 import { safeGetStorage, safeSetStorage } from '@/hooks/use-storage';
@@ -44,10 +44,10 @@ export function TourProvider({ children, customTours = {} }: TourProviderProps) 
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   
   // Combine predefined tours with custom tours
-  const allTours = {
+  const allTours = useMemo(() => ({
     ...predefinedTours,
     ...customTours
-  };
+  }), [customTours]);
   
   // Tour hook for the active tour
   const {

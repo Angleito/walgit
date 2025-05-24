@@ -5,7 +5,7 @@ import ora from 'ora';
 import crypto from 'crypto';
 import { initializeWallet } from './auth.js';
 import { saveCurrentRepository, getCurrentRepository, getWalGitDir } from './config.js';
-import { getRepositoryFromChain, validatePackageId, pushCommitsOnChain } from './sui-integration.js';
+import { getRepositoryFromChain, validatePackageId, pushCommitsOnChain, createRepositoryOnChain } from './sui-integration.js';
 import { WorkingCopyManager } from './working-copy-manager.js';
 
 /**
@@ -16,6 +16,38 @@ import { WorkingCopyManager } from './working-copy-manager.js';
  */
 const calculateHash = (content) => {
   return crypto.createHash('md5').update(content).digest('hex');
+};
+
+/**
+ * Get local commits that need to be synced
+ * @param {string} walgitDir - The .walgit directory path
+ * @param {string} remoteHead - The remote HEAD commit hash
+ * @returns {Promise<Array>} Array of commit objects to sync
+ */
+const getLocalCommitsToSync = async (walgitDir, remoteHead) => {
+  const commitsToSync = [];
+  const objectsDir = path.join(walgitDir, 'objects');
+  
+  // Read all commit objects
+  if (fs.existsSync(objectsDir)) {
+    const files = fs.readdirSync(objectsDir);
+    for (const file of files) {
+      if (file.startsWith('commit-')) {
+        const commitPath = path.join(objectsDir, file);
+        const commitData = JSON.parse(fs.readFileSync(commitPath, 'utf8'));
+        
+        // Add commit if it's not already on remote
+        if (commitData.hash !== remoteHead) {
+          commitsToSync.push(commitData);
+        }
+      }
+    }
+  }
+  
+  // Sort commits by timestamp
+  commitsToSync.sort((a, b) => a.timestamp - b.timestamp);
+  
+  return commitsToSync;
 };
 
 /**
@@ -167,7 +199,7 @@ export const createCommit = async (options) => {
     const repository = await getCurrentRepository();
     if (!repository) {
       progressSpinner.fail('Not in a WalGit repository');
-      throw new Error("Not in a WalGit repository");
+      throw new Error('Not in a WalGit repository');
     }
 
     // Import necessary modules (dynamic import to avoid circular dependencies)
@@ -326,10 +358,10 @@ export const createCommit = async (options) => {
       progressSpinner.succeed(`Commit ${commit.hash.substring(0, 8)} created (on blockchain: ${onChainCommitResult.id.substring(0, 8)})`);
     } else if (useOnChain) {
       progressSpinner.succeed(`Commit ${commit.hash.substring(0, 8)} created (local simulation, blockchain unavailable)`);
-      console.log(chalk.yellow("Note: Commit was created in local simulation mode. Files were not uploaded to Walrus storage."));
+      console.log(chalk.yellow('Note: Commit was created in local simulation mode. Files were not uploaded to Walrus storage.'));
     } else {
       progressSpinner.succeed(`Commit ${commit.hash.substring(0, 8)} created (local simulation)`);
-      console.log(chalk.yellow("Note: Commit was created in local simulation mode. Use WALGIT_USE_BLOCKCHAIN=true to enable blockchain integration."));
+      console.log(chalk.yellow('Note: Commit was created in local simulation mode. Use WALGIT_USE_BLOCKCHAIN=true to enable blockchain integration.'));
     }
 
     return commit;
@@ -376,7 +408,7 @@ export const pushCommits = async (options) => {
     const repository = await getCurrentRepository();
     if (!repository) {
       progressSpinner.fail('Not in a WalGit repository');
-      throw new Error("Not in a WalGit repository");
+      throw new Error('Not in a WalGit repository');
     }
 
     // Get the latest commit hash from HEAD
@@ -385,7 +417,7 @@ export const pushCommits = async (options) => {
 
     if (!fs.existsSync(headPath)) {
       progressSpinner.fail('No commits to push');
-      throw new Error("No commits to push. Please make a commit first.");
+      throw new Error('No commits to push. Please make a commit first.');
     }
 
     const headContent = fs.readFileSync(headPath, 'utf-8').trim();
@@ -411,7 +443,7 @@ export const pushCommits = async (options) => {
 
     if (!latestCommitHash) {
       progressSpinner.fail('Could not determine the latest commit');
-      throw new Error("Could not determine the latest commit from HEAD.");
+      throw new Error('Could not determine the latest commit from HEAD.');
     }
 
     progressSpinner.text = `Analyzing local commit history for ${currentBranch}...`;
@@ -436,7 +468,7 @@ export const pushCommits = async (options) => {
     const isPackageValid = useOnChain ? await validatePackageId() : false;
 
     if (useOnChain && isPackageValid) {
-      progressSpinner.text = `Checking remote repository state on blockchain...`;
+      progressSpinner.text = 'Checking remote repository state on blockchain...';
       
       try {
         // Import necessary blockchain integration modules
@@ -483,8 +515,8 @@ export const pushCommits = async (options) => {
         if (remoteHasConflicts && !options.force) {
           progressSpinner.fail('Remote has conflicting changes');
           throw new Error(
-            "Remote branch has changes that conflict with your local branch. " +
-            "Use --force to override (this may overwrite remote changes) or pull first to merge the changes."
+            'Remote branch has changes that conflict with your local branch. ' +
+            'Use --force to override (this may overwrite remote changes) or pull first to merge the changes.'
           );
         }
         
@@ -596,8 +628,8 @@ export const pushCommits = async (options) => {
               if (successfulBatches > 0) {
                 progressSpinner.warn(
                   `${successfulBatches} out of ${batches.length} batches were pushed successfully, ` +
-                  `but the branch reference was not updated. ` +
-                  `Your commits are on the blockchain but not linked to the branch.`
+                  'but the branch reference was not updated. ' +
+                  'Your commits are on the blockchain but not linked to the branch.'
                 );
                 
                 // Try to update branch reference as a separate operation
@@ -747,7 +779,7 @@ export const pushCommits = async (options) => {
       }
     } else {
       // Local simulation mode
-      progressSpinner.text = `Simulating push operation locally...`;
+      progressSpinner.text = 'Simulating push operation locally...';
       
       if (useOnChain) {
         progressSpinner.info('Falling back to local simulation mode due to invalid package ID or configuration.');
@@ -769,7 +801,7 @@ export const pushCommits = async (options) => {
       fs.writeFileSync(trackingInfoPath, latestCommitHash);
       
       progressSpinner.succeed(`Successfully simulated push of ${commitsToSync.length} commit(s)`);
-      console.log(chalk.yellow("Note: This is a local simulation. No data was sent to a remote or blockchain."));
+      console.log(chalk.yellow('Note: This is a local simulation. No data was sent to a remote or blockchain.'));
       
       // Detailed push result for local simulation
       return {
@@ -1870,9 +1902,11 @@ export const fetchRemote = async (options = {}) => {
     // Track metrics and results
     const updatedRefs = [];
     let newObjects = 0;
-    let fetchedCommits = 0;
-    let fetchedTrees = 0;
-    let fetchedBlobs = 0;
+    const counters = {
+      fetchedCommits: 0,
+      fetchedTrees: 0,
+      fetchedBlobs: 0
+    };
     
     if (useOnChain && isPackageValid) {
       spinner.text = 'Connecting to blockchain...';
@@ -2000,7 +2034,7 @@ export const fetchRemote = async (options = {}) => {
             try {
               // Get commit details
               const commit = await getCommitFromChain(currentCommitId);
-              fetchedCommits++;
+              counters.fetchedCommits++;
               
               // Store commit object locally
               const commitDir = path.join(walgitDir, 'objects', currentCommitId.substring(0, 2));
@@ -2014,7 +2048,7 @@ export const fetchRemote = async (options = {}) => {
                 
                 // Get root tree object
                 const rootTree = await getTreeFromChain(commit.treeId);
-                fetchedTrees++;
+                counters.fetchedTrees++;
                 
                 // Store tree locally
                 const treeDir = path.join(walgitDir, 'objects', commit.treeId.substring(0, 2));
@@ -2023,7 +2057,7 @@ export const fetchRemote = async (options = {}) => {
                 fs.writeFileSync(treePath, JSON.stringify(rootTree, null, 2));
                 
                 // Process tree for blob references (without downloading contents)
-                await processTreeForBlobs(rootTree, processedObjects);
+                await processTreeForBlobs(rootTree, processedObjects, counters, walgitDir);
               }
               
               // Move to parent commit
@@ -2041,7 +2075,7 @@ export const fetchRemote = async (options = {}) => {
           fs.writeFileSync(remoteTrackingRefPath, remoteCommitId);
           
           // Increment total object count
-          newObjects += fetchedCommits + fetchedTrees + fetchedBlobs;
+          newObjects += counters.fetchedCommits + counters.fetchedTrees + counters.fetchedBlobs;
         } catch (error) {
           spinner.warn(`Failed to fetch branch '${branchName}': ${error.message}`);
         }
@@ -2103,9 +2137,9 @@ export const fetchRemote = async (options = {}) => {
         remoteUrl,
         newObjects,
         updatedRefs,
-        commits: fetchedCommits,
-        trees: fetchedTrees,
-        blobs: fetchedBlobs,
+        commits: counters.fetchedCommits,
+        trees: counters.fetchedTrees,
+        blobs: counters.fetchedBlobs,
       };
       
     } else {
@@ -2132,9 +2166,11 @@ export const fetchRemote = async (options = {}) => {
    * Process a tree to find and store blob references
    * @param {object} tree - Tree object
    * @param {Set} processedObjects - Set of already processed object IDs
+   * @param {object} counters - Object containing fetchedBlobs and fetchedTrees counters
+   * @param {string} walgitDir - The .walgit directory path
    * @returns {Promise<void>}
    */
-  async function processTreeForBlobs(tree, processedObjects) {
+  async function processTreeForBlobs(tree, processedObjects, counters, walgitDir) {
     const { getBlobFromChain, getTreeFromChain } = await import('./sui-integration.js');
     
     for (const entry of tree.entries) {
@@ -2144,7 +2180,7 @@ export const fetchRemote = async (options = {}) => {
         try {
           // Get blob metadata (not content)
           const blob = await getBlobFromChain(entry.objectId);
-          fetchedBlobs++;
+          counters.counters.fetchedBlobs++;
           
           // Store blob reference metadata locally
           const blobDir = path.join(walgitDir, 'objects', entry.objectId.substring(0, 2));
@@ -2161,7 +2197,7 @@ export const fetchRemote = async (options = {}) => {
         try {
           // Get subtree
           const subtree = await getTreeFromChain(entry.objectId);
-          fetchedTrees++;
+          counters.counters.fetchedTrees++;
           
           // Store tree locally
           const treeDir = path.join(walgitDir, 'objects', entry.objectId.substring(0, 2));
@@ -2170,7 +2206,7 @@ export const fetchRemote = async (options = {}) => {
           fs.writeFileSync(treePath, JSON.stringify(subtree, null, 2));
           
           // Process subtree recursively
-          await processTreeForBlobs(subtree, processedObjects);
+          await processTreeForBlobs(subtree, processedObjects, counters, walgitDir);
           
         } catch (error) {
           console.warn(chalk.yellow(`Warning: Failed to fetch tree ${entry.objectId}: ${error.message}`));

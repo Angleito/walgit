@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useCallback } from 'react';
 import { cn } from "@/lib/utils";
 
 interface CommitNode {
@@ -49,7 +49,7 @@ export function CommitGraph({
   }, [commits]);
 
   // Get branch colors
-  const getBranchColor = (branchName?: string): string => {
+  const getBranchColor = useCallback((branchName?: string): string => {
     const colors = [
       '#1f6feb', // Blue
       '#3fb950', // Green
@@ -65,7 +65,7 @@ export function CommitGraph({
     
     const index = Array.from(branchLanes.keys()).indexOf(branchName);
     return colors[index % colors.length];
-  };
+  }, [branchLanes]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

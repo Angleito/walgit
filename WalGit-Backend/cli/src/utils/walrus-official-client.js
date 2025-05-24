@@ -289,4 +289,4 @@ export class WalrusOfficialClient {
 export const walrusOfficialClient = new WalrusOfficialClient();
 
 // Export class for advanced usage
-export { WalrusOfficialClient };
+export default WalrusOfficialClient;

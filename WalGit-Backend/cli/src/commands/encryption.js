@@ -47,7 +47,7 @@ export function registerEncryptionCommand(program) {
         
         const result = await sealClient.createEncryptionPolicy(repoId, policyParams);
         
-        spinner.succeed(chalk.green(`Repository encryption enabled`));
+        spinner.succeed(chalk.green('Repository encryption enabled'));
         console.log(chalk.cyan(`Policy ID: ${result.policyId}`));
         console.log(chalk.cyan(`Master key hash: ${result.keyHash}`));
         console.log(chalk.cyan(`Threshold: ${options.threshold}/${options.shares}`));
@@ -78,7 +78,7 @@ export function registerEncryptionCommand(program) {
         // Disable encryption in config
         await repository.setEncryptionEnabled(false);
         
-        spinner.succeed(chalk.green(`Repository encryption disabled`));
+        spinner.succeed(chalk.green('Repository encryption disabled'));
         console.log(chalk.yellow('Note: Existing encrypted blobs will remain encrypted'));
         
       } catch (error) {

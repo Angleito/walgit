@@ -1,6 +1,6 @@
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { getWalletConfig } from './config.js';
+import { getSuiClient, executeTransaction, getActiveAddress } from './sui-wallet-integration.js';
 import { initializeWallet } from './auth.js';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -13,32 +13,33 @@ import {
 } from './transaction-utils.js';
 import {
   DEFAULT_GAS_BUDGET,
-  MAX_GAS_BUDGET
+  MAX_GAS_BUDGET,
+  NETWORK_CONFIG
 } from './constants.js';
 
-// Package ID for the WalGit smart contract
-// This should be updated with the actual deployed package ID
-const WALGIT_PACKAGE_ID = process.env.WALGIT_PACKAGE_ID || '0x0'; // Default to 0x0 for testing
+// Cache for package ID to avoid repeated config loads
+let cachedPackageId = null;
+
+/**
+ * Get the WalGit package ID from configuration
+ * @returns {Promise<string>} Package ID
+ */
+export const getPackageId = async () => {
+  if (cachedPackageId) return cachedPackageId;
+  
+  const { getConfig } = await import('./config.js');
+  const config = await getConfig();
+  cachedPackageId = config.packageId || process.env.WALGIT_PACKAGE_ID || '0x0';
+  return cachedPackageId;
+};
 
 /**
  * Initialize Sui client based on network configuration
  * @returns {Promise<SuiClient>} Initialized Sui client
  */
 export const initializeSuiClient = async () => {
-  const walletConfig = await getWalletConfig();
-  const network = walletConfig.network || 'devnet';
-  
-  // Network RPC URLs
-  const networkUrls = {
-    devnet: 'https://fullnode.devnet.sui.io:443',
-    testnet: 'https://fullnode.testnet.sui.io:443',
-    mainnet: 'https://fullnode.mainnet.sui.io:443',
-    localnet: 'http://localhost:9000'
-  };
-  
-  const rpcUrl = networkUrls[network] || networkUrls.devnet;
-  
-  return new SuiClient({ url: rpcUrl });
+  // Use Sui CLI's client
+  return getSuiClient();
 };
 
 /**
@@ -54,12 +55,15 @@ export const createRepositoryOnChain = async (options) => {
   const spinner = ora('Creating repository on-chain...').start();
   
   try {
+    // Get package ID
+    const packageId = await getPackageId();
+    
     // Create transaction block
     const tx = new TransactionBlock();
     
     // Call the init_repository function from the git_operations module
     tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::git_operations::init_repository`,
+      target: `${packageId}::git_operations::init_repository`,
       arguments: [
         tx.pure(options.name),
         tx.pure(options.description || '')
@@ -124,6 +128,7 @@ export const createRepositoryOnChain = async (options) => {
  * @returns {Promise<object>} Created commit data
  */
 export const createCommitOnChain = async (options) => {
+  const packageId = await getPackageId();
   const wallet = await initializeWallet();
   const spinner = ora('Creating commit on-chain...').start();
   
@@ -154,7 +159,7 @@ export const createCommitOnChain = async (options) => {
       
       // Create blob object for the commit
       const blobResult = tx.moveCall({
-        target: `${WALGIT_PACKAGE_ID}::git_blob_object::create_blob`,
+        target: `${packageId}::git_blob_object::create_blob`,
         arguments: [
           tx.pure(file.walrusBlobId), // Blob ID in Walrus storage
           tx.pure(file.size),         // File size
@@ -195,7 +200,7 @@ export const createCommitOnChain = async (options) => {
     
     // Create commit object
     const commitResult = tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::git_commit_object::create_commit`,
+      target: `${packageId}::git_commit_object::create_commit`,
       arguments: [
         rootTreeResult,                // Root tree ID
         tx.pure(parentCommit),         // Parent commit ID
@@ -206,7 +211,7 @@ export const createCommitOnChain = async (options) => {
     
     // Add commit to repository
     tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::git_operations::add_commit_to_repository`,
+      target: `${packageId}::git_operations::add_commit_to_repository`,
       arguments: [
         tx.pure(options.repositoryId), // Repository ID
         commitResult                   // Commit object
@@ -459,6 +464,7 @@ export const getRemoteBranchState = async (repositoryId, branchName) => {
  * @private
  */
 async function branchExistsOnChain(referencesId, branchName) {
+  const packageId = await getPackageId();
   const client = await initializeSuiClient();
   
   try {
@@ -472,7 +478,7 @@ async function branchExistsOnChain(referencesId, branchName) {
         id: referencesId,
         branch: branchName
       }),
-      targetFunction: `${WALGIT_PACKAGE_ID}::git_reference::branch_exists`
+      targetFunction: `${packageId}::git_reference::branch_exists`
     });
     
     // Extract the result
@@ -543,6 +549,7 @@ async function getBranchReferenceId(referencesId, branchName) {
  * @returns {Promise<object>} Push result
  */
 export const pushCommitsOnChain = async (options) => {
+  const packageId = await getPackageId();
   const wallet = await initializeWallet();
   const spinner = ora('Pushing commits to blockchain...').start();
   
@@ -563,7 +570,7 @@ export const pushCommitsOnChain = async (options) => {
     if (options.force) {
       // Force update branch reference to point to the new commit
       tx.moveCall({
-        target: `${WALGIT_PACKAGE_ID}::git_reference::force_update_branch`,
+        target: `${packageId}::git_reference::force_update_branch`,
         arguments: [
           tx.pure(options.repositoryId), // Repository ID
           tx.pure(options.branch),       // Branch name
@@ -573,7 +580,7 @@ export const pushCommitsOnChain = async (options) => {
     } else {
       // Standard update branch reference to point to the new commit
       tx.moveCall({
-        target: `${WALGIT_PACKAGE_ID}::git_reference::update_branch`,
+        target: `${packageId}::git_reference::update_branch`,
         arguments: [
           tx.pure(options.repositoryId), // Repository ID
           tx.pure(options.branch),       // Branch name
@@ -803,7 +810,8 @@ export const getBlobFromChain = async (blobId) => {
  * @returns {Promise<boolean>} Whether the package is valid
  */
 export const validatePackageId = async () => {
-  if (WALGIT_PACKAGE_ID === '0x0') {
+  const packageId = await getPackageId();
+  if (packageId === '0x0') {
     console.warn(chalk.yellow('Warning: Using default package ID (0x0). Set WALGIT_PACKAGE_ID environment variable to use a deployed contract.'));
     return false;
   }
@@ -813,7 +821,7 @@ export const validatePackageId = async () => {
   try {
     // Try to get the package object
     const packageObj = await client.getObject({
-      id: WALGIT_PACKAGE_ID,
+      id: packageId,
       options: {
         showType: true
       }
@@ -1124,12 +1132,13 @@ async function estimateGasForTransaction(client, tx, sender) {
  * @returns {Promise<Object>} Access control result
  */
 export async function setupAccessControl(options) {
+  const packageId = await getPackageId();
   const wallet = await initializeWallet();
   const tx = new TransactionBlock();
   
   // Create access control policy object
   const policyResult = tx.moveCall({
-    target: `${WALGIT_PACKAGE_ID}::access_control::create_policy`,
+    target: `${packageId}::access_control::create_policy`,
     arguments: [
       tx.pure(options.repositoryId),
       tx.pure(options.policyType || 'standard'),
@@ -1141,7 +1150,7 @@ export async function setupAccessControl(options) {
   // Share the policy object for collaborative access
   if (options.shared) {
     tx.moveCall({
-      target: `${WALGIT_PACKAGE_ID}::access_control::share_policy`,
+      target: `${packageId}::access_control::share_policy`,
       arguments: [policyResult]
     });
   }
@@ -1175,6 +1184,7 @@ export async function setupAccessControl(options) {
  * @returns {Promise<boolean>} Whether the user has permission
  */
 export async function checkPermission(policyId, userId, action) {
+  const packageId = await getPackageId();
   const client = await initializeSuiClient();
   
   try {
@@ -1183,7 +1193,7 @@ export async function checkPermission(policyId, userId, action) {
     const result = await client.devInspectTransactionBlock({
       sender: userId,
       transactionBlock: tx,
-      targetFunction: `${WALGIT_PACKAGE_ID}::access_control::has_permission`,
+      targetFunction: `${packageId}::access_control::has_permission`,
       arguments: [policyId, userId, action]
     });
     
@@ -1202,6 +1212,7 @@ export async function checkPermission(policyId, userId, action) {
  * @returns {Promise<BlobIdRegistry>} Initialized blob registry
  */
 export async function initializeBlobRegistry() {
+  const packageId = await getPackageId();
   const client = await initializeSuiClient();
-  return new BlobIdRegistry(client, WALGIT_PACKAGE_ID);
+  return new BlobIdRegistry(client, packageId);
 }

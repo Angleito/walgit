@@ -44,7 +44,7 @@ export function clearDiffCache() {
 export function computeIncrementalDiff(oldContent, newContent, options = {}) {
   // Implementation will be added with actual diff logic
   return {
-    diff: "Sample diff output",
+    diff: 'Sample diff output',
     stats: {
       additions: 5,
       deletions: 3,

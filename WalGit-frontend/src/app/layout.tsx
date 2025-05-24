@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import './globals.css';
+import '@mysten/dapp-kit/dist/index.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {

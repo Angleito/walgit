@@ -263,9 +263,9 @@ export function BranchSelector({
                             )}
                           </div>
                           <div className="text-xs text-gray-500 mt-0.5">
-                            <span className="font-mono">{branch.lastCommit.hash.substring(0, 7)}</span>
+                            <span className="font-mono">{branch.lastCommit?.hash?.substring(0, 7) || 'unknown'}</span>
                             <span className="mx-1">·</span>
-                            <span>{formatRelativeTime(branch.lastCommit.date)}</span>
+                            <span>{branch.lastCommit?.date ? formatRelativeTime(branch.lastCommit.date) : 'unknown'}</span>
                           </div>
                         </div>
                       </div>
@@ -312,9 +312,9 @@ export function BranchSelector({
                         <div>
                           <div className="font-medium">{tag.name}</div>
                           <div className="text-xs text-gray-500 mt-0.5">
-                            <span className="font-mono">{tag.commit.hash.substring(0, 7)}</span>
+                            <span className="font-mono">{tag.commit?.hash?.substring(0, 7) || 'unknown'}</span>
                             <span className="mx-1">·</span>
-                            <span>{formatRelativeTime(tag.commit.date)}</span>
+                            <span>{tag.commit?.date ? formatRelativeTime(tag.commit.date) : 'unknown'}</span>
                           </div>
                         </div>
                       </div>
@@ -442,7 +442,7 @@ export function BranchSelector({
                 <GitBranch className="h-4 w-4 mr-2 text-gray-500" />
                 <span className="text-sm text-gray-700">{currentBranch}</span>
                 <span className="text-xs text-gray-500 ml-2">
-                  ({currentBranchData?.lastCommit.hash.substring(0, 7)})
+                  ({currentBranchData?.lastCommit?.hash?.substring(0, 7) || 'unknown'})
                 </span>
               </div>
               <div className="text-xs text-gray-500 mt-1">

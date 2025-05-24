@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import { validateWalletConnection } from '../utils/auth.js';
 import { getCurrentRepository } from '../utils/config.js';
 import { addRemote, removeRemote, listRemotes, setRemoteUrl } from '../utils/repository.js';
-// Removed unused imports from transaction-utils.js
 
 /**
  * Register the remote command

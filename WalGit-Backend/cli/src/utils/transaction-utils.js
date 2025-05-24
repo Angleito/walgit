@@ -7,8 +7,8 @@
 
 import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 import { toB64 } from '@mysten/sui.js/utils';
+import { getSuiClient, getActiveKeypair } from './sui-wallet-integration.js';
 // EventId is not exported in this version, removed unused import
 import {
   DEFAULT_GAS_BUDGET,

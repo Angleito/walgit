@@ -51,7 +51,7 @@ const customJestConfig: Config = {
     '<rootDir>/out/',
   ],
   
-  // Transforms
+  // Transform configuration - use Next.js built-in transforms
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },

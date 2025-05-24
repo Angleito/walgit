@@ -107,7 +107,7 @@ const config: Config = {
         'text-glitch-subtle': 'text-glitch 6s linear infinite',
         'text-glitch-intense': 'text-glitch 1.5s linear infinite',
         'scanline-scroll': 'scanline-scroll var(--animation-duration, 4s) linear infinite',
-        'scanline-flicker': 'scanline-flicker var(--animation-duration, 4s) ease-in-out infinite',
+        'scanline-flicker-anim': 'scanline-flicker var(--animation-duration, 4s) ease-in-out infinite',
         'blink-cursor': 'blink-cursor 1.2s step-end infinite',
         'scanner': 'scanner 2s linear infinite',
         'rotate': 'rotate 10s linear infinite',
@@ -239,10 +239,6 @@ const config: Config = {
           '40%': { transform: 'translateX(5px)' },
           '60%': { transform: 'translateX(-2px)' },
           '80%': { transform: 'translateX(2px)' },
-        },
-        'scanline-scroll': {
-          '0%': { backgroundPosition: '0 0' },
-          '100%': { backgroundPosition: '0 100%' },
         },
         'crt-flicker': {
           '0%, 100%': { opacity: '1.0' },

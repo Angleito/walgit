@@ -13,7 +13,7 @@ import { initializeSuiClient } from './sui-integration.js';
 import { walrusClient } from './walrus-sdk-integration.js';
 import { estimateGasCost, executeTransactionWithRetry } from './transaction-utils.js';
 import { getConfig } from './config.js';
-import { walletManager } from './wallet-integration.js';
+import { validateWalletConnection, executeTransaction, getActiveKeypair } from './sui-wallet-integration.js';
 import { formatBytes } from './format-utils.js';
 
 // Constants for storage optimization
@@ -41,7 +41,7 @@ export class OptimizedStorageManager {
    */
   static async initializeStorage(repositoryId) {
     const suiClient = await initializeSuiClient();
-    const keypair = await walletManager();
+    const keypair = getActiveKeypair();
     
     // Create transaction block
     const txb = suiClient.createTransactionBlock();
@@ -80,7 +80,7 @@ export class OptimizedStorageManager {
   static async createStorageAllocation(repositoryId, tier = 1, autoRenew = true) {
     const suiClient = await initializeSuiClient();
     const walrusClient = walrusClient;
-    const keypair = await walletManager();
+    const keypair = getActiveKeypair();
     
     // Get configuration
     const config = await getConfig();
@@ -184,7 +184,7 @@ export class OptimizedStorageManager {
   static async uploadSmallFile(repositoryId, fileContent, blobId, contentType, options = {}) {
     const walrusClient = walrusClient;
     const suiClient = await initializeSuiClient();
-    const keypair = await walletManager();
+    const keypair = getActiveKeypair();
     
     // Upload to Walrus
     const uploadResult = await walrusClient.uploadBlob(fileContent, {
@@ -249,7 +249,7 @@ export class OptimizedStorageManager {
   static async uploadLargeFile(repositoryId, fileContent, blobId, contentType, options = {}) {
     const walrusClient = walrusClient;
     const suiClient = await initializeSuiClient();
-    const keypair = await walletManager();
+    const keypair = getActiveKeypair();
     
     // Determine chunks
     const fileSize = fileContent.length;
@@ -438,13 +438,13 @@ export class OptimizedStorageManager {
     
     // Call view function to check if blob exists
     const viewResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "enhanced_walrus_integration",
-          function: "blob_exists",
+          module: 'enhanced_walrus_integration',
+          function: 'blob_exists',
           typeArguments: [],
           arguments: [
             repositoryId,
@@ -522,13 +522,13 @@ export class OptimizedStorageManager {
     
     // Call view function to check if blob exists
     const viewResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "enhanced_walrus_integration",
-          function: "blob_exists",
+          module: 'enhanced_walrus_integration',
+          function: 'blob_exists',
           typeArguments: [],
           arguments: [
             repositoryId,
@@ -555,13 +555,13 @@ export class OptimizedStorageManager {
     
     // Get total blob count
     const blobCountResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "enhanced_walrus_integration",
-          function: "get_repository_blob_count",
+          module: 'enhanced_walrus_integration',
+          function: 'get_repository_blob_count',
           typeArguments: [],
           arguments: [
             repositoryId
@@ -572,13 +572,13 @@ export class OptimizedStorageManager {
     
     // Get total storage size
     const storageSizeResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "enhanced_walrus_integration",
-          function: "get_repository_storage_size",
+          module: 'enhanced_walrus_integration',
+          function: 'get_repository_storage_size',
           typeArguments: [],
           arguments: [
             repositoryId

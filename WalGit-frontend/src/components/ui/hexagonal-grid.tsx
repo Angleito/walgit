@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 interface HexagonalGridProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -84,7 +84,7 @@ export const HexagonalGrid: React.FC<HexagonalGridProps> = ({
   };
   
   // Draw a single hexagon
-  const drawHexagon = (
+  const drawHexagon = useCallback((
     ctx: CanvasRenderingContext2D, 
     centerX: number, 
     centerY: number, 
@@ -112,7 +112,7 @@ export const HexagonalGrid: React.FC<HexagonalGridProps> = ({
     
     ctx.strokeStyle = strokeColor;
     ctx.stroke();
-  };
+  }, []);
   
   useEffect(() => {
     const canvas = canvasRef.current;

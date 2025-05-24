@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const CLI_PATH = path.join(process.cwd(), 'WalGit-Backend', 'cli', 'bin', 'walgit.js');
+const CLI_PATH = path.join(process.cwd(), 'walgit-backend', 'cli', 'bin', 'walgit.js');
 const TEST_DIR = path.join(os.tmpdir(), 'walgit-practical-test');
 
 // Helper function to execute CLI commands

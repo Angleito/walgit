@@ -221,13 +221,13 @@ export class CodeReviewManager {
     
     // Call the view function to get threads
     const viewResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "git_code_review",
-          function: "get_threads_for_pr",
+          module: 'git_code_review',
+          function: 'get_threads_for_pr',
           typeArguments: [],
           arguments: [
             reviewSummaryId,
@@ -361,13 +361,13 @@ export class CodeReviewManager {
     
     // First get all comments for the PR
     const commentsResult = await suiClient.devInspectTransaction({
-      sender: "0x0", // Dummy sender for view function
+      sender: '0x0', // Dummy sender for view function
       transaction: {
-        kind: "moveCall",
+        kind: 'moveCall',
         data: {
           packageObjectId: process.env.PACKAGE_ID,
-          module: "git_code_review",
-          function: "get_comments_for_pr",
+          module: 'git_code_review',
+          function: 'get_comments_for_pr',
           typeArguments: [],
           arguments: [
             reviewSummaryId,

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { walletManager } from '../utils/wallet-integration.js';
+import { validateWalletConnection } from '../utils/sui-wallet-integration.js';
 import { initializeSuiClient } from '../utils/sui-integration.js';
 import { getConfig } from '../utils/config.js';
 
@@ -19,13 +19,11 @@ export const listCommand = (program) => {
     .option('--format <format>', 'Output format: table, json, or ids', 'table')
     .action(async (options) => {
       try {
-        // Ensure wallet is unlocked
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        // Ensure wallet is connected
+        const wallet = await validateWalletConnection();
 
         const spinner = ora('Fetching repositories...').start();
-        const userAddress = walletManager.getCurrentAddress();
+        const userAddress = wallet.address;
         const suiClient = await initializeSuiClient();
         const config = getConfig();
 
@@ -125,9 +123,7 @@ export const listCommand = (program) => {
     .option('--limit <limit>', 'Maximum number of results', parseInt, 10)
     .action(async (query, options) => {
       try {
-        if (!walletManager.isWalletUnlocked()) {
-          throw new Error('Wallet is locked. Run `walgit wallet unlock` first.');
-        }
+        const wallet = await validateWalletConnection();
 
         const spinner = ora(`Searching for "${query}"...`).start();
         
@@ -138,7 +134,7 @@ export const listCommand = (program) => {
         // For now, we'll search through owned repositories
         // In production, this would query an indexing service
         const ownedRepos = await suiClient.getOwnedObjects({
-          owner: walletManager.getCurrentAddress(),
+          owner: wallet.address,
           filter: {
             StructType: `${config.sui.packageId}::git_repository::Repo`
           },

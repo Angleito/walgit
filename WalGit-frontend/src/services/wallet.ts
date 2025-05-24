@@ -1,7 +1,6 @@
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { ConnectedWallet } from '@mysten/dapp-kit';
-import { SuiTransactionBlockResponse } from '@mysten/sui.js/client';
+import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui.js/client';
+import { Transaction } from '@mysten/sui/transactions';
+import type { ConnectedWallet } from '@mysten/dapp-kit';
 
 // Interface for the repository creation parameters
 export interface CreateRepositoryParams {
@@ -40,8 +39,8 @@ export const walletService = {
     params: CreateRepositoryParams
   ): Promise<SuiTransactionBlockResponse> {
     try {
-      // Create a transaction block
-      const tx = new TransactionBlock();
+      // Create a transaction
+      const tx = new Transaction();
       
       // Get package ID from environment variables
       const PACKAGE_ID = getPackageId();
@@ -68,11 +67,11 @@ export const walletService = {
       const createRepoTx = tx.moveCall({
         target: `${PACKAGE_ID}::walgit::create_repository`,
         arguments: [
-          tx.pure.string(params.name),
-          tx.pure.string(params.description),
-          tx.pure.string(params.defaultBranch || 'main'),
+          tx.pure(params.name),
+          tx.pure(params.description),
+          tx.pure(params.defaultBranch || 'main'),
           tx.object(storageQuotaObjectId),
-          tx.pure.bool(params.isPublic !== undefined ? params.isPublic : true),
+          tx.pure(params.isPublic !== undefined ? params.isPublic : true),
         ],
       });
 
@@ -82,10 +81,10 @@ export const walletService = {
           target: `${PACKAGE_ID}::walgit::configure_repository`,
           arguments: [
             createRepoTx,
-            tx.pure.string(params.template || ''),
-            tx.pure.bool(params.addReadme || false),
-            tx.pure.bool(params.addGitignore || false),
-            tx.pure.string(typeof params.addLicense === 'string' ? params.addLicense : ''),
+            tx.pure(params.template || ''),
+            tx.pure(params.addReadme || false),
+            tx.pure(params.addGitignore || false),
+            tx.pure(typeof params.addLicense === 'string' ? params.addLicense : ''),
           ],
         });
       }
@@ -124,8 +123,8 @@ export const walletService = {
   // Method to create a storage quota
   async createStorageQuota(wallet: ConnectedWallet): Promise<SuiTransactionBlockResponse> {
     try {
-      // Create a transaction block
-      const tx = new TransactionBlock();
+      // Create a transaction
+      const tx = new Transaction();
       
       // Call the function to create a storage quota
       const PACKAGE_ID = getPackageId();
@@ -148,18 +147,21 @@ export const walletService = {
   
   // Method to purchase storage
   async purchaseStorage(
+    client: SuiClient,
     wallet: ConnectedWallet, 
     amount: number
   ): Promise<SuiTransactionBlockResponse> {
     try {
-      // Create a transaction block
-      const tx = new TransactionBlock();
+      // Create a transaction
+      const tx = new Transaction();
 
       // Call the function to purchase storage
       const PACKAGE_ID = getPackageId();
 
-      // Get client
-      const client = wallet.client || wallet.getClient?.() || wallet;
+      // Get client - use the passed client parameter
+      if (!client) {
+        throw new Error('SuiClient is required for storage purchase');
+      }
       
       // Query for storage quota object
       const { data: quotaObjects } = await client.getOwnedObjects({
@@ -180,14 +182,14 @@ export const walletService = {
       }
 
       // Create a coin for payment
-      const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(amount * 1000000)]);
+      const [coin] = tx.splitCoins(tx.gas, [tx.pure(amount * 1000000)]);
 
       tx.moveCall({
         target: `${PACKAGE_ID}::storage::purchase_storage`,
         arguments: [
           tx.object(storageQuotaObjectId),
           coin,
-          tx.pure.u64(amount * 1024 * 1024), // Convert to bytes
+          tx.pure(amount * 1024 * 1024), // Convert to bytes
         ],
       });
 

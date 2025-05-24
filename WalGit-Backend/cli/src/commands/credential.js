@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { URL } from 'url';
 import {
   loadCredentialConfig,
   saveCredentialConfig,

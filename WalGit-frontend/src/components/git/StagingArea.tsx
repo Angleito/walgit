@@ -75,7 +75,7 @@ export function StagingArea({
     f.filename.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelectFile = (filename: string) => {
+  const handleSelectFile = useCallback((filename: string) => {
     const newSelected = new Set(selectedFiles);
     if (newSelected.has(filename)) {
       newSelected.delete(filename);
@@ -83,7 +83,7 @@ export function StagingArea({
       newSelected.add(filename);
     }
     setSelectedFiles(newSelected);
-  };
+  }, [selectedFiles]);
 
   const handleStageSelected = () => {
     const filesToStage = Array.from(selectedFiles).filter(f => 

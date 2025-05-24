@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ReviewThread } from './ReviewThread';
@@ -120,7 +120,7 @@ export function EnhancedFileDiff({
   }, {} as Record<number, typeof threads>);
   
   // Detect file language for syntax highlighting
-  const detectLanguage = (filePath: string): string => {
+  const detectLanguage = useCallback((filePath: string): string => {
     if (fileInfo.language) return fileInfo.language;
     
     const extension = filePath.split('.').pop()?.toLowerCase() || '';
@@ -151,10 +151,10 @@ export function EnhancedFileDiff({
     };
     
     return extensionMap[extension] || 'plaintext';
-  };
+  }, [fileInfo.language]);
   
   // Apply syntax highlighting to diff content
-  const applySyntaxHighlighting = (content: string, language: string): string => {
+  const applySyntaxHighlighting = useCallback((content: string, language: string): string => {
     try {
       if (!highlightSyntax) return content;
       if (language === 'plaintext') return content;
@@ -170,7 +170,7 @@ export function EnhancedFileDiff({
       console.error('Error applying syntax highlighting:', error);
       return content;
     }
-  };
+  }, [highlightSyntax]);
   
   // Process hunks with syntax highlighting
   const processedHunks = useMemo(() => {
@@ -189,7 +189,7 @@ export function EnhancedFileDiff({
         lines: processedLines
       };
     });
-  }, [hunks, fileInfo, highlightSyntax, applySyntaxHighlighting, detectLanguage]);
+  }, [hunks, fileInfo, applySyntaxHighlighting, detectLanguage]);
   
   const handleAddComment = async () => {
     if (!commentingLine || !commentContent.trim()) return;

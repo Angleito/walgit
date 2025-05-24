@@ -1772,11 +1772,11 @@ function generateAsciiChart(timeSeries, options = {}) {
     if (i === height) {
       chart += chalk.dim(`${maxCount} ┐ `);
     } else if (i === 0) {
-      chart += chalk.dim(`0 └─`);
+      chart += chalk.dim('0 └─');
     } else if (i === height / 2) {
       chart += chalk.dim(`${Math.round(maxCount / 2)} ┤ `);
     } else {
-      chart += chalk.dim(`  │ `);
+      chart += chalk.dim('  │ ');
     }
     
     // Bars
